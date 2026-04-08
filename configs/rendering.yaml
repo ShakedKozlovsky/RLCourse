@@ -1,0 +1,38 @@
+window:
+  width: 800  # Window width in pixels
+  height: 600  # Window height in pixels
+  title: "Drone RL Simulator"  # Window title
+
+rendering:
+  target_fps: 60  # Target frames per second
+  enable_vsync: true  # Enable vertical sync
+  antialiasing: true  # Enable antialiasing
+
+camera:
+  initial_mode: "follow"  # Camera mode: follow, free, top_down, side
+  fov: 60.0  # Field of view in degrees
+  near_plane: 0.1  # Near clipping plane distance
+  far_plane: 2000.0  # Far clipping plane distance
+  follow_distance: 50.0  # Distance behind drone in follow mode
+  follow_height: 30.0  # Height above drone in follow mode
+
+visualization:
+  show_wind: true  # Show wind vectors
+  show_trail: true  # Show drone flight trail
+  trail_length: 1000  # Maximum trail points to display
+  show_collision_boxes: false  # Show building collision boxes
+  show_grid: true  # Show ground grid
+
+ui:
+  font_size: 16  # UI font size
+  metric_panel_position: [10, 10]  # Metrics panel position [x, y]
+  plot_panel_position: [1200, 10]  # Plot panel position [x, y]
+  plot_panel_size: [380, 400]  # Plot panel size [width, height]
+
+colors:
+  background: [0.53, 0.81, 0.92]  # Sky blue
+  buildings: [0.5, 0.5, 0.5]  # Gray
+  drone: [1.0, 0.2, 0.2]  # Red
+  goal: [0.2, 1.0, 0.2]  # Green
+  trail: [1.0, 1.0, 0.0]  # Yellow
+  wind: [0.0, 0.5, 1.0]  # Blue

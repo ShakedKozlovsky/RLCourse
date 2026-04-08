@@ -1,0 +1,29 @@
+city:
+  size: [1000, 1000]  # City dimensions in meters [width, depth]
+  building_density: 0.5  # Fraction of area covered by buildings [0-1]
+  building_height_range: [10, 100]  # Min and max building height in meters
+  street_width: 15  # Width of streets between buildings
+  seed: null  # Random seed for reproducibility (null = random)
+
+drone:
+  start_position: [50, 50, 50]  # Starting position [x, y, z] in meters
+  max_speed: 20.0  # Maximum speed in m/s
+  max_acceleration: 5.0  # Maximum acceleration in m/s²
+  mass: 2.0  # Drone mass in kg
+  drag_coefficient: 0.1  # Air resistance coefficient
+  size: [0.5, 0.3, 0.5]  # Drone dimensions [width, height, depth] in meters
+  initial_energy: 600.0  # Initial energy in seconds of flight time
+
+goal:
+  position: [950, 50, 950]  # Goal position [x, y, z] in meters
+  radius: 10.0  # Success radius in meters
+
+wind:
+  enabled: true  # Enable wind simulation
+  base_speed_range: [0, 10]  # Wind speed range in m/s
+  turbulence: 0.3  # Turbulence level [0-1]
+  update_interval: 2.0  # Wind update frequency in seconds
+
+episode:
+  max_steps: 2000  # Maximum steps per episode
+  timeout_penalty: -100.0  # Penalty for exceeding max steps

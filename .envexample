@@ -1,0 +1,11 @@
+# Environment Variables Template
+# Copy this file to .env and fill in actual values if needed
+
+# Display settings for VNC/X11 (optional)
+# DISPLAY=:0
+
+# Logging level (optional)
+# LOG_LEVEL=INFO
+
+# Project paths (optional - defaults are usually fine)
+# PROJECT_ROOT=/home/corsight/src/assignment1

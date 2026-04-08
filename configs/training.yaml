@@ -1,0 +1,32 @@
+algorithm: "DQN"  # Reinforcement learning algorithm
+
+hyperparameters:
+  learning_rate: 0.001  # Neural network learning rate
+  gamma: 0.99  # Discount factor for future rewards
+  batch_size: 64  # Mini-batch size for training
+  buffer_size: 100000  # Replay buffer capacity
+  learning_starts: 1000  # Steps before training begins
+  train_frequency: 4  # Train every N steps
+  target_update_frequency: 1000  # Update target network every N steps
+
+exploration:
+  initial_epsilon: 1.0  # Initial exploration rate
+  final_epsilon: 0.01  # Minimum exploration rate
+  epsilon_decay: 0.995  # Epsilon decay factor per episode
+
+network:
+  hidden_layers: [256, 256]  # Hidden layer sizes
+  activation: "relu"  # Activation function
+
+training:
+  num_episodes: 10000  # Total training episodes
+  eval_frequency: 100  # Evaluate every N episodes
+  checkpoint_frequency: 500  # Save checkpoint every N episodes
+
+rewards:
+  progress_weight: 10.0  # Weight for progress toward goal
+  goal_reward: 1000.0  # Reward for reaching goal
+  collision_penalty: 500.0  # Penalty for collisions
+  time_penalty: 1.0  # Penalty per time step
+  energy_penalty: 0.1  # Penalty for energy usage
+  out_of_bounds_penalty: 300.0  # Penalty for leaving boundaries

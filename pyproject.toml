@@ -1,0 +1,55 @@
+[project]
+name = "drone-rl-simulator"
+version = "0.1.0"
+description = "Drone route optimization simulator using reinforcement learning"
+authors = [
+    {name = "Drone RL Team"}
+]
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.24.0",
+    "pygame-ce>=2.4.0",
+    "gymnasium>=0.29.0",
+    "pyyaml>=6.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "mypy>=1.0.0",
+    "ruff>=0.1.0",
+    "types-PyYAML>=6.0.0",
+]
+
+[project.scripts]
+drone-sim = "src.main_grid:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E", "F", "I", "N", "W"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
