@@ -1705,7 +1705,7 @@
 ### 9.8 Split config.py (296 → 150 lines)
 - [X] Analyze config.py structure
 - [X] Identify unused Pydantic models
-- [X] Realize many models for 3D simulator
+- [X] Realize many models were unused legacy code
 - [X] Check main_grid.py usage
 - [X] Confirm only YAML loading needed
 - [X] Rewrite config.py (71 lines)
