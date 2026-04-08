@@ -341,7 +341,7 @@ assignment1/
 
 ## Implemented Features
 
-- ✓ 2D grid-based environment (15x15 default, configurable)
+- ✓ 2D grid-based environment (20x20 configurable)
 - ✓ Q-Learning with Bellman equation updates
 - ✓ Epsilon-greedy exploration (1.0 → 0.01)
 - ✓ Interactive bottom menu with 10 buttons
