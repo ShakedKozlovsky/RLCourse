@@ -27,7 +27,7 @@ All documentation is in the `docs/` folder:
 
 - **Q-Learning Algorithm**: Tabular Q-Learning with Bellman equation updates
 - **Epsilon-Greedy Exploration**: Balanced exploration-exploitation (ε: 1.0 → 0.01)
-- **2D Grid Environment**: Discrete 15x15 grid with configurable obstacles
+- **2D Grid Environment**: Discrete 20x20 grid with configurable obstacles
 - **Interactive UI**: Bottom menu with 10 clickable buttons
 - **Dynamic Obstacles**: Place buildings, traps, and wind zones in real-time
 - **Visit Heatmap**: Visualize which cells the drone explores most
@@ -114,7 +114,7 @@ Where:
 
 ### Environment
 
-**Grid**: 15x15 discrete cells (default, configurable)  
+**Grid**: 20x20 discrete cells  
 **Actions**: Stay, Up, Down, Left, Right (5 discrete actions)  
 **Obstacles**:
 - **Buildings** (brown): Collision = episode ends, -100 reward
