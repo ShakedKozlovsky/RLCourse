@@ -21,7 +21,7 @@ class GridApplication:
     """Main application for grid-based drone RL simulator."""
     
     def __init__(self, config_dir: Optional[Path] = None, load_model: Optional[Path] = None, 
-                 grid_size: tuple = (20, 20)):
+                 grid_size: tuple = (15, 15)):
         """Initialize application."""
         print("Initializing Grid-based Drone RL Simulator...")
         
