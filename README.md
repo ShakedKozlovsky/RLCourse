@@ -10,7 +10,7 @@ This repository contains all assignments and projects for the Reinforcement Lear
 **Grid-based drone navigation using Q-Learning**
 
 - **Algorithm:** Tabular Q-Learning with Bellman updates
-- **Environment:** 2D grid (20×20) with obstacles, traps, and wind zones
+- **Environment:** 2D grid (15×15 default) with obstacles, traps, and wind zones
 - **Features:** 
   - Interactive visualization with pygame
   - Real-time training metrics
