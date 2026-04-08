@@ -41,7 +41,11 @@ All documentation is in the `docs/` folder:
 ## Quick Start
 
 ```bash
-cd assignment1
+# Clone the repository
+git clone https://github.com/ShakedKozlovsky/RLCourse.git
+cd RLCourse/assignment1
+
+# Run the simulator
 ./run_grid_simulator.sh
 ```
 
@@ -524,7 +528,8 @@ Educational project for reinforcement learning demonstration.
 **Ready to fly?**
 
 ```bash
-cd assignment1
+git clone https://github.com/ShakedKozlovsky/RLCourse.git
+cd RLCourse/assignment1
 ./run_grid_simulator.sh
 ```
 
