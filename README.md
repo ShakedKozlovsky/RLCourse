@@ -21,8 +21,9 @@ This repository contains all assignments and projects for the Reinforcement Lear
 
 **Quick Start:**
 ```bash
-cd assignment1
-uv run python3 src/main_grid.py
+git clone https://github.com/ShakedKozlovsky/RLCourse.git
+cd RLCourse/assignment1
+./run_grid_simulator.sh
 ```
 
 ---
