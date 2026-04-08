@@ -43,8 +43,8 @@ echo ""
 echo "Starting Grid Drone RL Simulator..."
 
 # Run the GRID simulator
-cd /home/corsight/src/assignment1
-/home/corsight/.local/bin/uv run python src/main_grid.py
+cd /home/corsight/src/assignment1/assignment1
+uv run python src/main_grid.py
 
 # Cleanup on exit
 echo "Simulator exited. Stopping VNC and Xvfb..."
