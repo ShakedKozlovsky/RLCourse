@@ -69,19 +69,24 @@ Commit: `Layer 2: TradingEnv + RewardFunction + Portfolio + tests`
 
 ---
 
-## Layer 3 — Model + memory
+## Layer 3 — Model + memory ✅
 
-Commit: `Layer 3: Dueling DQN + Uniform/Prioritized replay + target network + tests`
+Commit: `Layer 3: Dueling DQN + Uniform/Prioritized replay + target sync + tests`
 
-- [ ] `model/dueling_dqn.py` — Conv1D feature extractor, V/A heads, Dueling aggregation
-- [ ] `model/target_network.py` — hard sync (later: soft sync polyak)
-- [ ] `memory/uniform_replay.py` — circular buffer, `add`, `sample`, `__len__`
-- [ ] `memory/prioritized_replay.py` — proportional, sum-tree-backed, IS weights, `update_priorities`
-- [ ] `tests/unit/test_dueling_dqn.py` — forward shape, Q decomposition identity
-- [ ] `tests/unit/test_uniform_replay.py` — order-free sampling, capacity wrap
-- [ ] `tests/unit/test_prioritized_replay.py` — sample prob ∝ p^α, IS weights ∈ (0, 1], update path
+- [x] `model/dueling_dqn.py` — Conv1D trunk (2 layers), shared dense, V/A heads, mean-centred aggregation. `dueling=False` collapses heads into a single Q head — the *vanilla DQN* baseline.
+- [x] `model/dueling_dqn.py` includes `hard_update` and Polyak `soft_update(τ)` for target sync (target network is just another instance of the same nn.Module — no separate file needed).
+- [x] `memory/uniform_replay.py` — circular `deque`-backed buffer; `Batch` namedtuple shared with PER for trainer-side interchangeability.
+- [x] `memory/sum_tree.py` — array-backed sum-tree of length `2N − 1`; `add`/`update`/`get` all O(log N); `sample_indices` does stratified per-segment sampling.
+- [x] `memory/prioritized_replay.py` — proportional PER backed by the sum tree; tracks max-priority for new-transition default; emits `IS_weights = (N·P)^(-β)` normalised to ≤ 1.
+- [x] `tests/unit/test_dueling_dqn.py` — forward shapes, Dueling identity (`Q − Q.mean ≡ A − A.mean`), vanilla fallback, hard/soft sync, backward-pass convergence over 50 Adam steps (9 tests)
+- [x] `tests/unit/test_uniform_replay.py` — empty/length/capacity wrap, sample shapes, IS-weights=1.0, no-op `update_priorities` (7 tests)
+- [x] `tests/unit/test_sum_tree.py` — sum invariants, propagation, prefix-sum sampling, frequency proportionality, error paths (7 tests)
+- [x] `tests/unit/test_prioritized_replay.py` — IS-weight normalisation, priority boost shifts sampling, invalid β/lengths (8 tests)
+- [x] **95/95 tests pass**, **96% coverage**, **ruff clean**, largest file 99 LOC
 
-**DoD:** model + memory tests green, coverage of `model/` and `memory/` ≥ 90%. Forward+backward sanity test: a single optimization step on a synthetic batch decreases loss.
+**Note** — the `Batch` namedtuple is intentionally shared between `UniformReplay` and `PrioritizedReplay` so `TrainingService` is buffer-agnostic. Uniform replay returns `is_weights == 1.0` and is a no-op on `update_priorities`, by design.
+
+**DoD met:** all model + memory modules ≥ 96% coverage (most at 100%). The Dueling identity is verified structurally (not just numerically). Backward-pass convergence test exercises the full forward + loss + backprop path.
 
 ---
 
