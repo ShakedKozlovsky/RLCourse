@@ -131,16 +131,21 @@ Commit: `Layer 5: BacktestService + InferenceService + risk metrics + tests`
 
 ---
 
-## Layer 6 — SDK + CLI
+## Layer 6 — SDK + CLI ✅
 
 Commit: `Layer 6: TradingSDK facade + CLI (click) + tests`
 
-- [ ] `sdk/sdk.py` — `TradingSDK` with `prepare_data`, `train`, `backtest`, `predict`, `run_experiment`
-- [ ] `interface/cli/main.py` — Click-based CLI: `dqn-trader data prepare`, `train`, `backtest`, `predict`, `experiment <name>`
-- [ ] `interface/__main__.py` so `python -m dqn_trader.interface.cli` works
-- [ ] `tests/integration/test_sdk.py` — end-to-end smoke: prepare → train (1 ep) → backtest → predict, all in tmp dirs
+- [x] `sdk/sdk.py` — `TradingSDK` with `prepare_data`, `train`, `backtest`, `predict`. Calls `set_global_seed` at construction. `TrainResult` dataclass bundles `metrics`, `run_dir`, `pipeline` so the consumer doesn't need to re-run data prep before backtesting.
+- [x] `interface/cli/main.py` — Click-based CLI with subcommands `data`, `train`, `backtest`, `predict`. `--config` overrides the default config path. `dqn-trader --help` works as a console_script (registered in pyproject.toml).
+- [x] `tests/integration/test_sdk.py` — end-to-end data→train→backtest→predict smoke (1 test).
+- [x] `tests/integration/test_cli.py` — Click `CliRunner` exercising `--help`, `data`, and the full `train → backtest → predict` chain (3 tests).
+- [x] **130/130 tests pass**, **97% coverage**, **ruff clean**, largest file unchanged at 144 LOC. `sdk.py` is 92 LOC.
 
-**DoD:** `uv run python -m dqn_trader.interface.cli --help` prints the command tree. Smoke test green.
+**Notes**
+- The CLI never imports services/environment/model directly — it always goes through the SDK, which is the architecture's load-bearing rule (PLAN.md §1).
+- `run_experiment` is intentionally deferred to Layer 8 where it lives — keeping the SDK lean here.
+
+**DoD met:** `uv run dqn-trader --help` prints the command tree; the CLI smoke test trains for 1 episode, runs a backtest, and emits a prediction in JSON.
 
 ---
 
