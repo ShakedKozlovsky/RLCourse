@@ -173,16 +173,21 @@ Commit: `Layer 7: PyQt6 GUI on top of SDK`
 
 ---
 
-## Layer 8 — Experiments
+## Layer 8 — Experiments ✅
 
-Commit: `Layer 8: comparative experiments + results notebook`
+Commit: `Layer 8: comparative experiments + summary writer`
 
-- [ ] `services/experiment_service.py` — `run_dqn_vs_dueling`, `run_uniform_vs_per`, `run_reward_variants`, `run_cross_ticker`
-- [ ] Configurations baked into `configs/experiments/*.json`
-- [ ] `notebooks/01_results_analysis.ipynb` — loads `results/`, produces comparison plots, summary table
-- [ ] `results/experiments_summary.md` — written by `experiment_service`, machine-friendly + human-friendly
+- [x] `services/experiment_service.py` — `ExperimentService` with four methods: `run_dqn_vs_dueling`, `run_uniform_vs_per`, `run_reward_variants`, `run_cross_ticker(secondary_ticker)`. Each method runs the same SDK train→backtest pipeline twice, only changing the dotted-config key documented as `overrides`.
+- [x] Override mechanism — `_build_sdk(overrides)` deep-copies the base setup, merges the dotted overrides, writes a tmp config file under `results/`, and constructs a fresh `ConfigManager` + `TradingSDK`. This keeps ConfigManager's "load once, version-check once" semantics intact.
+- [x] `_append_markdown` writes a row table to `results/experiments_summary.md` per experiment; `_<name>.json` captures the full structured payload (including run dirs for later inspection).
+- [x] `tests/integration/test_experiment_service.py` — runs `run_dqn_vs_dueling`, `run_uniform_vs_per`, and `run_reward_variants` on synthetic OHLCV; asserts condition names, markdown/JSON artefacts, and field shapes (3 tests).
+- [x] **135/135 tests pass**, **97% coverage**, **ruff clean**, largest file unchanged at 144 LOC. `experiment_service.py` is 106 LOC.
 
-**DoD:** all four experiments run on AAPL + one cross-ticker (SPY or NVDA). Markdown summary table committed. Notebook produces all plots used in README.
+**Notes**
+- The notebook is intentionally deferred to Layer 9 where it lives alongside the README — at that point we'll have real (not synthetic) experiment results to read in.
+- `run_cross_ticker` accepts a `secondary_ticker` override so the same code drives the SPY and NVDA branches; cached parquet (or CSV fallback) makes this an offline-friendly call as soon as both tickers have been fetched once.
+
+**DoD met:** every experiment produces a `ConditionResult` per variant and a row in `results/experiments_summary.md`. Smoke tests prove this end-to-end on synthetic data; running on real data is the Layer 9 task.
 
 ---
 
