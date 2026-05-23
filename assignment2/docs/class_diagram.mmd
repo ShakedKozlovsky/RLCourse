@@ -1,0 +1,90 @@
+%% Class diagram — `mmdc -i class_diagram.mmd -o ../assets/class_diagram.png`
+classDiagram
+    class TradingSDK {
+        +prepare_data(ticker) PipelineOutput
+        +train(ticker) TrainResult
+        +backtest(checkpoint) BacktestResult
+        +predict(window) Decision
+    }
+
+    class DataService {
+        +run(ticker) PipelineOutput
+    }
+    class TrainingService {
+        +fit() (metrics, run_dir)
+    }
+    class BacktestService {
+        +run() BacktestResult
+    }
+    class InferenceService {
+        +decide(window, position, pnl) Decision
+    }
+    class ExperimentService {
+        +run_dqn_vs_dueling()
+        +run_uniform_vs_per()
+        +run_reward_variants()
+        +run_cross_ticker(ticker)
+    }
+
+    class DQNAgent {
+        +act(state, epsilon) int
+        +remember(s,a,r,s2,done)
+        +optimize(batch_size, beta) float
+        +save(path)
+        +load(path)
+    }
+
+    class DuelingDQN {
+        +forward(x) Q
+    }
+
+    class TradingEnv {
+        +reset() (obs, info)
+        +step(action) (obs, reward, done, info)
+    }
+    class Portfolio {
+        +buy(price)
+        +sell(price)
+        +value(price)
+    }
+    class RewardFunction {
+        <<abstract>>
+        +compute(prev_v, new_v, init_v) float
+    }
+    class BaselineReward
+    class RiskAdjustedReward
+
+    class UniformReplay {
+        +add(s,a,r,s2,done)
+        +sample(batch, beta) Batch
+        +update_priorities(idx, td)
+    }
+    class PrioritizedReplay {
+        +add(s,a,r,s2,done)
+        +sample(batch, beta) Batch
+        +update_priorities(idx, td)
+    }
+    class SumTree {
+        +add(p) idx
+        +update(idx, p)
+        +get(value) (idx, p)
+    }
+
+    TradingSDK --> DataService
+    TradingSDK --> TrainingService
+    TradingSDK --> BacktestService
+    TradingSDK --> InferenceService
+    TradingSDK --> ExperimentService
+    TrainingService --> DQNAgent
+    BacktestService --> DQNAgent
+    InferenceService --> DQNAgent
+    TrainingService --> TradingEnv
+    BacktestService --> TradingEnv
+    TradingEnv --> Portfolio
+    TradingEnv --> RewardFunction
+    RewardFunction <|-- BaselineReward
+    RewardFunction <|-- RiskAdjustedReward
+    DQNAgent --> DuelingDQN
+    DQNAgent --> UniformReplay : <<uses>>
+    DQNAgent --> PrioritizedReplay : <<uses>>
+    PrioritizedReplay --> SumTree

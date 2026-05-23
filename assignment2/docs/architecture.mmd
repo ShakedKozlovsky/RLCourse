@@ -1,0 +1,67 @@
+%% Architecture diagram — `mmdc -i architecture.mmd -o ../assets/architecture.png`
+flowchart TD
+    subgraph Interface
+        CLI[interface/cli/main.py]
+        GUI[interface/gui/main_window.py]
+    end
+
+    SDK[sdk/sdk.py<br/>TradingSDK]
+
+    subgraph Services
+        Data[services/data_service.py<br/>DataService]
+        Train[services/training_service.py<br/>TrainingService]
+        Back[services/backtest_service.py<br/>BacktestService]
+        Infer[services/inference_service.py<br/>InferenceService]
+        Exp[services/experiment_service.py<br/>ExperimentService]
+        Agent[services/dqn_agent.py<br/>DQNAgent]
+    end
+
+    subgraph Domain
+        Env[environment/<br/>TradingEnv · Portfolio · Reward]
+        Model[model/<br/>DuelingDQN]
+        Mem[memory/<br/>Uniform · Prioritized · SumTree]
+    end
+
+    subgraph DataLayer
+        YFC[data/yfinance_client.py]
+        FE[data/feature_engineer.py]
+        SP[data/splitter.py]
+        SC[data/scaler.py]
+        WB[data/window_builder.py]
+    end
+
+    subgraph Shared
+        Cfg[shared/config.py]
+        Gate[shared/gatekeeper.py]
+        Log[shared/logger.py]
+        Seed[shared/seed.py]
+        Types[shared/types.py]
+    end
+
+    CLI --> SDK
+    GUI --> SDK
+    SDK --> Data
+    SDK --> Train
+    SDK --> Back
+    SDK --> Infer
+    SDK --> Exp
+    Train --> Agent
+    Back --> Agent
+    Infer --> Agent
+    Agent --> Model
+    Agent --> Mem
+    Train --> Env
+    Back --> Env
+    Data --> YFC
+    Data --> FE
+    Data --> SP
+    Data --> SC
+    Data --> WB
+    YFC --> Gate
+    Cfg -. read by .-> SDK
+    Cfg -. read by .-> Services
+    Log -. used by .-> Services
+    Log -. used by .-> DataLayer
+    Seed -. called by .-> SDK
+    Types -. used by .-> Env
+    Types -. used by .-> Mem
