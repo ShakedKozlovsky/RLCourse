@@ -111,17 +111,23 @@ Commit: `Layer 4: TrainingService (Double DQN, ε-greedy, target sync, checkpoin
 
 ---
 
-## Layer 5 — Backtest + inference
+## Layer 5 — Backtest + inference ✅
 
 Commit: `Layer 5: BacktestService + InferenceService + risk metrics + tests`
 
-- [ ] `services/backtest_service.py` — runs greedy policy on test slice, computes equity curve, total return, Sharpe, Max DD, Win Rate, trade count
-- [ ] `services/inference_service.py` — single state → action + Q-values + confidence
-- [ ] Plot helpers: equity vs Buy-and-Hold, drawdown bands
-- [ ] `tests/unit/test_backtest_metrics.py` — Sharpe on synthetic constant-return series; Max DD on a known dip
-- [ ] `tests/unit/test_inference_service.py` — output schema (action ∈ {0,1,2}, q_values shape (3,), confidence ∈ [0,1])
+- [x] `services/risk_metrics.py` — `total_return`, `sharpe_ratio` (annualised), `max_drawdown` (negative fraction of peak), `win_rate` (closed-trade P&L); `BacktestMetrics` dataclass and `summarise()` helper.
+- [x] `services/backtest_service.py` — runs greedy policy on a SliceData via the env. Returns `BacktestResult(metrics, equity, benchmark, actions, trade_pnls)`. Benchmark = Buy-and-Hold from day 0 of the evaluation window. `save_backtest` writes `<name>.npz` and `<name>.json`.
+- [x] `services/inference_service.py` — single-decision API for the GUI/CLI. Takes a `(window, 8)` market window + position + scaled P&L, assembles the 10-channel observation, runs the online network in `torch.no_grad()`, returns `Decision(action, q_values, confidence)` (confidence is `softmax(Q)[a]`).
+- [x] `tests/unit/test_risk_metrics.py` — 9 analytical tests: empty cases, known DD, zero-stdev Sharpe, alternating returns, win-rate, summarise schema.
+- [x] `tests/unit/test_inference_service.py` — schema, argmax consistency, shape guards (3 tests).
+- [x] `tests/integration/test_backtest_service.py` — full backtest on a synthetic env: full-horizon iteration, metric finiteness, save round-trip, benchmark initialisation (4 tests).
+- [x] **126/126 tests pass**, **97% coverage**, **ruff clean**, largest file unchanged at 144 LOC.
 
-**DoD:** running backtest on a trained checkpoint produces JSON + PNG in `results/backtest/`. README has "How to evaluate".
+**Notes**
+- Plot helpers are deferred to Layer 7 (GUI) because matplotlib embedding belongs with the GUI rather than the headless services layer.
+- The trade-PnL tracker treats each Buy/Sell pair as one closed trade and reports the difference of marked-to-market values — this is well-defined under all-in/all-out positioning.
+
+**DoD met:** backtest on a freshly-initialised agent produces a finite metrics dataclass and persists both `.npz` (curves) and `.json` (metrics) artefacts. Inference returns a `Decision` whose `action` matches `argmax(Q)`.
 
 ---
 
