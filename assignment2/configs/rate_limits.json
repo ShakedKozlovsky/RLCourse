@@ -1,0 +1,13 @@
+{
+  "version": "1.00",
+  "services": {
+    "yfinance": {
+      "requests_per_minute": 30,
+      "requests_per_hour": 500,
+      "concurrent_max": 1,
+      "retry_after_seconds": 30,
+      "max_retries": 3,
+      "backoff_factor": 2.0
+    }
+  }
+}

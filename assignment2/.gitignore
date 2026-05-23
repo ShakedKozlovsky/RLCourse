@@ -1,0 +1,44 @@
+# Secrets
+.env
+*.key
+*.pem
+credentials.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual envs / uv
+.venv/
+.python-version
+
+# Data and run artifacts (rebuildable from config) — ignore contents, keep dirs
+data/raw/*.parquet
+data/raw/*.csv
+data/processed/*
+results/*
+
+# OS junk
+.DS_Store
+._.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Allow placeholder dirs
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!results/.gitkeep
+!assets/.gitkeep
