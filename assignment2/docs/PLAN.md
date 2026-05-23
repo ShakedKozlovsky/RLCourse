@@ -310,6 +310,8 @@ Linear(64*30, 128) → ReLU                ┐
 
 - **ADR-006: PyQt6 GUI + Click-based CLI, both as thin wrappers over the SDK.** Rationale: the GUI is required for top grade; CLI is essential for headless training and scripting. Trade-off: two interfaces to maintain — mitigated because they share a single SDK and ~10 lines of orchestration each.
 
+- **ADR-007 (added during Layer 1): features-first-then-split, not split-first-then-features.** Rationale: every market indicator we use (log_return, RSI, MACD, Bollinger %B, VWAP distance, rolling z-score of volume) is *causal* — it depends only on past prices/volumes. Computing them on the full raw series before splitting therefore introduces no leakage, while computing them per-slice loses ~26 days of indicator warmup from val and test independently (catastrophic on short slices). Trade-off: requires careful auditing if a non-causal indicator is added later — documented as a constraint in `docs/PRD_features.md`.
+
 ## 11. Reproducibility plan
 
 - `seed` is loaded from `configs/setup.json` and applied via `shared/seed.set_global_seed` to NumPy, Python `random`, PyTorch (CPU + CUDA), and Gymnasium.
