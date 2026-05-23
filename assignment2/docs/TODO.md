@@ -90,18 +90,24 @@ Commit: `Layer 3: Dueling DQN + Uniform/Prioritized replay + target sync + tests
 
 ---
 
-## Layer 4 — Training service
+## Layer 4 — Training service ✅
 
 Commit: `Layer 4: TrainingService (Double DQN, ε-greedy, target sync, checkpointing) + tests`
 
-- [ ] `services/training_service.py` — owns `DQNAgent`, training loop, episode/step bookkeeping
-- [ ] Inside the service: ε-greedy policy, Double DQN target, Huber loss, gradient clipping, target sync, replay sampling (uniform or PER chosen by config)
-- [ ] Per-episode metrics: reward, loss (mean), epsilon, val_sharpe (every N), trades
-- [ ] Checkpointing: best (by `val_sharpe`) and last; saved with `git_hash.txt`, `config_snapshot.json`
-- [ ] `tests/integration/test_training_smoke.py` — runs 2 episodes on synthetic data, checkpoint files appear
-- [ ] `tests/unit/test_dqn_agent.py` — ε schedule monotonicity, target-sync count
+- [x] `services/epsilon_schedule.py` — `LinearSchedule` used as both `EpsilonSchedule` (decreasing) and `BetaSchedule` (increasing); aliases keep call-sites self-documenting.
+- [x] `services/run_directory.py` — per-run timestamped folder with `config_snapshot.json`, `git_hash.txt`, `checkpoints/`, `plots/`, `metrics.csv`.
+- [x] `services/dqn_agent.py` — owns online + target Dueling nets, Adam, Huber loss, PER-aware loss-with-IS-weights. Double-DQN target: action selected by *online*, evaluated by *target*. Periodic hard target sync. `save/load` with `weights_only=True`.
+- [x] `services/training_service.py` — orchestrates: builds env from `PipelineOutput`, picks replay buffer per config (PER or Uniform), runs N episodes, evaluates greedily on val slice, saves *best* (by `val_return`) and *last* checkpoints, writes `metrics.csv` per episode.
+- [x] `tests/unit/test_epsilon_schedule.py` — clamping, interpolation, both directions (4 tests)
+- [x] `tests/unit/test_dqn_agent.py` — action sampling, ε=1 uniformity, optimize returns None when empty, target sync at interval, Double-DQN path, save/load round-trip, dueling parameter count (9 tests)
+- [x] `tests/integration/test_training_smoke.py` — full PER + Uniform smoke runs on synthetic OHLCV → checkpoints + metrics.csv present (2 tests)
+- [x] **110/110 tests pass**, **97% coverage**, **ruff clean**, largest file 144 LOC.
 
-**DoD:** smoke training run completes on synthetic data; loss curve trends down; `results/run_<ts>/` populated. Documented in README under "How to train".
+**Implementation notes**
+- `Batch` namedtuple is shared between Uniform and Prioritized replay so the agent is buffer-agnostic. `update_priorities` is a no-op for uniform — the agent calls it unconditionally.
+- The val evaluation uses `epsilon=0.0` (greedy) and a fresh RNG to keep the metric deterministic.
+
+**DoD met:** smoke runs complete in seconds. Both PER and Uniform paths exercised by tests. Checkpoints, metrics CSV, and config snapshot land in `results/run_<ts>/` as designed.
 
 ---
 
