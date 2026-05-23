@@ -1,0 +1,35 @@
+{
+  "name": "dqn_vs_dueling",
+  "conditions": [
+    {
+      "name": "vanilla_dqn",
+      "overrides": {
+        "agent.dueling": false
+      },
+      "metrics": {
+        "total_return": -0.13383201882126086,
+        "sharpe": -1.5478465435922195,
+        "max_drawdown": -0.19134944534856824,
+        "win_rate": 0.25,
+        "n_trades": 8,
+        "final_value": 8661.679811787391
+      },
+      "run_dir": "/home/corsight/src/RL_Course/assignment1/assignment2/results/run_1779560104"
+    },
+    {
+      "name": "dueling_dqn",
+      "overrides": {
+        "agent.dueling": true
+      },
+      "metrics": {
+        "total_return": -0.22304868195614408,
+        "sharpe": -3.932972716848273,
+        "max_drawdown": -0.24089348455493867,
+        "win_rate": 0.35714285714285715,
+        "n_trades": 14,
+        "final_value": 7769.513180438559
+      },
+      "run_dir": "/home/corsight/src/RL_Course/assignment1/assignment2/results/run_1779560202"
+    }
+  ]
+}

@@ -65,6 +65,7 @@ class TradingSDK:
         *,
         slice_name: str = "test",
         pipeline: PipelineOutput | None = None,
+        report_name: str | None = None,
     ) -> BacktestResult:
         pipeline = pipeline or self.prepare_data()
         slc: SliceData = getattr(pipeline, slice_name)
@@ -72,7 +73,7 @@ class TradingSDK:
         agent = self._build_agent_and_load(checkpoint)
         result = BacktestService(env, agent).run()
         out_dir = Path(self._cfg.get("backtest.report_dir", "results/backtest"))
-        save_backtest(result, out_dir, name=f"{slc.name}_backtest")
+        save_backtest(result, out_dir, name=report_name or f"{slc.name}_backtest")
         return result
 
     def predict(self, market_window: np.ndarray, *, checkpoint: Path, position: int = 0,

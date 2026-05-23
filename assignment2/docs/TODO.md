@@ -226,9 +226,25 @@ Commit: `Layer 9: full README + architecture/class diagrams + analysis notebook 
 - [ ] `uv.lock` regenerated when deps change
 - [ ] After each layer: update this `TODO.md` to mark items `[x]` and bump version where applicable
 
-## Excellence extensions (only if base is fully green)
+## Layer 10 — Real experiments, plots, GUI screenshots ✅
+
+Commit: `Layer 10: run real experiments + plots + GUI screenshots + report names`
+
+- [x] Fetched real AAPL + SPY OHLCV (756 daily bars each, 2020-01-01..2023-01-01) into `data/raw/*.parquet`.
+- [x] Reduced training schedule to 30 episodes (from 200) so end-to-end runs fit in a single session; ε decay tightened to 8000 steps and PER β anneal to 13000 steps to match.
+- [x] Ran all four experiments (8 conditions × 30 episodes = 240 training episodes) via `scripts/run_experiments.py` — see `results/experiment_log.txt` (committed) for the full per-episode trace.
+- [x] Numbers reported in the README's §10 are the real outputs of `ExperimentService` on this hardware.
+- [x] Patched `TradingSDK.backtest` with a `report_name` keyword so each condition writes a unique `.npz` instead of overwriting `test_backtest.npz`. Added an SDK test covering the new path.
+- [x] `scripts/rebacktest_all.py` re-emits the 8 per-condition equity curves from the existing checkpoints (no retraining required).
+- [x] `scripts/generate_plots.py` renders training curves, per-experiment metric bar charts, and equity-overlay plots into `assets/plots/`.
+- [x] `scripts/capture_gui_screenshots.py` runs PyQt6 under `QT_QPA_PLATFORM=offscreen` and saves the four GUI tabs into `assets/gui/`.
+- [x] README updated with: real numbers, all 9 generated plots embedded, 4 GUI screenshots, per-experiment commentary on what each result *means*, and a real-data answer to reflection question 11.
+- [x] **135/135 tests pass** (added the SDK report_name test), **97% coverage**, **ruff clean** across `src/`, `tests/`, AND the new `scripts/` directory.
+
+## Excellence extensions (deferred — base is fully green)
 
 - [ ] Window-size sensitivity sweep (10, 20, 30, 50) and plot
 - [ ] Reward-hacking sanity probe: log action distribution per episode, flag if Hold > 95%
 - [ ] Add an attention-based explainability module that highlights which days in the 30-window mattered most for the chosen action
 - [ ] Multi-asset portfolio extension (single-asset → 3-asset basket) — explicitly out of base scope
+- [ ] Longer training schedule (200+ episodes) to see whether Dueling and PER catch up to / exceed their lighter baselines on AAPL.

@@ -1,0 +1,265 @@
+2026-05-23 21:15:03,331 INFO    [driver] === dqn_vs_dueling ===
+2026-05-23 21:15:03,331 INFO    [dqn_trader.services.experiment_service] experiment: dqn_vs_dueling — 2 conditions
+2026-05-23 21:15:04,782 INFO    [dqn_trader.services.data_service] data pipeline: ticker=AAPL 2020-01-01..2023-01-01
+2026-05-23 21:15:04,782 INFO    [dqn_trader.data.yfinance_client] yfinance cache HIT AAPL_2020-01-01_2023-01-01.parquet
+2026-05-23 21:15:07,286 INFO    [dqn_trader.services.training_service] ep=0 reward=0.1747 loss=0.0010 eps=0.946 trades=156 final_v=11747.47 val_ret=0.0059
+2026-05-23 21:15:10,291 INFO    [dqn_trader.services.training_service] ep=1 reward=0.3560 loss=0.0009 eps=0.891 trades=175 final_v=13559.74 val_ret=-0.1563
+2026-05-23 21:15:13,380 INFO    [dqn_trader.services.training_service] ep=2 reward=-0.2053 loss=0.0003 eps=0.837 trades=161 final_v=7947.41 val_ret=-0.0906
+2026-05-23 21:15:16,481 INFO    [dqn_trader.services.training_service] ep=3 reward=-0.1387 loss=0.0000 eps=0.782 trades=164 final_v=8612.59 val_ret=-0.0742
+2026-05-23 21:15:19,848 INFO    [dqn_trader.services.training_service] ep=4 reward=0.6031 loss=0.0000 eps=0.728 trades=176 final_v=16031.20 val_ret=-0.0123
+2026-05-23 21:15:23,059 INFO    [dqn_trader.services.training_service] ep=5 reward=1.2016 loss=0.0000 eps=0.674 trades=137 final_v=22015.79 val_ret=-0.0994
+2026-05-23 21:15:26,270 INFO    [dqn_trader.services.training_service] ep=6 reward=1.7680 loss=0.0000 eps=0.619 trades=156 final_v=27680.11 val_ret=-0.0973
+2026-05-23 21:15:29,578 INFO    [dqn_trader.services.training_service] ep=7 reward=1.2632 loss=0.0000 eps=0.565 trades=162 final_v=22632.17 val_ret=-0.1068
+2026-05-23 21:15:32,941 INFO    [dqn_trader.services.training_service] ep=8 reward=2.4733 loss=0.0000 eps=0.511 trades=153 final_v=34733.27 val_ret=-0.0848
+2026-05-23 21:15:36,272 INFO    [dqn_trader.services.training_service] ep=9 reward=3.0417 loss=0.0000 eps=0.456 trades=147 final_v=40416.65 val_ret=0.0175
+2026-05-23 21:15:39,602 INFO    [dqn_trader.services.training_service] ep=10 reward=3.2726 loss=0.0000 eps=0.402 trades=167 final_v=42726.07 val_ret=-0.0507
+2026-05-23 21:15:42,887 INFO    [dqn_trader.services.training_service] ep=11 reward=3.8003 loss=0.0000 eps=0.347 trades=163 final_v=48002.91 val_ret=0.0072
+2026-05-23 21:15:46,275 INFO    [dqn_trader.services.training_service] ep=12 reward=5.1521 loss=0.0000 eps=0.293 trades=155 final_v=61520.99 val_ret=-0.0316
+2026-05-23 21:15:49,538 INFO    [dqn_trader.services.training_service] ep=13 reward=3.9572 loss=0.0000 eps=0.239 trades=165 final_v=49572.49 val_ret=-0.1824
+2026-05-23 21:15:52,870 INFO    [dqn_trader.services.training_service] ep=14 reward=8.3074 loss=0.0000 eps=0.184 trades=149 final_v=93073.69 val_ret=-0.1339
+2026-05-23 21:15:56,556 INFO    [dqn_trader.services.training_service] ep=15 reward=10.0266 loss=0.0000 eps=0.130 trades=162 final_v=110265.74 val_ret=-0.0326
+2026-05-23 21:15:59,796 INFO    [dqn_trader.services.training_service] ep=16 reward=12.2277 loss=0.0000 eps=0.075 trades=151 final_v=132277.45 val_ret=-0.0099
+2026-05-23 21:16:03,116 INFO    [dqn_trader.services.training_service] ep=17 reward=14.1515 loss=0.0001 eps=0.050 trades=153 final_v=151514.59 val_ret=-0.0118
+2026-05-23 21:16:06,438 INFO    [dqn_trader.services.training_service] ep=18 reward=13.3558 loss=0.0001 eps=0.050 trades=153 final_v=143557.54 val_ret=-0.0794
+2026-05-23 21:16:09,707 INFO    [dqn_trader.services.training_service] ep=19 reward=14.8227 loss=0.0001 eps=0.050 trades=146 final_v=158227.35 val_ret=-0.1471
+2026-05-23 21:16:13,345 INFO    [dqn_trader.services.training_service] ep=20 reward=12.9206 loss=0.0001 eps=0.050 trades=141 final_v=139205.84 val_ret=0.1329
+2026-05-23 21:16:16,667 INFO    [dqn_trader.services.training_service] ep=21 reward=12.2165 loss=0.0001 eps=0.050 trades=145 final_v=132164.70 val_ret=-0.0780
+2026-05-23 21:16:19,915 INFO    [dqn_trader.services.training_service] ep=22 reward=14.8579 loss=0.0001 eps=0.050 trades=139 final_v=158579.04 val_ret=0.0606
+2026-05-23 21:16:23,332 INFO    [dqn_trader.services.training_service] ep=23 reward=13.2722 loss=0.0001 eps=0.050 trades=127 final_v=142721.60 val_ret=0.0681
+2026-05-23 21:16:26,541 INFO    [dqn_trader.services.training_service] ep=24 reward=14.6765 loss=0.0001 eps=0.050 trades=129 final_v=156764.73 val_ret=-0.1047
+2026-05-23 21:16:29,766 INFO    [dqn_trader.services.training_service] ep=25 reward=16.0718 loss=0.0001 eps=0.050 trades=149 final_v=170718.46 val_ret=-0.0573
+2026-05-23 21:16:32,936 INFO    [dqn_trader.services.training_service] ep=26 reward=13.6292 loss=0.0001 eps=0.050 trades=141 final_v=146292.12 val_ret=-0.0713
+2026-05-23 21:16:36,112 INFO    [dqn_trader.services.training_service] ep=27 reward=13.4608 loss=0.0001 eps=0.050 trades=157 final_v=144608.48 val_ret=-0.1010
+2026-05-23 21:16:39,299 INFO    [dqn_trader.services.training_service] ep=28 reward=11.4990 loss=0.0001 eps=0.050 trades=147 final_v=124990.47 val_ret=-0.0849
+2026-05-23 21:16:42,554 INFO    [dqn_trader.services.training_service] ep=29 reward=16.9708 loss=0.0001 eps=0.050 trades=151 final_v=179708.01 val_ret=-0.0410
+2026-05-23 21:16:42,586 INFO    [dqn_trader.services.data_service] data pipeline: ticker=AAPL 2020-01-01..2023-01-01
+2026-05-23 21:16:42,586 INFO    [dqn_trader.data.yfinance_client] yfinance cache HIT AAPL_2020-01-01_2023-01-01.parquet
+2026-05-23 21:16:45,403 INFO    [dqn_trader.services.training_service] ep=0 reward=0.1448 loss=0.0017 eps=0.946 trades=160 final_v=11448.46 val_ret=0.0492
+2026-05-23 21:16:48,649 INFO    [dqn_trader.services.training_service] ep=1 reward=0.4399 loss=0.0011 eps=0.891 trades=180 final_v=14398.95 val_ret=0.0040
+2026-05-23 21:16:52,310 INFO    [dqn_trader.services.training_service] ep=2 reward=-0.0113 loss=0.0005 eps=0.837 trades=165 final_v=9887.29 val_ret=0.0196
+2026-05-23 21:16:55,685 INFO    [dqn_trader.services.training_service] ep=3 reward=-0.1598 loss=0.0000 eps=0.782 trades=164 final_v=8401.51 val_ret=-0.1159
+2026-05-23 21:16:58,933 INFO    [dqn_trader.services.training_service] ep=4 reward=0.2720 loss=0.0001 eps=0.728 trades=164 final_v=12719.98 val_ret=0.0735
+2026-05-23 21:17:02,257 INFO    [dqn_trader.services.training_service] ep=5 reward=0.4342 loss=0.0000 eps=0.674 trades=151 final_v=14341.63 val_ret=0.1188
+2026-05-23 21:17:05,616 INFO    [dqn_trader.services.training_service] ep=6 reward=0.6711 loss=0.0001 eps=0.619 trades=135 final_v=16710.59 val_ret=0.0904
+2026-05-23 21:17:08,969 INFO    [dqn_trader.services.training_service] ep=7 reward=0.8777 loss=0.0000 eps=0.565 trades=144 final_v=18777.37 val_ret=0.1005
+2026-05-23 21:17:12,251 INFO    [dqn_trader.services.training_service] ep=8 reward=2.2053 loss=0.0000 eps=0.511 trades=161 final_v=32053.31 val_ret=0.2319
+2026-05-23 21:17:15,527 INFO    [dqn_trader.services.training_service] ep=9 reward=2.2202 loss=0.0000 eps=0.456 trades=123 final_v=32201.71 val_ret=0.1788
+2026-05-23 21:17:19,050 INFO    [dqn_trader.services.training_service] ep=10 reward=3.0008 loss=0.0000 eps=0.402 trades=154 final_v=40008.46 val_ret=0.1520
+2026-05-23 21:17:22,449 INFO    [dqn_trader.services.training_service] ep=11 reward=3.0046 loss=0.0001 eps=0.347 trades=148 final_v=40046.17 val_ret=0.0968
+2026-05-23 21:17:25,966 INFO    [dqn_trader.services.training_service] ep=12 reward=4.7902 loss=0.0000 eps=0.293 trades=161 final_v=57902.14 val_ret=0.1489
+2026-05-23 21:17:29,391 INFO    [dqn_trader.services.training_service] ep=13 reward=3.0825 loss=0.0001 eps=0.239 trades=150 final_v=40824.50 val_ret=-0.0198
+2026-05-23 21:17:32,981 INFO    [dqn_trader.services.training_service] ep=14 reward=7.1347 loss=0.0000 eps=0.184 trades=147 final_v=81347.12 val_ret=-0.0367
+2026-05-23 21:17:36,449 INFO    [dqn_trader.services.training_service] ep=15 reward=8.5899 loss=0.0001 eps=0.130 trades=133 final_v=95898.72 val_ret=-0.0847
+2026-05-23 21:17:39,753 INFO    [dqn_trader.services.training_service] ep=16 reward=10.2904 loss=0.0000 eps=0.075 trades=127 final_v=112904.36 val_ret=-0.0358
+2026-05-23 21:17:43,282 INFO    [dqn_trader.services.training_service] ep=17 reward=10.8411 loss=0.0001 eps=0.050 trades=144 final_v=118410.88 val_ret=0.0552
+2026-05-23 21:17:46,835 INFO    [dqn_trader.services.training_service] ep=18 reward=11.9566 loss=0.0001 eps=0.050 trades=147 final_v=129566.28 val_ret=-0.0111
+2026-05-23 21:17:50,338 INFO    [dqn_trader.services.training_service] ep=19 reward=14.3281 loss=0.0001 eps=0.050 trades=149 final_v=153280.56 val_ret=-0.0149
+2026-05-23 21:17:53,901 INFO    [dqn_trader.services.training_service] ep=20 reward=9.1674 loss=0.0001 eps=0.050 trades=153 final_v=101674.05 val_ret=0.0865
+2026-05-23 21:17:57,529 INFO    [dqn_trader.services.training_service] ep=21 reward=12.1867 loss=0.0001 eps=0.050 trades=157 final_v=131866.75 val_ret=0.0206
+2026-05-23 21:18:01,097 INFO    [dqn_trader.services.training_service] ep=22 reward=11.1054 loss=0.0001 eps=0.050 trades=135 final_v=121054.29 val_ret=0.0080
+2026-05-23 21:18:04,540 INFO    [dqn_trader.services.training_service] ep=23 reward=12.0201 loss=0.0001 eps=0.050 trades=143 final_v=130201.04 val_ret=-0.0181
+2026-05-23 21:18:07,972 INFO    [dqn_trader.services.training_service] ep=24 reward=12.4918 loss=0.0001 eps=0.050 trades=153 final_v=134917.59 val_ret=-0.0178
+2026-05-23 21:18:11,408 INFO    [dqn_trader.services.training_service] ep=25 reward=15.9445 loss=0.0001 eps=0.050 trades=159 final_v=169445.32 val_ret=-0.0075
+2026-05-23 21:18:14,850 INFO    [dqn_trader.services.training_service] ep=26 reward=11.4454 loss=0.0001 eps=0.050 trades=141 final_v=124454.37 val_ret=-0.1411
+2026-05-23 21:18:18,243 INFO    [dqn_trader.services.training_service] ep=27 reward=13.5015 loss=0.0001 eps=0.050 trades=147 final_v=145015.22 val_ret=-0.1211
+2026-05-23 21:18:21,700 INFO    [dqn_trader.services.training_service] ep=28 reward=10.7653 loss=0.0001 eps=0.050 trades=151 final_v=117653.27 val_ret=-0.0577
+2026-05-23 21:18:25,349 INFO    [dqn_trader.services.training_service] ep=29 reward=10.6491 loss=0.0001 eps=0.050 trades=129 final_v=116491.05 val_ret=-0.1292
+2026-05-23 21:18:25,380 INFO    [driver] === uniform_vs_per ===
+2026-05-23 21:18:25,380 INFO    [dqn_trader.services.experiment_service] experiment: uniform_vs_per — 2 conditions
+2026-05-23 21:18:25,381 INFO    [dqn_trader.services.data_service] data pipeline: ticker=AAPL 2020-01-01..2023-01-01
+2026-05-23 21:18:25,381 INFO    [dqn_trader.data.yfinance_client] yfinance cache HIT AAPL_2020-01-01_2023-01-01.parquet
+2026-05-23 21:18:27,858 INFO    [dqn_trader.services.training_service] ep=0 reward=0.1443 loss=0.0029 eps=0.946 trades=154 final_v=11442.66 val_ret=0.0226
+2026-05-23 21:18:30,578 INFO    [dqn_trader.services.training_service] ep=1 reward=0.3235 loss=0.0022 eps=0.891 trades=172 final_v=13235.22 val_ret=0.0652
+2026-05-23 21:18:33,309 INFO    [dqn_trader.services.training_service] ep=2 reward=-0.1903 loss=0.0007 eps=0.837 trades=157 final_v=8097.44 val_ret=-0.0769
+2026-05-23 21:18:36,111 INFO    [dqn_trader.services.training_service] ep=3 reward=-0.2299 loss=0.0001 eps=0.782 trades=158 final_v=7700.80 val_ret=-0.0086
+2026-05-23 21:18:38,977 INFO    [dqn_trader.services.training_service] ep=4 reward=0.7077 loss=0.0001 eps=0.728 trades=166 final_v=17076.77 val_ret=-0.0374
+2026-05-23 21:18:41,846 INFO    [dqn_trader.services.training_service] ep=5 reward=0.6093 loss=0.0000 eps=0.674 trades=147 final_v=16093.11 val_ret=0.0347
+2026-05-23 21:18:44,764 INFO    [dqn_trader.services.training_service] ep=6 reward=0.9696 loss=0.0001 eps=0.619 trades=146 final_v=19696.21 val_ret=-0.0507
+2026-05-23 21:18:47,647 INFO    [dqn_trader.services.training_service] ep=7 reward=1.6033 loss=0.0000 eps=0.565 trades=156 final_v=26033.19 val_ret=-0.0314
+2026-05-23 21:18:50,578 INFO    [dqn_trader.services.training_service] ep=8 reward=2.1216 loss=0.0001 eps=0.511 trades=163 final_v=31215.69 val_ret=-0.1156
+2026-05-23 21:18:53,470 INFO    [dqn_trader.services.training_service] ep=9 reward=3.0664 loss=0.0000 eps=0.456 trades=125 final_v=40663.57 val_ret=-0.0097
+2026-05-23 21:18:56,395 INFO    [dqn_trader.services.training_service] ep=10 reward=2.5683 loss=0.0000 eps=0.402 trades=156 final_v=35683.26 val_ret=-0.1397
+2026-05-23 21:18:59,372 INFO    [dqn_trader.services.training_service] ep=11 reward=4.4120 loss=0.0001 eps=0.347 trades=136 final_v=54120.20 val_ret=-0.1225
+2026-05-23 21:19:02,269 INFO    [dqn_trader.services.training_service] ep=12 reward=4.6690 loss=0.0000 eps=0.293 trades=159 final_v=56690.03 val_ret=-0.1446
+2026-05-23 21:19:05,162 INFO    [dqn_trader.services.training_service] ep=13 reward=3.6012 loss=0.0001 eps=0.239 trades=153 final_v=46012.22 val_ret=-0.0898
+2026-05-23 21:19:08,169 INFO    [dqn_trader.services.training_service] ep=14 reward=8.8207 loss=0.0001 eps=0.184 trades=165 final_v=98207.32 val_ret=-0.0804
+2026-05-23 21:19:11,155 INFO    [dqn_trader.services.training_service] ep=15 reward=7.9773 loss=0.0002 eps=0.130 trades=147 final_v=89772.87 val_ret=-0.0441
+2026-05-23 21:19:14,179 INFO    [dqn_trader.services.training_service] ep=16 reward=12.3858 loss=0.0002 eps=0.075 trades=145 final_v=133858.48 val_ret=0.0227
+2026-05-23 21:19:17,561 INFO    [dqn_trader.services.training_service] ep=17 reward=13.0991 loss=0.0003 eps=0.050 trades=149 final_v=140990.60 val_ret=-0.0582
+2026-05-23 21:19:20,863 INFO    [dqn_trader.services.training_service] ep=18 reward=12.5939 loss=0.0002 eps=0.050 trades=141 final_v=135939.40 val_ret=-0.0524
+2026-05-23 21:19:23,970 INFO    [dqn_trader.services.training_service] ep=19 reward=14.5886 loss=0.0003 eps=0.050 trades=154 final_v=155886.30 val_ret=-0.1263
+2026-05-23 21:19:27,136 INFO    [dqn_trader.services.training_service] ep=20 reward=13.2394 loss=0.0003 eps=0.050 trades=161 final_v=142393.76 val_ret=-0.1964
+2026-05-23 21:19:30,198 INFO    [dqn_trader.services.training_service] ep=21 reward=12.7855 loss=0.0003 eps=0.050 trades=151 final_v=137854.70 val_ret=0.0222
+2026-05-23 21:19:33,278 INFO    [dqn_trader.services.training_service] ep=22 reward=12.1181 loss=0.0004 eps=0.050 trades=145 final_v=131180.85 val_ret=-0.0233
+2026-05-23 21:19:36,253 INFO    [dqn_trader.services.training_service] ep=23 reward=12.7810 loss=0.0003 eps=0.050 trades=147 final_v=137810.08 val_ret=-0.0416
+2026-05-23 21:19:39,193 INFO    [dqn_trader.services.training_service] ep=24 reward=14.0600 loss=0.0005 eps=0.050 trades=145 final_v=150599.77 val_ret=-0.0470
+2026-05-23 21:19:42,204 INFO    [dqn_trader.services.training_service] ep=25 reward=14.4288 loss=0.0004 eps=0.050 trades=151 final_v=154287.60 val_ret=-0.0086
+2026-05-23 21:19:45,178 INFO    [dqn_trader.services.training_service] ep=26 reward=13.5070 loss=0.0005 eps=0.050 trades=151 final_v=145069.62 val_ret=-0.0564
+2026-05-23 21:19:48,155 INFO    [dqn_trader.services.training_service] ep=27 reward=13.6459 loss=0.0003 eps=0.050 trades=161 final_v=146459.22 val_ret=-0.1073
+2026-05-23 21:19:51,137 INFO    [dqn_trader.services.training_service] ep=28 reward=11.9946 loss=0.0005 eps=0.050 trades=171 final_v=129945.88 val_ret=-0.0958
+2026-05-23 21:19:54,184 INFO    [dqn_trader.services.training_service] ep=29 reward=15.1152 loss=0.0004 eps=0.050 trades=137 final_v=161152.41 val_ret=-0.1369
+2026-05-23 21:19:54,218 INFO    [dqn_trader.services.data_service] data pipeline: ticker=AAPL 2020-01-01..2023-01-01
+2026-05-23 21:19:54,218 INFO    [dqn_trader.data.yfinance_client] yfinance cache HIT AAPL_2020-01-01_2023-01-01.parquet
+2026-05-23 21:19:57,085 INFO    [dqn_trader.services.training_service] ep=0 reward=0.1448 loss=0.0017 eps=0.946 trades=160 final_v=11448.46 val_ret=0.0492
+2026-05-23 21:20:00,239 INFO    [dqn_trader.services.training_service] ep=1 reward=0.4399 loss=0.0011 eps=0.891 trades=180 final_v=14398.95 val_ret=0.0040
+2026-05-23 21:20:03,471 INFO    [dqn_trader.services.training_service] ep=2 reward=-0.0113 loss=0.0005 eps=0.837 trades=165 final_v=9887.29 val_ret=0.0196
+2026-05-23 21:20:06,657 INFO    [dqn_trader.services.training_service] ep=3 reward=-0.1598 loss=0.0000 eps=0.782 trades=164 final_v=8401.51 val_ret=-0.1159
+2026-05-23 21:20:09,933 INFO    [dqn_trader.services.training_service] ep=4 reward=0.2720 loss=0.0001 eps=0.728 trades=164 final_v=12719.98 val_ret=0.0735
+2026-05-23 21:20:13,388 INFO    [dqn_trader.services.training_service] ep=5 reward=0.4342 loss=0.0000 eps=0.674 trades=151 final_v=14341.63 val_ret=0.1188
+2026-05-23 21:20:16,748 INFO    [dqn_trader.services.training_service] ep=6 reward=0.6711 loss=0.0001 eps=0.619 trades=135 final_v=16710.59 val_ret=0.0904
+2026-05-23 21:20:20,115 INFO    [dqn_trader.services.training_service] ep=7 reward=0.8777 loss=0.0000 eps=0.565 trades=144 final_v=18777.37 val_ret=0.1005
+2026-05-23 21:20:23,552 INFO    [dqn_trader.services.training_service] ep=8 reward=2.2053 loss=0.0000 eps=0.511 trades=161 final_v=32053.31 val_ret=0.2319
+2026-05-23 21:20:26,865 INFO    [dqn_trader.services.training_service] ep=9 reward=2.2202 loss=0.0000 eps=0.456 trades=123 final_v=32201.71 val_ret=0.1788
+2026-05-23 21:20:30,096 INFO    [dqn_trader.services.training_service] ep=10 reward=3.0008 loss=0.0000 eps=0.402 trades=154 final_v=40008.46 val_ret=0.1520
+2026-05-23 21:20:33,217 INFO    [dqn_trader.services.training_service] ep=11 reward=3.0046 loss=0.0001 eps=0.347 trades=148 final_v=40046.17 val_ret=0.0968
+2026-05-23 21:20:36,400 INFO    [dqn_trader.services.training_service] ep=12 reward=4.7902 loss=0.0000 eps=0.293 trades=161 final_v=57902.14 val_ret=0.1489
+2026-05-23 21:20:39,818 INFO    [dqn_trader.services.training_service] ep=13 reward=3.0825 loss=0.0001 eps=0.239 trades=150 final_v=40824.50 val_ret=-0.0198
+2026-05-23 21:20:43,339 INFO    [dqn_trader.services.training_service] ep=14 reward=7.1347 loss=0.0000 eps=0.184 trades=147 final_v=81347.12 val_ret=-0.0367
+2026-05-23 21:20:46,913 INFO    [dqn_trader.services.training_service] ep=15 reward=8.5899 loss=0.0001 eps=0.130 trades=133 final_v=95898.72 val_ret=-0.0847
+2026-05-23 21:20:50,286 INFO    [dqn_trader.services.training_service] ep=16 reward=10.2904 loss=0.0000 eps=0.075 trades=127 final_v=112904.36 val_ret=-0.0358
+2026-05-23 21:20:53,640 INFO    [dqn_trader.services.training_service] ep=17 reward=10.8411 loss=0.0001 eps=0.050 trades=144 final_v=118410.88 val_ret=0.0552
+2026-05-23 21:20:57,079 INFO    [dqn_trader.services.training_service] ep=18 reward=11.9566 loss=0.0001 eps=0.050 trades=147 final_v=129566.28 val_ret=-0.0111
+2026-05-23 21:21:00,574 INFO    [dqn_trader.services.training_service] ep=19 reward=14.3281 loss=0.0001 eps=0.050 trades=149 final_v=153280.56 val_ret=-0.0149
+2026-05-23 21:21:03,950 INFO    [dqn_trader.services.training_service] ep=20 reward=9.1674 loss=0.0001 eps=0.050 trades=153 final_v=101674.05 val_ret=0.0865
+2026-05-23 21:21:07,510 INFO    [dqn_trader.services.training_service] ep=21 reward=12.1867 loss=0.0001 eps=0.050 trades=157 final_v=131866.75 val_ret=0.0206
+2026-05-23 21:21:11,000 INFO    [dqn_trader.services.training_service] ep=22 reward=11.1054 loss=0.0001 eps=0.050 trades=135 final_v=121054.29 val_ret=0.0080
+2026-05-23 21:21:14,421 INFO    [dqn_trader.services.training_service] ep=23 reward=12.0201 loss=0.0001 eps=0.050 trades=143 final_v=130201.04 val_ret=-0.0181
+2026-05-23 21:21:17,891 INFO    [dqn_trader.services.training_service] ep=24 reward=12.4918 loss=0.0001 eps=0.050 trades=153 final_v=134917.59 val_ret=-0.0178
+2026-05-23 21:21:21,332 INFO    [dqn_trader.services.training_service] ep=25 reward=15.9445 loss=0.0001 eps=0.050 trades=159 final_v=169445.32 val_ret=-0.0075
+2026-05-23 21:21:24,779 INFO    [dqn_trader.services.training_service] ep=26 reward=11.4454 loss=0.0001 eps=0.050 trades=141 final_v=124454.37 val_ret=-0.1411
+2026-05-23 21:21:28,203 INFO    [dqn_trader.services.training_service] ep=27 reward=13.5015 loss=0.0001 eps=0.050 trades=147 final_v=145015.22 val_ret=-0.1211
+2026-05-23 21:21:31,766 INFO    [dqn_trader.services.training_service] ep=28 reward=10.7653 loss=0.0001 eps=0.050 trades=151 final_v=117653.27 val_ret=-0.0577
+2026-05-23 21:21:35,248 INFO    [dqn_trader.services.training_service] ep=29 reward=10.6491 loss=0.0001 eps=0.050 trades=129 final_v=116491.05 val_ret=-0.1292
+2026-05-23 21:21:35,283 INFO    [driver] === reward_variants ===
+2026-05-23 21:21:35,283 INFO    [dqn_trader.services.experiment_service] experiment: reward_variants — 2 conditions
+2026-05-23 21:21:35,284 INFO    [dqn_trader.services.data_service] data pipeline: ticker=AAPL 2020-01-01..2023-01-01
+2026-05-23 21:21:35,285 INFO    [dqn_trader.data.yfinance_client] yfinance cache HIT AAPL_2020-01-01_2023-01-01.parquet
+2026-05-23 21:21:38,181 INFO    [dqn_trader.services.training_service] ep=0 reward=0.1448 loss=0.0017 eps=0.946 trades=160 final_v=11448.46 val_ret=0.0492
+2026-05-23 21:21:41,375 INFO    [dqn_trader.services.training_service] ep=1 reward=0.4399 loss=0.0011 eps=0.891 trades=180 final_v=14398.95 val_ret=0.0040
+2026-05-23 21:21:44,663 INFO    [dqn_trader.services.training_service] ep=2 reward=-0.0113 loss=0.0005 eps=0.837 trades=165 final_v=9887.29 val_ret=0.0196
+2026-05-23 21:21:47,961 INFO    [dqn_trader.services.training_service] ep=3 reward=-0.1598 loss=0.0000 eps=0.782 trades=164 final_v=8401.51 val_ret=-0.1159
+2026-05-23 21:21:51,285 INFO    [dqn_trader.services.training_service] ep=4 reward=0.2720 loss=0.0001 eps=0.728 trades=164 final_v=12719.98 val_ret=0.0735
+2026-05-23 21:21:54,611 INFO    [dqn_trader.services.training_service] ep=5 reward=0.4342 loss=0.0000 eps=0.674 trades=151 final_v=14341.63 val_ret=0.1188
+2026-05-23 21:21:57,809 INFO    [dqn_trader.services.training_service] ep=6 reward=0.6711 loss=0.0001 eps=0.619 trades=135 final_v=16710.59 val_ret=0.0904
+2026-05-23 21:22:01,218 INFO    [dqn_trader.services.training_service] ep=7 reward=0.8777 loss=0.0000 eps=0.565 trades=144 final_v=18777.37 val_ret=0.1005
+2026-05-23 21:22:04,608 INFO    [dqn_trader.services.training_service] ep=8 reward=2.2053 loss=0.0000 eps=0.511 trades=161 final_v=32053.31 val_ret=0.2319
+2026-05-23 21:22:08,018 INFO    [dqn_trader.services.training_service] ep=9 reward=2.2202 loss=0.0000 eps=0.456 trades=123 final_v=32201.71 val_ret=0.1788
+2026-05-23 21:22:11,413 INFO    [dqn_trader.services.training_service] ep=10 reward=3.0008 loss=0.0000 eps=0.402 trades=154 final_v=40008.46 val_ret=0.1520
+2026-05-23 21:22:14,817 INFO    [dqn_trader.services.training_service] ep=11 reward=3.0046 loss=0.0001 eps=0.347 trades=148 final_v=40046.17 val_ret=0.0968
+2026-05-23 21:22:18,214 INFO    [dqn_trader.services.training_service] ep=12 reward=4.7902 loss=0.0000 eps=0.293 trades=161 final_v=57902.14 val_ret=0.1489
+2026-05-23 21:22:21,413 INFO    [dqn_trader.services.training_service] ep=13 reward=3.0825 loss=0.0001 eps=0.239 trades=150 final_v=40824.50 val_ret=-0.0198
+2026-05-23 21:22:24,613 INFO    [dqn_trader.services.training_service] ep=14 reward=7.1347 loss=0.0000 eps=0.184 trades=147 final_v=81347.12 val_ret=-0.0367
+2026-05-23 21:22:28,010 INFO    [dqn_trader.services.training_service] ep=15 reward=8.5899 loss=0.0001 eps=0.130 trades=133 final_v=95898.72 val_ret=-0.0847
+2026-05-23 21:22:31,410 INFO    [dqn_trader.services.training_service] ep=16 reward=10.2904 loss=0.0000 eps=0.075 trades=127 final_v=112904.36 val_ret=-0.0358
+2026-05-23 21:22:34,834 INFO    [dqn_trader.services.training_service] ep=17 reward=10.8411 loss=0.0001 eps=0.050 trades=144 final_v=118410.88 val_ret=0.0552
+2026-05-23 21:22:38,284 INFO    [dqn_trader.services.training_service] ep=18 reward=11.9566 loss=0.0001 eps=0.050 trades=147 final_v=129566.28 val_ret=-0.0111
+2026-05-23 21:22:41,793 INFO    [dqn_trader.services.training_service] ep=19 reward=14.3281 loss=0.0001 eps=0.050 trades=149 final_v=153280.56 val_ret=-0.0149
+2026-05-23 21:22:45,148 INFO    [dqn_trader.services.training_service] ep=20 reward=9.1674 loss=0.0001 eps=0.050 trades=153 final_v=101674.05 val_ret=0.0865
+2026-05-23 21:22:48,611 INFO    [dqn_trader.services.training_service] ep=21 reward=12.1867 loss=0.0001 eps=0.050 trades=157 final_v=131866.75 val_ret=0.0206
+2026-05-23 21:22:51,838 INFO    [dqn_trader.services.training_service] ep=22 reward=11.1054 loss=0.0001 eps=0.050 trades=135 final_v=121054.29 val_ret=0.0080
+2026-05-23 21:22:55,079 INFO    [dqn_trader.services.training_service] ep=23 reward=12.0201 loss=0.0001 eps=0.050 trades=143 final_v=130201.04 val_ret=-0.0181
+2026-05-23 21:22:58,523 INFO    [dqn_trader.services.training_service] ep=24 reward=12.4918 loss=0.0001 eps=0.050 trades=153 final_v=134917.59 val_ret=-0.0178
+2026-05-23 21:23:01,879 INFO    [dqn_trader.services.training_service] ep=25 reward=15.9445 loss=0.0001 eps=0.050 trades=159 final_v=169445.32 val_ret=-0.0075
+2026-05-23 21:23:05,075 INFO    [dqn_trader.services.training_service] ep=26 reward=11.4454 loss=0.0001 eps=0.050 trades=141 final_v=124454.37 val_ret=-0.1411
+2026-05-23 21:23:08,328 INFO    [dqn_trader.services.training_service] ep=27 reward=13.5015 loss=0.0001 eps=0.050 trades=147 final_v=145015.22 val_ret=-0.1211
+2026-05-23 21:23:11,595 INFO    [dqn_trader.services.training_service] ep=28 reward=10.7653 loss=0.0001 eps=0.050 trades=151 final_v=117653.27 val_ret=-0.0577
+2026-05-23 21:23:14,879 INFO    [dqn_trader.services.training_service] ep=29 reward=10.6491 loss=0.0001 eps=0.050 trades=129 final_v=116491.05 val_ret=-0.1292
+2026-05-23 21:23:14,920 INFO    [dqn_trader.services.data_service] data pipeline: ticker=AAPL 2020-01-01..2023-01-01
+2026-05-23 21:23:14,920 INFO    [dqn_trader.data.yfinance_client] yfinance cache HIT AAPL_2020-01-01_2023-01-01.parquet
+2026-05-23 21:23:17,771 INFO    [dqn_trader.services.training_service] ep=0 reward=-34.9491 loss=0.5278 eps=0.946 trades=158 final_v=10759.19 val_ret=-0.0739
+2026-05-23 21:23:20,976 INFO    [dqn_trader.services.training_service] ep=1 reward=251.7637 loss=0.4017 eps=0.891 trades=172 final_v=12922.65 val_ret=0.0358
+2026-05-23 21:23:24,244 INFO    [dqn_trader.services.training_service] ep=2 reward=-109.0685 loss=0.5221 eps=0.837 trades=161 final_v=8370.64 val_ret=-0.1332
+2026-05-23 21:23:27,537 INFO    [dqn_trader.services.training_service] ep=3 reward=-395.4555 loss=0.5207 eps=0.782 trades=169 final_v=7630.72 val_ret=-0.1146
+2026-05-23 21:23:30,943 INFO    [dqn_trader.services.training_service] ep=4 reward=289.4978 loss=0.5467 eps=0.728 trades=166 final_v=12794.93 val_ret=-0.0596
+2026-05-23 21:23:34,380 INFO    [dqn_trader.services.training_service] ep=5 reward=322.2855 loss=0.5300 eps=0.674 trades=153 final_v=14532.32 val_ret=-0.0565
+2026-05-23 21:23:37,725 INFO    [dqn_trader.services.training_service] ep=6 reward=521.7422 loss=0.5591 eps=0.619 trades=135 final_v=16192.18 val_ret=-0.0579
+2026-05-23 21:23:41,124 INFO    [dqn_trader.services.training_service] ep=7 reward=508.7453 loss=0.5351 eps=0.565 trades=134 final_v=14565.15 val_ret=-0.0686
+2026-05-23 21:23:44,504 INFO    [dqn_trader.services.training_service] ep=8 reward=490.1734 loss=0.5106 eps=0.511 trades=153 final_v=13376.69 val_ret=-0.1686
+2026-05-23 21:23:47,904 INFO    [dqn_trader.services.training_service] ep=9 reward=446.9328 loss=0.5384 eps=0.456 trades=143 final_v=12735.10 val_ret=-0.1865
+2026-05-23 21:23:51,174 INFO    [dqn_trader.services.training_service] ep=10 reward=468.1525 loss=0.4834 eps=0.402 trades=153 final_v=13325.90 val_ret=-0.2298
+2026-05-23 21:23:54,621 INFO    [dqn_trader.services.training_service] ep=11 reward=613.0937 loss=0.5485 eps=0.347 trades=144 final_v=16909.89 val_ret=-0.0533
+2026-05-23 21:23:58,372 INFO    [dqn_trader.services.training_service] ep=12 reward=485.4111 loss=0.4587 eps=0.293 trades=147 final_v=14139.78 val_ret=-0.1472
+2026-05-23 21:24:02,004 INFO    [dqn_trader.services.training_service] ep=13 reward=921.5511 loss=0.5056 eps=0.239 trades=121 final_v=18559.25 val_ret=0.1428
+2026-05-23 21:24:05,648 INFO    [dqn_trader.services.training_service] ep=14 reward=1100.7365 loss=0.4614 eps=0.184 trades=112 final_v=25027.66 val_ret=-0.0364
+2026-05-23 21:24:09,090 INFO    [dqn_trader.services.training_service] ep=15 reward=1111.3443 loss=0.4638 eps=0.130 trades=101 final_v=22218.71 val_ret=-0.0887
+2026-05-23 21:24:12,588 INFO    [dqn_trader.services.training_service] ep=16 reward=1129.2546 loss=0.4260 eps=0.075 trades=75 final_v=27946.74 val_ret=-0.0205
+2026-05-23 21:24:16,122 INFO    [dqn_trader.services.training_service] ep=17 reward=1217.5735 loss=0.4621 eps=0.050 trades=65 final_v=29073.36 val_ret=-0.1139
+2026-05-23 21:24:19,481 INFO    [dqn_trader.services.training_service] ep=18 reward=944.7669 loss=0.4170 eps=0.050 trades=15 final_v=22289.41 val_ret=0.0011
+2026-05-23 21:24:22,964 INFO    [dqn_trader.services.training_service] ep=19 reward=1106.7058 loss=0.4228 eps=0.050 trades=31 final_v=24318.91 val_ret=-0.0772
+2026-05-23 21:24:26,466 INFO    [dqn_trader.services.training_service] ep=20 reward=1330.8550 loss=0.3901 eps=0.050 trades=54 final_v=30881.42 val_ret=-0.0861
+2026-05-23 21:24:29,880 INFO    [dqn_trader.services.training_service] ep=21 reward=1179.3541 loss=0.3523 eps=0.050 trades=71 final_v=30308.36 val_ret=-0.0016
+2026-05-23 21:24:33,298 INFO    [dqn_trader.services.training_service] ep=22 reward=1024.3592 loss=0.4077 eps=0.050 trades=53 final_v=25923.99 val_ret=-0.0176
+2026-05-23 21:24:36,896 INFO    [dqn_trader.services.training_service] ep=23 reward=1255.3201 loss=0.3285 eps=0.050 trades=44 final_v=30411.42 val_ret=0.0452
+2026-05-23 21:24:40,335 INFO    [dqn_trader.services.training_service] ep=24 reward=1275.8159 loss=0.3617 eps=0.050 trades=58 final_v=32056.08 val_ret=0.0186
+2026-05-23 21:24:43,785 INFO    [dqn_trader.services.training_service] ep=25 reward=1246.4394 loss=0.3085 eps=0.050 trades=51 final_v=32747.46 val_ret=-0.1097
+2026-05-23 21:24:47,336 INFO    [dqn_trader.services.training_service] ep=26 reward=1184.5440 loss=0.3281 eps=0.050 trades=43 final_v=30292.29 val_ret=-0.1069
+2026-05-23 21:24:50,842 INFO    [dqn_trader.services.training_service] ep=27 reward=986.2707 loss=0.2797 eps=0.050 trades=37 final_v=23691.44 val_ret=-0.0088
+2026-05-23 21:24:54,370 INFO    [dqn_trader.services.training_service] ep=28 reward=1278.1288 loss=0.3057 eps=0.050 trades=68 final_v=32304.51 val_ret=-0.0933
+2026-05-23 21:24:57,939 INFO    [dqn_trader.services.training_service] ep=29 reward=1144.4301 loss=0.2778 eps=0.050 trades=22 final_v=30676.10 val_ret=-0.1162
+2026-05-23 21:24:57,973 INFO    [driver] === cross_ticker ===
+2026-05-23 21:24:57,973 INFO    [dqn_trader.services.experiment_service] experiment: cross_ticker — 2 conditions
+2026-05-23 21:24:57,974 INFO    [dqn_trader.services.data_service] data pipeline: ticker=AAPL 2020-01-01..2023-01-01
+2026-05-23 21:24:57,974 INFO    [dqn_trader.data.yfinance_client] yfinance cache HIT AAPL_2020-01-01_2023-01-01.parquet
+2026-05-23 21:25:00,668 INFO    [dqn_trader.services.training_service] ep=0 reward=0.1448 loss=0.0017 eps=0.946 trades=160 final_v=11448.46 val_ret=0.0492
+2026-05-23 21:25:03,775 INFO    [dqn_trader.services.training_service] ep=1 reward=0.4399 loss=0.0011 eps=0.891 trades=180 final_v=14398.95 val_ret=0.0040
+2026-05-23 21:25:06,943 INFO    [dqn_trader.services.training_service] ep=2 reward=-0.0113 loss=0.0005 eps=0.837 trades=165 final_v=9887.29 val_ret=0.0196
+2026-05-23 21:25:10,229 INFO    [dqn_trader.services.training_service] ep=3 reward=-0.1598 loss=0.0000 eps=0.782 trades=164 final_v=8401.51 val_ret=-0.1159
+2026-05-23 21:25:13,625 INFO    [dqn_trader.services.training_service] ep=4 reward=0.2720 loss=0.0001 eps=0.728 trades=164 final_v=12719.98 val_ret=0.0735
+2026-05-23 21:25:17,058 INFO    [dqn_trader.services.training_service] ep=5 reward=0.4342 loss=0.0000 eps=0.674 trades=151 final_v=14341.63 val_ret=0.1188
+2026-05-23 21:25:20,429 INFO    [dqn_trader.services.training_service] ep=6 reward=0.6711 loss=0.0001 eps=0.619 trades=135 final_v=16710.59 val_ret=0.0904
+2026-05-23 21:25:23,768 INFO    [dqn_trader.services.training_service] ep=7 reward=0.8777 loss=0.0000 eps=0.565 trades=144 final_v=18777.37 val_ret=0.1005
+2026-05-23 21:25:27,091 INFO    [dqn_trader.services.training_service] ep=8 reward=2.2053 loss=0.0000 eps=0.511 trades=161 final_v=32053.31 val_ret=0.2319
+2026-05-23 21:25:30,396 INFO    [dqn_trader.services.training_service] ep=9 reward=2.2202 loss=0.0000 eps=0.456 trades=123 final_v=32201.71 val_ret=0.1788
+2026-05-23 21:25:33,736 INFO    [dqn_trader.services.training_service] ep=10 reward=3.0008 loss=0.0000 eps=0.402 trades=154 final_v=40008.46 val_ret=0.1520
+2026-05-23 21:25:37,123 INFO    [dqn_trader.services.training_service] ep=11 reward=3.0046 loss=0.0001 eps=0.347 trades=148 final_v=40046.17 val_ret=0.0968
+2026-05-23 21:25:40,500 INFO    [dqn_trader.services.training_service] ep=12 reward=4.7902 loss=0.0000 eps=0.293 trades=161 final_v=57902.14 val_ret=0.1489
+2026-05-23 21:25:43,882 INFO    [dqn_trader.services.training_service] ep=13 reward=3.0825 loss=0.0001 eps=0.239 trades=150 final_v=40824.50 val_ret=-0.0198
+2026-05-23 21:25:47,378 INFO    [dqn_trader.services.training_service] ep=14 reward=7.1347 loss=0.0000 eps=0.184 trades=147 final_v=81347.12 val_ret=-0.0367
+2026-05-23 21:25:50,809 INFO    [dqn_trader.services.training_service] ep=15 reward=8.5899 loss=0.0001 eps=0.130 trades=133 final_v=95898.72 val_ret=-0.0847
+2026-05-23 21:25:54,324 INFO    [dqn_trader.services.training_service] ep=16 reward=10.2904 loss=0.0000 eps=0.075 trades=127 final_v=112904.36 val_ret=-0.0358
+2026-05-23 21:25:57,733 INFO    [dqn_trader.services.training_service] ep=17 reward=10.8411 loss=0.0001 eps=0.050 trades=144 final_v=118410.88 val_ret=0.0552
+2026-05-23 21:26:01,232 INFO    [dqn_trader.services.training_service] ep=18 reward=11.9566 loss=0.0001 eps=0.050 trades=147 final_v=129566.28 val_ret=-0.0111
+2026-05-23 21:26:04,772 INFO    [dqn_trader.services.training_service] ep=19 reward=14.3281 loss=0.0001 eps=0.050 trades=149 final_v=153280.56 val_ret=-0.0149
+2026-05-23 21:26:08,440 INFO    [dqn_trader.services.training_service] ep=20 reward=9.1674 loss=0.0001 eps=0.050 trades=153 final_v=101674.05 val_ret=0.0865
+2026-05-23 21:26:11,928 INFO    [dqn_trader.services.training_service] ep=21 reward=12.1867 loss=0.0001 eps=0.050 trades=157 final_v=131866.75 val_ret=0.0206
+2026-05-23 21:26:15,435 INFO    [dqn_trader.services.training_service] ep=22 reward=11.1054 loss=0.0001 eps=0.050 trades=135 final_v=121054.29 val_ret=0.0080
+2026-05-23 21:26:18,925 INFO    [dqn_trader.services.training_service] ep=23 reward=12.0201 loss=0.0001 eps=0.050 trades=143 final_v=130201.04 val_ret=-0.0181
+2026-05-23 21:26:22,611 INFO    [dqn_trader.services.training_service] ep=24 reward=12.4918 loss=0.0001 eps=0.050 trades=153 final_v=134917.59 val_ret=-0.0178
+2026-05-23 21:26:26,074 INFO    [dqn_trader.services.training_service] ep=25 reward=15.9445 loss=0.0001 eps=0.050 trades=159 final_v=169445.32 val_ret=-0.0075
+2026-05-23 21:26:29,446 INFO    [dqn_trader.services.training_service] ep=26 reward=11.4454 loss=0.0001 eps=0.050 trades=141 final_v=124454.37 val_ret=-0.1411
+2026-05-23 21:26:32,853 INFO    [dqn_trader.services.training_service] ep=27 reward=13.5015 loss=0.0001 eps=0.050 trades=147 final_v=145015.22 val_ret=-0.1211
+2026-05-23 21:26:36,315 INFO    [dqn_trader.services.training_service] ep=28 reward=10.7653 loss=0.0001 eps=0.050 trades=151 final_v=117653.27 val_ret=-0.0577
+2026-05-23 21:26:39,810 INFO    [dqn_trader.services.training_service] ep=29 reward=10.6491 loss=0.0001 eps=0.050 trades=129 final_v=116491.05 val_ret=-0.1292
+2026-05-23 21:26:39,851 INFO    [dqn_trader.services.data_service] data pipeline: ticker=SPY 2020-01-01..2023-01-01
+2026-05-23 21:26:39,851 INFO    [dqn_trader.data.yfinance_client] yfinance cache HIT SPY_2020-01-01_2023-01-01.parquet
+2026-05-23 21:26:42,538 INFO    [dqn_trader.services.training_service] ep=0 reward=-0.0794 loss=0.0015 eps=0.946 trades=158 final_v=9206.44 val_ret=-0.0287
+2026-05-23 21:26:45,555 INFO    [dqn_trader.services.training_service] ep=1 reward=0.1379 loss=0.0007 eps=0.891 trades=172 final_v=11379.36 val_ret=-0.0522
+2026-05-23 21:26:48,628 INFO    [dqn_trader.services.training_service] ep=2 reward=-0.1124 loss=0.0003 eps=0.837 trades=161 final_v=8875.76 val_ret=-0.0728
+2026-05-23 21:26:52,107 INFO    [dqn_trader.services.training_service] ep=3 reward=-0.1763 loss=0.0000 eps=0.782 trades=162 final_v=8237.36 val_ret=-0.0801
+2026-05-23 21:26:55,495 INFO    [dqn_trader.services.training_service] ep=4 reward=0.0376 loss=0.0000 eps=0.728 trades=164 final_v=10375.97 val_ret=-0.0515
+2026-05-23 21:26:58,823 INFO    [dqn_trader.services.training_service] ep=5 reward=0.1396 loss=0.0000 eps=0.674 trades=145 final_v=11395.56 val_ret=-0.0465
+2026-05-23 21:27:02,168 INFO    [dqn_trader.services.training_service] ep=6 reward=0.1618 loss=0.0000 eps=0.619 trades=124 final_v=11617.93 val_ret=-0.0513
+2026-05-23 21:27:05,521 INFO    [dqn_trader.services.training_service] ep=7 reward=0.2128 loss=0.0000 eps=0.565 trades=136 final_v=12127.72 val_ret=-0.0563
+2026-05-23 21:27:08,933 INFO    [dqn_trader.services.training_service] ep=8 reward=0.4738 loss=0.0000 eps=0.511 trades=149 final_v=14737.68 val_ret=-0.0876
+2026-05-23 21:27:12,143 INFO    [dqn_trader.services.training_service] ep=9 reward=0.3685 loss=0.0000 eps=0.456 trades=129 final_v=13685.13 val_ret=-0.1100
+2026-05-23 21:27:15,414 INFO    [dqn_trader.services.training_service] ep=10 reward=0.8613 loss=0.0000 eps=0.402 trades=141 final_v=18612.51 val_ret=-0.1037
+2026-05-23 21:27:18,625 INFO    [dqn_trader.services.training_service] ep=11 reward=0.7519 loss=0.0000 eps=0.347 trades=121 final_v=17519.10 val_ret=-0.0212
+2026-05-23 21:27:22,145 INFO    [dqn_trader.services.training_service] ep=12 reward=1.2319 loss=0.0000 eps=0.293 trades=129 final_v=22318.65 val_ret=0.0385
+2026-05-23 21:27:25,666 INFO    [dqn_trader.services.training_service] ep=13 reward=0.8517 loss=0.0000 eps=0.239 trades=119 final_v=18516.69 val_ret=-0.0487
+2026-05-23 21:27:29,052 INFO    [dqn_trader.services.training_service] ep=14 reward=2.0881 loss=0.0000 eps=0.184 trades=135 final_v=30880.75 val_ret=-0.0618
+2026-05-23 21:27:32,459 INFO    [dqn_trader.services.training_service] ep=15 reward=1.9037 loss=0.0000 eps=0.130 trades=133 final_v=29036.87 val_ret=-0.0342
+2026-05-23 21:27:35,946 INFO    [dqn_trader.services.training_service] ep=16 reward=2.3085 loss=0.0000 eps=0.075 trades=119 final_v=33085.35 val_ret=-0.0549
+2026-05-23 21:27:39,448 INFO    [dqn_trader.services.training_service] ep=17 reward=2.0111 loss=0.0000 eps=0.050 trades=125 final_v=30111.09 val_ret=-0.0199
+2026-05-23 21:27:42,917 INFO    [dqn_trader.services.training_service] ep=18 reward=2.5583 loss=0.0000 eps=0.050 trades=114 final_v=35582.95 val_ret=-0.0065
+2026-05-23 21:27:46,395 INFO    [dqn_trader.services.training_service] ep=19 reward=2.7768 loss=0.0000 eps=0.050 trades=97 final_v=37767.90 val_ret=0.0104
+2026-05-23 21:27:49,771 INFO    [dqn_trader.services.training_service] ep=20 reward=2.5739 loss=0.0000 eps=0.050 trades=97 final_v=35739.35 val_ret=0.0226
+2026-05-23 21:27:53,297 INFO    [dqn_trader.services.training_service] ep=21 reward=2.6006 loss=0.0000 eps=0.050 trades=104 final_v=36006.41 val_ret=-0.0756
+2026-05-23 21:27:56,913 INFO    [dqn_trader.services.training_service] ep=22 reward=2.4004 loss=0.0000 eps=0.050 trades=92 final_v=34003.86 val_ret=-0.0837
+2026-05-23 21:28:00,425 INFO    [dqn_trader.services.training_service] ep=23 reward=2.7694 loss=0.0000 eps=0.050 trades=113 final_v=37693.88 val_ret=-0.0602
+2026-05-23 21:28:04,022 INFO    [dqn_trader.services.training_service] ep=24 reward=2.3994 loss=0.0000 eps=0.050 trades=114 final_v=33994.44 val_ret=-0.0581
+2026-05-23 21:28:07,684 INFO    [dqn_trader.services.training_service] ep=25 reward=2.8397 loss=0.0000 eps=0.050 trades=115 final_v=38396.63 val_ret=-0.0390
+2026-05-23 21:28:11,323 INFO    [dqn_trader.services.training_service] ep=26 reward=2.5111 loss=0.0000 eps=0.050 trades=115 final_v=35111.32 val_ret=-0.0839
+2026-05-23 21:28:14,948 INFO    [dqn_trader.services.training_service] ep=27 reward=2.9095 loss=0.0000 eps=0.050 trades=111 final_v=39094.71 val_ret=-0.0437
+2026-05-23 21:28:18,529 INFO    [dqn_trader.services.training_service] ep=28 reward=2.8490 loss=0.0000 eps=0.050 trades=129 final_v=38490.30 val_ret=-0.0246
+2026-05-23 21:28:22,100 INFO    [dqn_trader.services.training_service] ep=29 reward=2.4952 loss=0.0000 eps=0.050 trades=114 final_v=34952.19 val_ret=-0.0289
+2026-05-23 21:28:22,139 INFO    [driver] done — see results/experiments_summary.md

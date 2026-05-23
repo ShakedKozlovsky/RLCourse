@@ -1,0 +1,35 @@
+{
+  "name": "reward_variants",
+  "conditions": [
+    {
+      "name": "baseline",
+      "overrides": {
+        "env.reward_variant": "baseline"
+      },
+      "metrics": {
+        "total_return": -0.22304868195614408,
+        "sharpe": -3.932972716848273,
+        "max_drawdown": -0.24089348455493867,
+        "win_rate": 0.35714285714285715,
+        "n_trades": 14,
+        "final_value": 7769.513180438559
+      },
+      "run_dir": "/home/corsight/src/RL_Course/assignment1/assignment2/results/run_1779560495"
+    },
+    {
+      "name": "risk_adjusted",
+      "overrides": {
+        "env.reward_variant": "risk_adjusted"
+      },
+      "metrics": {
+        "total_return": -0.16353714595883959,
+        "sharpe": -1.7506238924947075,
+        "max_drawdown": -0.2733373580342279,
+        "win_rate": 0.3333333333333333,
+        "n_trades": 6,
+        "final_value": 8364.628540411604
+      },
+      "run_dir": "/home/corsight/src/RL_Course/assignment1/assignment2/results/run_1779560594"
+    }
+  ]
+}

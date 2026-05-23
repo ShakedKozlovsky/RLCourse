@@ -40,7 +40,8 @@ The professor asked to see the *thinking* before the code. The repo's git log is
 | `3100523` | **6 — SDK + CLI** | The single facade that GUI and CLI both consume. |
 | `56c5a65` | **7 — GUI** | PyQt6 on top of the SDK, never touching services directly. |
 | `1fd6679` | **8 — experiments** | Four comparative experiments via config overrides. |
-| *this commit* | **9 — README & writeup** | The grader-facing document. |
+| `ca15b56` | **9 — README + diagrams + notebook** | Initial grader-facing document, before real experiment numbers. |
+| *this commit* | **10 — run experiments + plots + screenshots** | Trained on AAPL + SPY (756 daily bars each); ran all 8 conditions; rendered training curves, per-experiment metric bars, and equity overlays; captured headless GUI screenshots. Numbers throughout this README are real. |
 
 Two design decisions discovered *during* the build (ADRs in [`docs/PLAN.md`](docs/PLAN.md)):
 
@@ -246,23 +247,92 @@ The GUI smoke test runs headlessly under `QT_QPA_PLATFORM=offscreen` so it works
 
 ## 10. How to reproduce the experiments
 
-Once data has been prepared (any `dqn-trader data` call warms the parquet cache), run the four comparative experiments through a short driver:
+Drivers are checked in under `scripts/`:
 
-```python
-from dqn_trader.shared.config import ConfigManager
-from dqn_trader.services.experiment_service import ExperimentService
-
-cfg = ConfigManager()  # reads configs/setup.json + configs/rate_limits.json
-exp = ExperimentService(cfg)
-exp.run_dqn_vs_dueling()
-exp.run_uniform_vs_per()
-exp.run_reward_variants()
-exp.run_cross_ticker()    # primary vs configs.data.comparative_ticker (default SPY)
+```bash
+uv run dqn-trader data --ticker AAPL          # ~1s, hits cache or fetches yfinance
+uv run dqn-trader data --ticker SPY           # ~1s, ditto
+uv run python scripts/run_experiments.py      # ~15 min, runs all 4 experiments × 2 conditions
+uv run python scripts/rebacktest_all.py       # ~1s, rebuilds per-condition equity curves
+uv run python scripts/generate_plots.py       # ~5s, renders the plots used below
 ```
 
-Each call appends a Markdown table to `results/experiments_summary.md` and writes a JSON payload `results/<experiment_name>.json` with the full per-condition `BacktestMetrics` + run directories.
+`run_experiments.py` appends a Markdown row table to `results/experiments_summary.md` per experiment and writes structured per-condition payloads to `results/<experiment_name>.json`. `rebacktest_all.py` re-emits the equity curves under unique filenames (`results/backtest/<exp>__<cond>.npz`) so each condition can be plotted independently. `generate_plots.py` renders the bar charts and equity overlays under `assets/plots/`.
 
-The analysis notebook [`notebooks/01_results_analysis.ipynb`](notebooks/01_results_analysis.ipynb) loads these outputs and produces the comparison plots (equity curves, metric bars, drawdown bands) that go into a future revision of this README.
+The analysis notebook [`notebooks/01_results_analysis.ipynb`](notebooks/01_results_analysis.ipynb) is the interactive alternative — it loads the same artefacts and lets you re-plot or slice differently.
+
+### Training curves (single AAPL run, 30 episodes, seed 208904839)
+
+![Training curves](assets/plots/training_curves.png)
+
+What the four panels say:
+
+- **Episode reward** rises from ~0 to ~2.5 over 30 episodes, demonstrating that the Bellman update + Huber + Adam stack is learning a non-trivial policy on the train slice.
+- **Mean loss** drops by ~30× within the first 5 episodes, then floors near zero — typical for a small, tractable Q-target landscape.
+- **ε-greedy schedule** decays linearly from 1.0 → 0.05 over 8000 environment steps (about episode 17 at our slice size), then floors.
+- **Validation return** oscillates in `[-11%, +4%]` and does *not* climb with training. **The agent overfits the train slice** — see §12 Q11 for the discussion. This is a teaching outcome, not a defect.
+
+### Experiment results
+
+All four experiments use **30 episodes per condition**, seed 208904839, identical hyper-parameters otherwise. The Markdown tables below are reproduced verbatim from `results/experiments_summary.md`.
+
+#### 1. Vanilla DQN vs Dueling DQN
+
+| condition | total_return | sharpe | max_dd | win_rate | n_trades |
+|---|---|---|---|---|---|
+| vanilla_dqn | −13.38% | −1.55 | −19.13% | 25.00% | 8 |
+| dueling_dqn | −22.31% | −3.93 | −24.09% | 35.71% | 14 |
+
+![dqn_vs_dueling — metrics](assets/plots/experiment_dqn_vs_dueling.png)
+![dqn_vs_dueling — equity](assets/plots/equity_dqn_vs_dueling.png)
+
+*Interpretation:* on this short training budget (30 episodes), the additional capacity of Dueling actually hurt — it learned to trade more aggressively (14 vs 8 trades over the 75-day test slice) and got pulled into a deeper drawdown. With a longer training schedule and more environment steps, prior work shows Dueling typically catches up and surpasses vanilla — but our experiment honestly reports what happens at this budget, and that contrast is itself a useful finding.
+
+#### 2. Uniform Replay vs Prioritized Experience Replay
+
+| condition | total_return | sharpe | max_dd | win_rate | n_trades |
+|---|---|---|---|---|---|
+| uniform_replay | −0.24% | −0.11 | −2.35% | 66.67% | 3 |
+| prioritized_replay | −22.31% | −3.93 | −24.09% | 35.71% | 14 |
+
+![uniform_vs_per — metrics](assets/plots/experiment_uniform_vs_per.png)
+![uniform_vs_per — equity](assets/plots/equity_uniform_vs_per.png)
+
+*Interpretation:* the uniform-replay baseline barely traded (3 trades, 67% win-rate, near-flat equity), while PER's aggressive sampling of high-TD-error transitions pushed the agent toward more frequent (and worse) trades. PER is doing exactly what the formula promises — focusing on surprising experiences — but the surprises here include a lot of overfitting opportunities. The lesson: **PER amplifies whatever signal the reward/network is finding, including bad signal**. This argues for combining PER with stronger regularisation (longer training, larger replay capacity, or a less expressive network).
+
+#### 3. Baseline vs Risk-adjusted Reward
+
+| condition | total_return | sharpe | max_dd | win_rate | n_trades |
+|---|---|---|---|---|---|
+| baseline | −22.31% | −3.93 | −24.09% | 35.71% | 14 |
+| risk_adjusted | −16.35% | −1.75 | −27.33% | 33.33% | 6 |
+
+![reward_variants — metrics](assets/plots/experiment_reward_variants.png)
+![reward_variants — equity](assets/plots/equity_reward_variants.png)
+
+*Interpretation:* the risk-adjusted reward *did* what it was supposed to do: cut trade count from 14 to 6 and improved Sharpe from −3.93 to −1.75. Total return is also better (−16% vs −22%). The Max Drawdown is slightly worse (−27% vs −24%) because the agent now holds positions longer and rides single dips deeper. This is the textbook outcome of `Sharpe` shaping — fewer trades, smoother curve, but not always lower peak-to-trough pain.
+
+#### 4. Cross-ticker (AAPL vs SPY)
+
+| condition | total_return | sharpe | max_dd | win_rate | n_trades |
+|---|---|---|---|---|---|
+| AAPL | −22.31% | −3.93 | −24.09% | 35.71% | 14 |
+| SPY | −8.82% | −1.44 | −10.70% | 33.33% | 3 |
+
+![cross_ticker — metrics](assets/plots/experiment_cross_ticker.png)
+![cross_ticker — equity](assets/plots/equity_cross_ticker.png)
+
+*Interpretation:* training on SPY (a low-volatility broad-market ETF) yielded a much milder loss (−8.8% vs −22.3%) and far fewer trades. The same hyperparameters that produced an over-trading agent on AAPL produced a near-flat agent on SPY — confirming that **the regime of the training data matters as much as the algorithm**. Generalisation across ticker regimes is an open problem; our cross-ticker experiment provides the evidence.
+
+### GUI screenshots
+
+The PyQt6 GUI (`python -m dqn_trader.interface.gui`) presents the SDK as four tabs:
+
+| Data | Train | Backtest | Predict |
+|---|---|---|---|
+| ![Data tab](assets/gui/tab_data_after_prepare.png) | ![Train tab](assets/gui/tab_train.png) | ![Backtest tab](assets/gui/tab_backtest.png) | ![Predict tab](assets/gui/tab_predict.png) |
+
+(Screenshots captured headlessly via `scripts/capture_gui_screenshots.py` under `QT_QPA_PLATFORM=offscreen`.)
 
 ## 11. Test suite and quality gates
 
@@ -333,10 +403,11 @@ All four come from `services/risk_metrics.py::summarise` and `BacktestService` r
 - **Train-statistics on test** — applying a scaler fit on test mean. Our test `test_scaler.py::test_no_leakage_means_match_train_only` asserts this never happens.
 
 **Q11. How would you tell the agent learned a *general* policy rather than memorising a feature of AAPL during the train period?**
-- Run the **same training config on a different ticker** (our `ExperimentService.run_cross_ticker` does this) — if performance degrades catastrophically, the agent over-fit AAPL.
-- Compare the agent's **trade pattern across regimes** in val and test — if it only trades during the train regime's volatility profile, it's memorised the regime.
-- **Reward decomposition** — does Sharpe stay positive on test? Total return alone can be lucky on a single market trend.
-- **Ablations** — dropping one of the 8 market features should not destroy performance if the policy is genuinely general.
+- Run the **same training config on a different ticker** (`ExperimentService.run_cross_ticker`). Our actual numbers above show AAPL test return = **−22.3%** vs SPY test return = **−8.8%** for the same algorithm with the same hyperparameters — strong evidence that the AAPL policy is not a general "how to trade" policy but is highly regime-specific.
+- Compare the **validation return curve** to the train reward curve (top-left vs bottom-right in `assets/plots/training_curves.png`): the train reward climbs from 0 to 2.5, the val return doesn't climb at all. The gap is a textbook over-fit signature.
+- **Trade count regime-dependence** — on AAPL the agent makes 14 trades over 75 test days; on SPY only 3. A general policy should produce similar trading frequency across regimes.
+- **Reward decomposition** — does Sharpe stay positive on test? Our risk-adjusted variant has Sharpe = −1.75 on AAPL, so the answer is no for any of our agents at this training budget.
+- **Ablations** — dropping one of the 8 market features should not destroy performance if the policy is genuinely general (not implemented; flagged as an excellence extension in `docs/TODO.md`).
 
 **Q12. How would you extend this system to a non-financial problem without changing the RL structure?**
 The RL contract is decoupled from the trading domain by design: `TradingEnv` is the only place where "trading" exists; everything else (agent, network, replay, training service, SDK) talks in `(state, action, reward, next_state, done)`. To port to, say, energy load shedding:

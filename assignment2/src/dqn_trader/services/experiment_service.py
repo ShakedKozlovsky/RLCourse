@@ -81,7 +81,10 @@ class ExperimentService:
             sdk = self._build_sdk(overrides)
             train = sdk.train()
             ckpt = train.run_dir / "checkpoints" / "best.pt"
-            bt = sdk.backtest(ckpt, slice_name="test", pipeline=train.pipeline)
+            bt = sdk.backtest(
+                ckpt, slice_name="test", pipeline=train.pipeline,
+                report_name=f"{name}__{cond_name}",
+            )
             results.append(ConditionResult(
                 name=cond_name, overrides=overrides, metrics=bt.metrics,
                 run_dir=str(train.run_dir),

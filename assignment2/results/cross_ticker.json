@@ -1,0 +1,35 @@
+{
+  "name": "cross_ticker",
+  "conditions": [
+    {
+      "name": "AAPL",
+      "overrides": {
+        "data.ticker": "AAPL"
+      },
+      "metrics": {
+        "total_return": -0.22304868195614408,
+        "sharpe": -3.932972716848273,
+        "max_drawdown": -0.24089348455493867,
+        "win_rate": 0.35714285714285715,
+        "n_trades": 14,
+        "final_value": 7769.513180438559
+      },
+      "run_dir": "/home/corsight/src/RL_Course/assignment1/assignment2/results/run_1779560697"
+    },
+    {
+      "name": "SPY",
+      "overrides": {
+        "data.ticker": "SPY"
+      },
+      "metrics": {
+        "total_return": -0.0881505929742767,
+        "sharpe": -1.4418397233481712,
+        "max_drawdown": -0.1070335258090151,
+        "win_rate": 0.3333333333333333,
+        "n_trades": 3,
+        "final_value": 9118.494070257233
+      },
+      "run_dir": "/home/corsight/src/RL_Course/assignment1/assignment2/results/run_1779560799"
+    }
+  ]
+}

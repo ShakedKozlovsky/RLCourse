@@ -86,3 +86,7 @@ def test_sdk_end_to_end(
     decision = sdk.predict(last_window, checkpoint=best)
     assert decision.q_values.shape == (3,)
     assert 0.0 < decision.confidence <= 1.0
+
+    # Backtest with custom report_name writes to that filename, not the default.
+    sdk.backtest(best, slice_name="test", pipeline=train_out.pipeline, report_name="custom_run")
+    assert (cfg.path("results_dir") / "backtest" / "custom_run.json").exists()
