@@ -9,19 +9,17 @@ The reward function is the formal contract between the trading objective and the
 ### Baseline (default)
 
 ```
-r_t = ΔV_t / V_0  −  α · |trade_value_t| / V_0  −  β · |trade_value_t| / V_0
+r_t = ΔV_t / V_0
 ```
 
-- `ΔV_t = portfolio_value_t − portfolio_value_{t-1}` — the marked-to-market change in equity (works for Hold too, not just Sell).
-- `α` = `transaction_cost_alpha`, default `0.001`.
-- `β` = `slippage_beta`, default `0.001`.
-- `trade_value_t` = 0 when action is Hold or invalid; equals `notional` when action is Buy/Sell that actually changes the position.
+- `ΔV_t = portfolio_value_t − portfolio_value_{t-1}` — the marked-to-market change in equity (works for Hold too, not just Sell). **Friction is already baked into ΔV** by `Portfolio.buy/sell` — see ADR-008 in PLAN.md.
+- Constants live in `Portfolio`, not in the reward: `α` = `transaction_cost_alpha` (default `0.001`), `β` = `slippage_beta` (default `0.001`). Each trade leg multiplies the relevant cash flow by `(1 − α − β)`.
 - Normalisation by `V_0` keeps reward on `~O(1e-3)` per step, suitable for Huber + Adam at `lr=5e-4`.
 
 ### Risk-adjusted (comparative experiment)
 
 ```
-r_t = ΔV_t / V_0  −  α · trade_cost  −  β · slippage  +  γ · rolling_sharpe_t
+r_t = ΔV_t / V_0  +  γ · rolling_sharpe_t
 ```
 
 - `rolling_sharpe_t` = annualised Sharpe of the last 20 daily returns of the *portfolio* (not the asset). Computed inside `RewardFunction` so the env stays stateless on this aspect.

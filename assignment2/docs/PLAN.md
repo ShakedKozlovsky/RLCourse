@@ -312,6 +312,8 @@ Linear(64*30, 128) → ReLU                ┐
 
 - **ADR-007 (added during Layer 1): features-first-then-split, not split-first-then-features.** Rationale: every market indicator we use (log_return, RSI, MACD, Bollinger %B, VWAP distance, rolling z-score of volume) is *causal* — it depends only on past prices/volumes. Computing them on the full raw series before splitting therefore introduces no leakage, while computing them per-slice loses ~26 days of indicator warmup from val and test independently (catastrophic on short slices). Trade-off: requires careful auditing if a non-causal indicator is added later — documented as a constraint in `docs/PRD_features.md`.
 
+- **ADR-008 (added during Layer 2): friction is deducted from cash inside `Portfolio.buy/sell`, not subtracted as a separate term in the reward.** Rationale: the original PRD formula `r = ΔV/V₀ − α·|trade|/V₀ − β·|trade|/V₀` double-counts because ΔV already reflects the cost that was paid out of cash. Folding the friction multiplicatively into the trade (`cash_after = cash_before · (1 − α − β)`) keeps a single source of truth (`V_t`) and lets the reward be the clean `ΔV/V₀`. The round-trip test still asserts the expected `−2·(α + β)·V₀` deficit — it now lives inside ΔV rather than in a separate reward term.
+
 ## 11. Reproducibility plan
 
 - `seed` is loaded from `configs/setup.json` and applied via `shared/seed.set_global_seed` to NumPy, Python `random`, PyTorch (CPU + CUDA), and Gymnasium.

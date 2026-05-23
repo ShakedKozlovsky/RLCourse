@@ -50,19 +50,22 @@ Commit: `Layer 1: data pipeline (yfinance, features, splits, windows) + tests`
 
 ---
 
-## Layer 2 — Environment
+## Layer 2 — Environment ✅
 
 Commit: `Layer 2: TradingEnv + RewardFunction + Portfolio + tests`
 
-- [ ] `environment/portfolio.py` — cash, position, MTM, trade execution with cost+slippage
-- [ ] `environment/reward.py` — baseline + risk-adjusted variants, both as classes
-- [ ] `environment/trading_env.py` — `reset`, `step`, observation assembly, terminal logic
-- [ ] `shared/types.py` — `Action`, `Observation`, `StepOutput` typed structures
-- [ ] `tests/unit/test_portfolio.py` — buy at flat, sell at long, no-op cases, PnL math
-- [ ] `tests/unit/test_reward.py` — baseline reward matches ΔV − cost; risk-adjusted adds Sharpe term
-- [ ] `tests/unit/test_trading_env.py` — reset shape, step shape, done at end, deterministic with seed
+- [x] `environment/portfolio.py` — cash, shares, MTM, all-in/all-out trade execution with symmetric friction (`α + β` per leg, applied multiplicatively to cash)
+- [x] `environment/reward.py` — `BaselineReward`, `RiskAdjustedReward` (rolling annualised Sharpe), `build_reward` factory, abstract `RewardFunction` base
+- [x] `environment/trading_env.py` — `reset`, `step`, observation assembly (8 market + 2 portfolio channels broadcast over time), terminal logic, invalid-action no-ops with optional penalty
+- [x] `shared/types.py` — already in place from Layer 1
+- [x] `tests/unit/test_portfolio.py` — buy/sell/no-ops, round-trip cost, MTM, PnL, invalid construction (8 tests)
+- [x] `tests/unit/test_reward.py` — baseline ΔV/V₀, first-step bonus disabled, zero-variance handling, positive-trend Sharpe bonus, factory (8 tests)
+- [x] `tests/unit/test_trading_env.py` — reset shape, step advance, position channel reflects holdings, termination, invalid action no-op, round-trip, post-termination raise, channel-count guard (9 tests)
+- [x] **64/64 tests pass**, **95% coverage**, **ruff clean**, largest file 99 LOC
 
-**DoD:** environment tests green, coverage of `environment/` ≥ 90%. Manual playthrough: alternating Buy/Sell on synthetic random walk produces expected sign of reward.
+**ADR-008 added (PLAN.md)** — friction is folded into cash on each trade (`Portfolio.buy/sell`), not applied as a separate term in the reward. This eliminates double-counting between the bookkeeping and the reward, and makes the reward formula `r = ΔV/V₀` exactly — the cost still appears in the round-trip test as the expected `−2·(α+β)·V₀` deficit, since it lives inside ΔV.
+
+**DoD met:** environment tests green, coverage of `environment/` ≥ 96% on all modules (`portfolio.py` 100%, `reward.py` 98%, `trading_env.py` 96%). Manual flat → long → flat round-trip with no price change produces a small negative reward equal to the round-trip friction, as expected.
 
 ---
 
