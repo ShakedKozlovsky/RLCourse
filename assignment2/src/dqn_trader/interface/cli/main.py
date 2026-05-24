@@ -86,5 +86,57 @@ def cmd_predict(
     }, indent=2))
 
 
+@cli.command("menu")
+@click.pass_context
+def cmd_menu(ctx: click.Context) -> None:
+    """Interactive numbered menu that loops until the user selects 0 (Exit)."""
+    sdk = _sdk(ctx.obj["config"])
+    while True:
+        click.echo("\n=== DQN Trader — Interactive Menu ===")
+        click.echo("1. Prepare data")
+        click.echo("2. Train agent")
+        click.echo("3. Run backtest")
+        click.echo("4. Predict next action")
+        click.echo("5. Run experiments")
+        click.echo("0. Exit")
+        choice = click.prompt("Select an option", type=click.Choice(["0", "1", "2", "3", "4", "5"]))
+
+        if choice == "0":
+            click.echo("Goodbye.")
+            break
+
+        elif choice == "1":
+            out = sdk.prepare_data()
+            click.echo(f"train features: {out.train.features.shape}")
+            click.echo(f"val   features: {out.val.features.shape}")
+            click.echo(f"test  features: {out.test.features.shape}")
+
+        elif choice == "2":
+            result = sdk.train()
+            final = result.metrics[-1]
+            click.echo(f"episodes: {len(result.metrics)}  final_val_return: {final.val_return:+.4f}")
+            click.echo(f"run dir: {result.run_dir}")
+
+        elif choice == "3":
+            ckpt = click.prompt("Checkpoint path", type=click.Path(exists=True, path_type=Path))
+            result = sdk.backtest(ckpt)
+            click.echo(json.dumps(result.metrics.__dict__, indent=2))
+
+        elif choice == "4":
+            ckpt = click.prompt("Checkpoint path", type=click.Path(exists=True, path_type=Path))
+            pipeline = sdk.prepare_data()
+            market = pipeline.test.features[-1]
+            decision = sdk.predict(market, checkpoint=ckpt)
+            click.echo(json.dumps({
+                "action": decision.action.name,
+                "q_values": decision.q_values.tolist(),
+                "confidence": decision.confidence,
+            }, indent=2))
+
+        elif choice == "5":
+            result = sdk.run_experiments()
+            click.echo(json.dumps(result if isinstance(result, dict) else str(result), indent=2))
+
+
 if __name__ == "__main__":  # pragma: no cover
     cli(obj={})

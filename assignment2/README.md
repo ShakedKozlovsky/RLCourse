@@ -171,6 +171,20 @@ Q(s, ·) = V(s) + (A(s, ·) − A(s, ·).mean(dim=1, keepdim=True))
 
 `dueling=False` collapses the heads to a single `Linear(128, 3)` — the vanilla DQN baseline used in the comparative experiment.
 
+### Why this architecture works (and its limits)
+
+**Conv1D as a temporal pattern detector:** the first Conv1d (kernel=5) sees 5-day patterns — momentum bursts, volatility clusters. The second Conv1d (kernel=3) combines those into higher-level 3-day patterns of patterns. This is analogous to how MACD operates on multiple EMA timescales, but learned rather than hand-crafted.
+
+**Training stability mechanisms:**
+- **Target Network** — without it, the Bellman target shifts every gradient step (a "moving target" problem). Our target net is hard-synced every 1000 steps (`target_sync_every` in config), verified by `test_dqn_agent.py::test_target_sync_happens_at_interval`.
+- **Experience Replay** — breaks temporal correlation between sequential market days. Without it, the network would see "rally, rally, rally" in sequence and overfit to the current regime.
+- **Huber Loss** — clips extreme TD errors (outlier days like earnings surprises), preventing gradient explosions. Delta = 1.0 from config.
+- **Gradient clipping** — `grad_clip=10.0` prevents single bad batches from destroying learned weights.
+
+**Loss curve interpretation** (see `assets/plots/training_curves.png`): the loss drops 30× in the first 5 episodes because the randomly-initialised Q-values produce large TD errors on easy transitions (e.g., "Hold during flat market → small reward"). By episode 10, the loss floors near zero — the Q-network accurately predicts the *training* Bellman targets. The val return NOT improving despite low loss is the textbook "low training loss ≠ good generalisation" lesson.
+
+**What the network learns vs what it doesn't:** Q(s,a) estimates the *discounted return* of taking action `a` in state `s` — not the next-day price. The network learns that "Buy in a rising market with low RSI" has higher expected return than "Sell in the same state." It does **not** learn to predict whether the market will rise — only which action is relatively better given the features it sees in the 30-day window.
+
 ## 7. Reward function
 
 | Variant | Formula | Notes |
@@ -202,16 +216,36 @@ Env · Model · Memory     ◀── domain code, pure tensor math
       Shared             ◀── config · logger · seed · gatekeeper · types
 ```
 
-Forward arrows only. The architecture diagram source is [`docs/architecture.mmd`](docs/architecture.mmd) (Mermaid). Render with `mmdc -i docs/architecture.mmd -o assets/architecture.png` (or paste into [mermaid.live](https://mermaid.live)).
+Forward arrows only. Diagram source: [`docs/architecture.mmd`](docs/architecture.mmd).
+
+![Architecture diagram](assets/architecture_diagram.png)
 
 ### Class diagram
 
-See [`docs/class_diagram.mmd`](docs/class_diagram.mmd). The key relationships:
+![Class diagram](assets/class_diagram.png)
 
-- `TradingSDK` calls into all five services.
+Key relationships:
+- `TradingSDK` calls into all five services. No consumer (CLI/GUI) ever imports from services/environment/model directly.
 - `TrainingService`, `BacktestService`, `InferenceService` each receive (or construct) a `DQNAgent` and a `TradingEnv`.
 - `DQNAgent` owns a `DuelingDQN` (online + target) and a `ReplayBuffer` (Uniform or Prioritized — both expose `add`, `sample(beta)`, `update_priorities`).
 - `TradingEnv` owns a `Portfolio` and a `RewardFunction` (Baseline or RiskAdjusted).
+- `PrioritizedReplay` delegates to `SumTree` for O(log N) insert/sample.
+
+### OOP design rationale
+
+| Pattern | Where | Why |
+|---|---|---|
+| **Facade** | `TradingSDK` | Single entry point for all 5 operations. Consumers never import internals. |
+| **Strategy** | `RewardFunction` → `BaselineReward` / `RiskAdjustedReward` | Swap reward logic without changing the environment. |
+| **Strategy** | `UniformReplay` / `PrioritizedReplay` | Same `Batch` interface, different sampling — the agent doesn't know which buffer it uses. |
+| **Template Method** | `TradingEnv.step()` | Fixed sequence (advance → execute → reward → observe) with pluggable reward and portfolio. |
+| **Builder** | `DataService.run()` | Chains fetch → features → split → scale → window in a fixed pipeline. |
+| **Dataclass** | `Transition`, `StepInfo`, `SliceData`, `BacktestMetrics` | Immutable typed records eliminate dict-key typos. |
+| **Composition** | `DQNAgent` owns net + target + optimizer + replay | The agent is a coordinator, not a god class — each piece is independently testable. |
+
+No code duplication: the `Batch` namedtuple is defined once in `uniform_replay.py` and imported by both replay variants. The `RewardFunction` interface is defined once and consumed by `TradingEnv`. The `ConfigManager` is instantiated once by the SDK and threaded to every service — no service reads config files directly.
+
+**File count by layer:** shared (7) · data (6) · environment (4) · model (2) · memory (4) · services (10) · sdk (2) · interface (12) = **47 source files**, each ≤ 144 LOC, with ≤ 1 responsibility per file.
 
 ## 9. How to install and run
 
@@ -227,10 +261,11 @@ uv run python -c "import dqn_trader; print(dqn_trader.__version__)"
 # CLI — top-level help
 uv run dqn-trader --help
 
-# Run the data pipeline (uses cached parquet if present, else fetches yfinance)
-uv run dqn-trader data --ticker AAPL
+# Interactive terminal menu (guided mode for first-time users)
+uv run dqn-trader menu
 
-# Train for `training.episodes` episodes (defaults to 200 in configs/setup.json)
+# Or use subcommands directly:
+uv run dqn-trader data --ticker AAPL
 uv run dqn-trader train
 
 # Backtest a trained checkpoint
@@ -324,13 +359,22 @@ All four experiments use **30 episodes per condition**, seed 208904839, identica
 
 *Interpretation:* training on SPY (a low-volatility broad-market ETF) yielded a much milder loss (−8.8% vs −22.3%) and far fewer trades. The same hyperparameters that produced an over-trading agent on AAPL produced a near-flat agent on SPY — confirming that **the regime of the training data matters as much as the algorithm**. Generalisation across ticker regimes is an open problem; our cross-ticker experiment provides the evidence.
 
-### GUI screenshots
+### GUI — screenshots and usage guide
 
-The PyQt6 GUI (`python -m dqn_trader.interface.gui`) presents the SDK as four tabs:
+Launch: `uv run python -m dqn_trader.interface.gui`
+
+The GUI never imports from services, environment, or model — it calls **only** `TradingSDK`. This is enforced by the architecture and verified by import analysis (see audit in `docs/CONVERSATION_LOG.md`).
 
 | Data | Train | Backtest | Predict |
 |---|---|---|---|
 | ![Data tab](assets/gui/tab_data_after_prepare.png) | ![Train tab](assets/gui/tab_train.png) | ![Backtest tab](assets/gui/tab_backtest.png) | ![Predict tab](assets/gui/tab_predict.png) |
+
+**How to use each tab:**
+
+1. **Data tab** — enter a ticker (default: AAPL from config), click "Prepare data". The output shows the tensor shapes for train/val/test slices. This calls `sdk.prepare_data()`.
+2. **Train tab** — click "Train" to launch training **off the UI thread** (via `QThread`). The episode reward curve plots in real time. When done, the status bar shows the val return and the run directory path containing checkpoints.
+3. **Backtest tab** — click "Browse…" to select a `best.pt` checkpoint, then "Run backtest". The equity curve (DQN vs Buy-and-Hold) renders in the embedded matplotlib widget. The status bar shows total return, Sharpe, max drawdown, and trade count.
+4. **Predict tab** — click "Browse…" for a checkpoint, then "Predict next action". Shows the recommended action (Sell/Hold/Buy), confidence (softmax probability), and the raw Q-values for all three actions.
 
 (Screenshots captured headlessly via `scripts/capture_gui_screenshots.py` under `QT_QPA_PLATFORM=offscreen`.)
 

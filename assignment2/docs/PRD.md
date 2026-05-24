@@ -8,6 +8,23 @@
 
 ---
 
+## 0. PRD evolution log
+
+This PRD evolved across the project's life — it was not written once and frozen. Each layer's implementation fed corrections back into the requirements.
+
+| Version | Layer | What changed and why |
+|---|---|---|
+| v1 (Layer 0) | Planning | Initial requirements written from the assignment PDF + slides + coding rules. |
+| v2 (Layer 1) | Data | ADR-007: changed pipeline from split-then-features to features-then-split. The integration test caught a warmup bug. Updated §4 and §5 to reflect the corrected ordering. |
+| v3 (Layer 2) | Environment | ADR-008: simplified reward formula from `ΔV − cost` to `ΔV` only. Friction is now deducted inside Portfolio.buy/sell, not in the reward function. Updated §7 and created PRD_reward.md v2. |
+| v4 (Layer 5) | Backtest | Added `report_name` parameter to `TradingSDK.backtest()` to prevent experiment conditions from overwriting each other's equity curves. |
+| v5 (Layer 10) | Experiments | Added window-size sweep (10/20/30/50) as a new experiment — not in original scope but motivated by Finding 4 (regime specificity). |
+| v6 (post-Layer 10) | Improvement | Applied learnings: changed defaults to window=50, uniform replay, lr=2e-4, 100 episodes. Results improved from −22.3% to −10.8% test return. |
+
+This evolution is the point — a PRD that never changes means the team didn't learn anything during implementation.
+
+---
+
 ## 1. Project goal
 
 Implement a complete, object-oriented DQN system around a continuous-time decision environment, using daily stock data as the case study. The agent must learn a *decision policy* (Sell / Hold / Buy) from a sequence of states, actions, and rewards — not predict the next price.
