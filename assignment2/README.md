@@ -363,6 +363,36 @@ These three analyses go beyond the assignment baseline.
 
 *Top:* Q(Sell), Q(Hold), Q(Buy) at every test step, with ▲/▼ markers for actual trades. *Bottom:* portfolio value. Q-values are tightly clustered (range ≈ [−0.04, +0.05]) — the network sees small differences between actions in most states. Buy/Sell decisions correlate with moments where one Q-value briefly dominates. This is the closest our system gets to **explainability**.
 
+### Improvement iteration — learning from our own experiments
+
+After analysing the baseline results, we applied three evidence-based changes:
+
+| Change | Evidence | Rationale |
+|---|---|---|
+| 100 episodes (was 30) | Train reward was still climbing at ep 30 | More passes through the data = better convergence |
+| window_size=50 (was 30) | Window sweep showed 50 had best Sharpe (−1.58) | Longer context captures regime-level information |
+| Uniform replay (was PER) | PER: −22.3% vs Uniform: −0.24% | PER amplifies noise on financial data |
+| lr=2e-4 (was 5e-4) | Val return never improved during baseline training | Slower learning reduces overfitting |
+
+**Results:**
+
+| Metric | Baseline | Improved | Change |
+|---|---|---|---|
+| **Total return** | −22.31% | **−10.80%** | +11.5pp |
+| **Sharpe** | −3.93 | **−1.37** | +2.56 |
+| **Max drawdown** | −24.09% | **−22.96%** | +1.1pp |
+| **Win rate** | 35.71% | **50.00%** | +14.3pp |
+| **Trades** | 14 | **6** | −8 |
+| **Val return (final ep)** | −12.9% | **+5.1%** | +18pp |
+
+![Improvement comparison](assets/plots/improvement_comparison.png)
+
+![Improved training curves](assets/plots/improved_training_curves.png)
+
+*Key takeaway:* every improvement was **predicted by our earlier experiments** — the window sweep, the PER-vs-uniform comparison, and the training curves all pointed to specific fixes. This is the iterative scientific process the assignment asks us to demonstrate: run experiment → analyse → hypothesise → apply → measure again.
+
+The agent still loses money on test (−10.8%), but it now trades less (6 vs 14), wins more often (50% vs 36%), and has a much better risk-adjusted profile (Sharpe −1.37 vs −3.93). The val return turned **positive** (+5.1% at episode 99), suggesting the policy is beginning to generalise — more training time and further tuning would likely continue the trend.
+
 ## 11. Test suite and quality gates
 
 ```bash

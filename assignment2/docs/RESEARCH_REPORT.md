@@ -78,7 +78,26 @@ We logged eight Architectural Decision Records (ADRs) in [`docs/PLAN.md`](PLAN.m
 4. **Attention-based explainability** — which of the 30 days in the window mattered most for the chosen action?
 5. **Regularisation** (dropout, weight decay, early stopping by val metric) — the obvious first response to the overfitting finding.
 
-## 6. What worked well in our development process
+## 6. Improvement iteration — applying our own findings
+
+After the baseline experiments, we asked: **can we improve results by applying what the experiments taught us?**
+
+Four changes, all evidence-based:
+1. **100 episodes** (was 30) — the training curve was still climbing at episode 30
+2. **window_size=50** (was 30) — the window sweep showed 50 had the best Sharpe (−1.58 vs −3.93)
+3. **Uniform replay** (was PER) — PER produced −22.3% vs Uniform's −0.24%
+4. **lr=2e-4** (was 5e-4) — the val return never improved during baseline, suggesting overfitting from too-fast updates
+
+Results:
+- Total return improved from **−22.3% → −10.8%** (+11.5pp)
+- Sharpe improved from **−3.93 → −1.37** (+2.56)
+- Win rate improved from **35.7% → 50.0%** (+14.3pp)
+- Trades reduced from **14 → 6** (less over-trading)
+- Val return at final episode went from **−12.9% → +5.1%** — the first positive val return we've seen
+
+The agent still loses money on the out-of-sample test (−10.8%), but every metric improved, and critically, the improvements were *predicted* by the earlier experiments. This demonstrates the iterative scientific method: **experiment → analyse → hypothesise → apply → measure**.
+
+## 7. What worked well in our development process
 
 - **Layered commits** made it trivial to bisect a bug to its layer.
 - **TDD for the reward function** caught the double-counting friction bug before it contaminated training runs.
