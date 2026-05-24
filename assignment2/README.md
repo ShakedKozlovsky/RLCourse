@@ -100,6 +100,36 @@ A policy `π(a|s)` over discrete actions `a ∈ {Sell, Hold, Buy}`, parameterise
 
 **Comparative ticker (mandatory):** SPY by default (`data.comparative_ticker`). Same pipeline, no code changes.
 
+### Data preview
+
+**756 rows** loaded from `data/raw/AAPL_2020-01-01_2023-01-01.parquet`. First 5 rows after loading:
+
+| Date | Close | High | Low | Open | Volume |
+|:---|---:|---:|---:|---:|---:|
+| 2020-01-02 | 72.33 | 72.39 | 71.09 | 71.34 | 1.35e+08 |
+| 2020-01-03 | 71.63 | 72.39 | 71.41 | 71.56 | 1.46e+08 |
+| 2020-01-06 | 72.20 | 72.24 | 70.50 | 70.75 | 1.18e+08 |
+| 2020-01-07 | 71.86 | 72.47 | 71.64 | 72.21 | 1.09e+08 |
+| 2020-01-08 | 73.02 | 73.32 | 71.57 | 71.57 | 1.32e+08 |
+
+**697 rows** after indicator warmup (first ~59 rows dropped due to MACD-26 + rolling-60 warmup). First 5 rows of computed features:
+
+| Date | log_return | rsi_14 | macd | macd_signal | macd_hist | bb_pct | vwap_dist | volume_norm |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 2020-03-27 | −0.0423 | 43.47 | −3.55 | −3.71 | 0.16 | 0.33 | −0.052 | 0.30 |
+| 2020-03-30 | 0.0281 | 45.94 | −3.23 | −3.61 | 0.38 | 0.43 | −0.016 | −0.13 |
+| 2020-03-31 | −0.0020 | 45.78 | −2.95 | −3.48 | 0.53 | 0.44 | −0.011 | 0.21 |
+| 2020-04-01 | −0.0541 | 41.78 | −2.96 | −3.38 | 0.42 | 0.30 | −0.054 | −0.05 |
+| 2020-04-02 | 0.0165 | 43.38 | −2.86 | −3.27 | 0.42 | 0.37 | −0.032 | −0.20 |
+
+The chronological split is verified in `test_splitter.py::test_chronological_order_preserved` — the last train date is always before the first val date, and the last val date is always before the first test date.
+
+### Price chart and feature visualization
+
+![AAPL price chart](assets/plots/aapl_price_chart.png)
+
+![Feature visualization](assets/plots/feature_visualization.png)
+
 **No-leakage rules (non-negotiable):**
 
 1. All normalisation statistics are fit on **train slice only** (`data/scaler.py`).
@@ -439,21 +469,110 @@ The agent still loses money on test (−10.8%), but it now trades less (6 vs 14)
 
 ## 11. Test suite and quality gates
 
-```bash
-uv run pytest tests/ -q                    # 139 tests, all passing
-uv run pytest --cov=dqn_trader tests/      # 97% statement+branch coverage (gate: 85%)
-uv run ruff check src/ tests/              # 0 errors
+### Test output
+
+```
+$ uv run pytest tests/ -q
+........................................................................  [51%]
+...................................................................      [100%]
+139 passed in 16.58s
 ```
 
-- Largest source file: 144 LOC (limit: 150).
-- Zero hardcoded magic numbers — every tunable lives in `configs/setup.json` or `configs/rate_limits.json`.
-- No `print` statements in library code — everything goes through `shared/logger.py`.
-- Tests run **fully offline** (synthetic OHLCV fixture in `tests/conftest.py`).
+```
+$ uv run ruff check src/ tests/ scripts/
+All checks passed!
+```
 
-TDD pairs called out explicitly in the codebase (Red → Green → Refactor):
+```
+$ uv run pytest --cov=dqn_trader tests/
+TOTAL    1346     23    206     16    97%
+Required test coverage of 85.0% reached. Total coverage: 97.33%
+```
 
-1. **`RewardFunction.compute`** — the test `test_reward.py::test_baseline_is_normalised_delta_v` was written first; implementation followed.
-2. **`PrioritizedReplay.sample`** — `test_prioritized_replay.py::test_priority_update_changes_distribution` written first; implementation refined to satisfy it.
+### Quality metrics
+
+| Metric | Value | Requirement |
+|---|---|---|
+| Tests passing | 139/139 | — |
+| Statement + branch coverage | **97.33%** | ≥ 85% |
+| Ruff errors | 0 | 0 |
+| Max file LOC | 144 | ≤ 150 |
+| Hardcoded magic numbers | 0 | 0 |
+| `print` in library code | 0 | 0 (use `shared/logger.py`) |
+| Offline test suite | yes | synthetic OHLCV fixture |
+
+### TDD walkthrough — Red → Green → Refactor
+
+The assignment requires demonstrating TDD for at least two components. Here are two concrete examples:
+
+**Example 1: RewardFunction (environment/reward.py)**
+
+**Red** — test written first:
+```python
+# test_reward.py::test_baseline_is_normalised_delta_v
+def test_baseline_is_normalised_delta_v() -> None:
+    r = BaselineReward()
+    assert r.compute(10000.0, 10100.0, 10000.0) == pytest.approx(0.01)
+```
+This test existed before `BaselineReward.compute()` was implemented. Running it produced `NotImplementedError`.
+
+**Green** — minimal implementation:
+```python
+class BaselineReward(RewardFunction):
+    def compute(self, prev_value, new_value, initial_value):
+        return (new_value - prev_value) / initial_value
+```
+Test passes. But the original PRD formula also subtracted friction — which would double-count (ADR-008).
+
+**Refactor** — removed the friction term from the formula because `Portfolio.buy/sell` already deducts it from cash. The test still passes with the simpler formula, confirming correctness.
+
+**Example 2: PrioritizedReplay (memory/prioritized_replay.py)**
+
+**Red** — test written first:
+```python
+# test_prioritized_replay.py::test_priority_update_changes_distribution
+def test_priority_update_changes_distribution() -> None:
+    buf = PrioritizedReplay(capacity=64, alpha=1.0, seed=0)
+    _fill(buf, 64)
+    buf.update_priorities(np.array([17]), np.array([1000.0]))
+    counts = np.zeros(64)
+    for _ in range(20):
+        batch = buf.sample(batch_size=32, beta=0.4)
+        counts += np.bincount(batch.indices, minlength=64)
+    assert counts[17] > counts.mean()
+```
+Before PER was implemented, this test failed (no `PrioritizedReplay` class).
+
+**Green** — implemented the sum-tree-backed PER. Test passes.
+
+**Refactor** — extracted `SumTree` into its own file (`memory/sum_tree.py`) for testability and the 150-LOC limit. Both the sum-tree unit tests and the PER integration test pass after the split.
+
+### Reproducibility
+
+To reproduce our exact results:
+
+```bash
+git clone https://github.com/ShakedKozlovsky/RLCourse.git
+cd RLCourse/assignment2
+uv sync --extra dev
+
+# Seed is fixed in configs/setup.json: 208904839
+# Same seed → same weights → same metrics (within float tolerance)
+
+uv run dqn-trader data --ticker AAPL          # warm parquet cache
+uv run dqn-trader data --ticker SPY           # for cross-ticker experiment
+uv run dqn-trader train                       # 30 episodes (baseline config)
+uv run python scripts/run_experiments.py      # 4 experiments × 2 conditions
+uv run python scripts/run_differentiators.py  # window sweep + analysis
+uv run python scripts/run_improved.py         # improved config (100 episodes)
+uv run python scripts/generate_plots.py       # render all plots
+
+# Verify
+uv run pytest tests/ -q                       # 139 passed
+uv run ruff check src/ tests/ scripts/        # All checks passed
+```
+
+All randomness flows through `shared/seed.set_global_seed(208904839)` — Python, NumPy, and PyTorch share the same seed from `configs/setup.json`.
 
 ## 12. Answers to the 12 reflection questions
 

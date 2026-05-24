@@ -19,6 +19,7 @@ dependencies = [
     "click>=8.1",
     "PyQt6>=6.6",
     "tqdm>=4.66",
+    "tabulate>=0.10.0",
 ]
 
 [project.optional-dependencies]
