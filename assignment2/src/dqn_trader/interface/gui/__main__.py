@@ -11,6 +11,7 @@ from dqn_trader.sdk.sdk import TradingSDK
 
 
 def main() -> int:
+    """Launch the PyQt6 GUI application."""
     app = QApplication(sys.argv)
     window = MainWindow(TradingSDK())
     window.show()

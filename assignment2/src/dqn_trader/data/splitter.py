@@ -28,6 +28,7 @@ class ChronologicalSplitter:
         self._val_pct = val_pct
 
     def split(self, df: pd.DataFrame) -> Split:
+        """Split a date-indexed DataFrame into chronological train/val/test."""
         if df.empty:
             raise ValueError("Cannot split an empty DataFrame")
         n = len(df)

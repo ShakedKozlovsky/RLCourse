@@ -13,6 +13,8 @@ from dqn_trader.sdk.sdk import TradingSDK
 
 
 class BacktestTab(QWidget):
+    """Tab widget for loading a checkpoint and running a backtest."""
+
     def __init__(self, sdk: TradingSDK) -> None:
         super().__init__()
         self._sdk = sdk

@@ -51,6 +51,7 @@ class PrioritizedReplay:
         self._dones[data_idx] = bool(done)
 
     def sample(self, batch_size: int, *, beta: float) -> Batch:
+        """Sample a batch weighted by priority; return Batch with IS weights."""
         if not 0.0 <= beta <= 1.0:
             raise ValueError("beta must be in [0, 1]")
         if batch_size <= 0:

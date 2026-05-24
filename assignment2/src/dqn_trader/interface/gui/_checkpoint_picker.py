@@ -19,6 +19,7 @@ class CheckpointPicker(QWidget):
         h.addWidget(self._browse)
 
     def path(self) -> str:
+        """Return the currently entered checkpoint file path."""
         return self._edit.text()
 
     def _on_browse(self) -> None:

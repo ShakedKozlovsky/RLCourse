@@ -24,6 +24,7 @@ class TrainWorker(QThread):
         self._ticker = ticker
 
     def run(self) -> None:  # pragma: no cover — exercised by GUI smoke test
+        """Execute sdk.train() off the UI thread and emit the result or exception."""
         try:
             result = self._sdk.train(ticker=self._ticker)
         except Exception as exc:  # noqa: BLE001
@@ -43,6 +44,7 @@ class BacktestWorker(QThread):
         self._checkpoint = checkpoint
 
     def run(self) -> None:  # pragma: no cover
+        """Execute sdk.backtest() off the UI thread and emit the result or exception."""
         try:
             result = self._sdk.backtest(self._checkpoint)
         except Exception as exc:  # noqa: BLE001

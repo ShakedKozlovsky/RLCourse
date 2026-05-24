@@ -15,6 +15,8 @@ from dqn_trader.sdk.sdk import TradingSDK
 
 
 class DataTab(QWidget):
+    """Tab widget for running the data pipeline and displaying tensor shapes."""
+
     def __init__(self, sdk: TradingSDK) -> None:
         super().__init__()
         self._sdk = sdk

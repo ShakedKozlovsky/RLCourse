@@ -54,13 +54,16 @@ class TradingEnv:
 
     @property
     def n_steps(self) -> int:
+        """Total number of environment steps in this slice."""
         return self._n_steps
 
     @property
     def observation_shape(self) -> tuple[int, int]:
+        """Shape of a single observation: (window_size, n_channels)."""
         return (self._window_size, N_MARKET + N_PORTFOLIO)
 
     def reset(self) -> tuple[np.ndarray, dict[str, Any]]:
+        """Reset portfolio and cursor to step 0; return initial observation."""
         self._portfolio = Portfolio(
             self._portfolio.initial_capital,
             self._portfolio.friction / 2.0,  # alpha == beta == friction/2 for symmetric default
@@ -71,6 +74,7 @@ class TradingEnv:
         return self._obs(), {}
 
     def step(self, action: int) -> tuple[np.ndarray, float, bool, bool, dict[str, Any]]:
+        """Advance one bar, execute the trade, compute reward, return the Gymnasium 5-tuple."""
         if self._step_idx >= self._n_steps - 1:
             raise RuntimeError("step() called on terminated env; reset() first")
         prev_price = self._current_price()

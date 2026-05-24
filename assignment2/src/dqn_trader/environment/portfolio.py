@@ -40,6 +40,7 @@ class Portfolio:
 
     @property
     def position(self) -> int:
+        """Return 0 (flat) or 1 (long) based on current holdings."""
         return 0 if self.shares == 0.0 else 1
 
     @property

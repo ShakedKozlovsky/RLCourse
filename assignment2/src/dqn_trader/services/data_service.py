@@ -44,6 +44,7 @@ class DataService:
         self._client = client
 
     def run(self, ticker: str | None = None) -> PipelineOutput:
+        """Execute the full pipeline: fetch → features → split → scale → window."""
         ticker = ticker or str(self._cfg.get("data.ticker"))
         start = str(self._cfg.get("data.start"))
         end = str(self._cfg.get("data.end"))
@@ -71,6 +72,7 @@ class DataService:
         )
 
     def save_scaler(self, scaler: ZScoreScaler, path: Path) -> None:
+        """Persist the fitted scaler alongside a model checkpoint."""
         scaler.save(path)
 
 

@@ -23,6 +23,7 @@ class PlotWidget(FigureCanvas):
         super().__init__(fig)
 
     def plot_equity(self, equity: np.ndarray, benchmark: np.ndarray | None = None) -> None:
+        """Plot the DQN equity curve and optionally the Buy-and-Hold benchmark."""
         self._ax.clear()
         self._ax.plot(equity, label="DQN policy", linewidth=2)
         if benchmark is not None:
@@ -34,6 +35,7 @@ class PlotWidget(FigureCanvas):
         self.draw()
 
     def plot_metric(self, values: list[float], title: str) -> None:
+        """Plot a single per-episode metric series with markers."""
         self._ax.clear()
         self._ax.plot(values, marker="o")
         self._ax.set_title(title)

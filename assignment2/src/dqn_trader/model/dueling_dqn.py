@@ -48,6 +48,7 @@ class DuelingDQN(nn.Module):
             self.q_head = nn.Linear(hidden, n_actions)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Map a (B, T, F) state tensor to (B, n_actions) Q-values."""
         if x.ndim != 3:
             raise ValueError(f"Expected (B, T, F), got shape {tuple(x.shape)}")
         # Conv1d expects (B, C, T); we have (B, T, F) so permute features → channels.

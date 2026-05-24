@@ -62,6 +62,7 @@ class DQNAgent:
         return int(torch.argmax(q).item())
 
     def remember(self, s: np.ndarray, a: int, r: float, s2: np.ndarray, done: bool) -> None:
+        """Store a transition in the replay buffer."""
         self.replay.add(s, a, r, s2, done)
 
     def optimize(self, batch_size: int, beta: float) -> float | None:
@@ -96,9 +97,11 @@ class DQNAgent:
         return float(loss.item())
 
     def save(self, path: str) -> None:
+        """Save online network weights and step count to a checkpoint file."""
         torch.save({"online": self.online.state_dict(), "step": self._step}, path)
 
     def load(self, path: str) -> None:
+        """Load weights from a checkpoint and sync to the target network."""
         state = torch.load(path, map_location=self.device, weights_only=True)
         self.online.load_state_dict(state["online"])
         hard_update(self.target, self.online)

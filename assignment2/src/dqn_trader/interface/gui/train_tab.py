@@ -10,6 +10,8 @@ from dqn_trader.sdk.sdk import TradingSDK
 
 
 class TrainTab(QWidget):
+    """Tab widget for launching training off-thread and plotting rewards."""
+
     def __init__(self, sdk: TradingSDK) -> None:
         super().__init__()
         self._sdk = sdk

@@ -11,6 +11,8 @@ from dqn_trader.sdk.sdk import TradingSDK
 
 
 class PredictTab(QWidget):
+    """Tab widget for single-step action prediction from the latest window."""
+
     def __init__(self, sdk: TradingSDK) -> None:
         super().__init__()
         self._sdk = sdk

@@ -19,6 +19,7 @@ class LinearSchedule:
         self._decay = int(decay_steps)
 
     def value(self, step: int) -> float:
+        """Return the interpolated schedule value at the given global step."""
         if step <= 0:
             return self._start
         if step >= self._decay:

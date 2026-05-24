@@ -37,6 +37,7 @@ class YFinanceClient:
         self._downloader = downloader or _default_downloader
 
     def fetch(self, ticker: str, start: str, end: str, interval: str = "1d") -> pd.DataFrame:
+        """Fetch OHLCV for a ticker, using parquet cache or CSV fallback on failure."""
         cache_file = self._cache / f"{ticker}_{start}_{end}.parquet"
         if cache_file.exists():
             _logger.info("yfinance cache HIT %s", cache_file.name)

@@ -30,6 +30,7 @@ class ZScoreScaler:
         self._state: ScalerState | None = None
 
     def fit(self, df: pd.DataFrame) -> ZScoreScaler:
+        """Learn mean/std from the train slice; must be called exactly once."""
         if self._state is not None:
             raise RuntimeError("Scaler already fitted; create a new one per run")
         mean = df.mean(axis=0)
@@ -42,6 +43,7 @@ class ZScoreScaler:
         return self
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Apply the train-fitted z-score to any DataFrame with matching columns."""
         if self._state is None:
             raise RuntimeError("Scaler not fitted")
         if list(df.columns) != self._state.columns:
@@ -55,11 +57,13 @@ class ZScoreScaler:
 
     @property
     def state(self) -> ScalerState:
+        """Return the fitted ScalerState (raises if not fitted)."""
         if self._state is None:
             raise RuntimeError("Scaler not fitted")
         return self._state
 
     def save(self, path: Path) -> None:
+        """Persist the fitted state as JSON for checkpoint reproducibility."""
         if self._state is None:
             raise RuntimeError("Scaler not fitted")
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -68,6 +72,7 @@ class ZScoreScaler:
 
     @classmethod
     def load(cls, path: Path) -> ZScoreScaler:
+        """Reconstruct a fitted scaler from a previously saved JSON."""
         with path.open("r", encoding="utf-8") as f:
             data = json.load(f)
         obj = cls()

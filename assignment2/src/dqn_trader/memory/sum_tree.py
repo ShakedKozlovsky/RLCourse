@@ -28,10 +28,12 @@ class SumTree:
 
     @property
     def total(self) -> float:
+        """Sum of all leaf priorities (the root value)."""
         return float(self._tree[0])
 
     @property
     def max_priority(self) -> float:
+        """Largest priority ever inserted; used as default for new transitions."""
         return self._max_priority
 
     def add(self, priority: float) -> int:

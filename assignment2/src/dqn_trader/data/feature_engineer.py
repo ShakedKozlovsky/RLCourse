@@ -45,6 +45,7 @@ class FeatureEngineer:
         self.macd_signal = macd_signal
 
     def transform(self, raw: pd.DataFrame) -> pd.DataFrame:
+        """Compute the 8 market feature channels from raw OHLCV."""
         close = raw["Close"].astype(float)
         volume = raw["Volume"].astype(float)
         out = pd.DataFrame(index=raw.index)

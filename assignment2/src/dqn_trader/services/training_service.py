@@ -48,6 +48,7 @@ class TrainingService:
         self._device = device
 
     def fit(self) -> tuple[list[EpisodeMetrics], RunDirectory]:
+        """Run the full training loop and return per-episode metrics + run directory."""
         agent_cfg = self._cfg.setup["agent"]
         per_cfg = self._cfg.setup["per"]
         env_cfg = self._cfg.setup["env"]

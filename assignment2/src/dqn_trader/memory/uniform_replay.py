@@ -34,6 +34,7 @@ class UniformReplay:
         return len(self._buf)
 
     def add(self, state: np.ndarray, action: int, reward: float, next_state: np.ndarray, done: bool) -> None:
+        """Store a (s, a, r, s', done) transition in the circular buffer."""
         self._buf.append((state.astype(np.float32, copy=False), int(action), float(reward),
                           next_state.astype(np.float32, copy=False), bool(done)))
 

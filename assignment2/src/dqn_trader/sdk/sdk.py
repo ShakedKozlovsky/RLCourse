@@ -48,12 +48,15 @@ class TradingSDK:
 
     @property
     def config(self) -> ConfigManager:
+        """Read-only access to the loaded ConfigManager."""
         return self._cfg
 
     def prepare_data(self, ticker: str | None = None) -> PipelineOutput:
+        """Run the full data pipeline and return windowed train/val/test tensors."""
         return DataService(self._cfg).run(ticker)
 
     def train(self, ticker: str | None = None, *, pipeline: PipelineOutput | None = None) -> TrainResult:
+        """Train a DQN agent end-to-end and return metrics + run directory."""
         pipeline = pipeline or self.prepare_data(ticker)
         service = TrainingService(self._cfg, pipeline, device=self._device)
         metrics, run = service.fit()
@@ -67,6 +70,7 @@ class TradingSDK:
         pipeline: PipelineOutput | None = None,
         report_name: str | None = None,
     ) -> BacktestResult:
+        """Evaluate a trained checkpoint on a slice and save the report."""
         pipeline = pipeline or self.prepare_data()
         slc: SliceData = getattr(pipeline, slice_name)
         env = self._build_env(slc)
@@ -78,6 +82,7 @@ class TradingSDK:
 
     def predict(self, market_window: np.ndarray, *, checkpoint: Path, position: int = 0,
                 pnl_unrealised_scaled: float = 0.0) -> Decision:
+        """Single-step inference: return the recommended action and Q-values."""
         agent = self._build_agent_and_load(checkpoint)
         return InferenceService(agent).decide(market_window, position, pnl_unrealised_scaled)
 

@@ -48,18 +48,21 @@ class ExperimentService:
         self._device = device
 
     def run_dqn_vs_dueling(self) -> ExperimentResult:
+        """Compare vanilla DQN (dueling=False) vs Dueling DQN (dueling=True)."""
         return self._compare(
             "dqn_vs_dueling",
             {"vanilla_dqn": {"agent.dueling": False}, "dueling_dqn": {"agent.dueling": True}},
         )
 
     def run_uniform_vs_per(self) -> ExperimentResult:
+        """Compare uniform replay (per.enabled=False) vs prioritised replay."""
         return self._compare(
             "uniform_vs_per",
             {"uniform_replay": {"per.enabled": False}, "prioritized_replay": {"per.enabled": True}},
         )
 
     def run_reward_variants(self) -> ExperimentResult:
+        """Compare baseline reward vs risk-adjusted (Sharpe bonus) reward."""
         return self._compare(
             "reward_variants",
             {"baseline": {"env.reward_variant": "baseline"},
@@ -67,6 +70,7 @@ class ExperimentService:
         )
 
     def run_cross_ticker(self, secondary_ticker: str | None = None) -> ExperimentResult:
+        """Compare training on the primary ticker vs the comparative ticker."""
         primary = str(self._base.get("data.ticker"))
         secondary = secondary_ticker or str(self._base.get("data.comparative_ticker", "SPY"))
         return self._compare(

@@ -18,21 +18,26 @@ class RunDirectory:
 
     @property
     def checkpoints(self) -> Path:
+        """Path to the checkpoints/ subdirectory."""
         return self.root / "checkpoints"
 
     @property
     def plots(self) -> Path:
+        """Path to the plots/ subdirectory."""
         return self.root / "plots"
 
     @property
     def metrics_csv(self) -> Path:
+        """Path to the per-episode metrics CSV."""
         return self.root / "metrics.csv"
 
     def write_config_snapshot(self, config: dict[str, Any]) -> None:
+        """Write a JSON snapshot of the config used for this run."""
         self.root.mkdir(parents=True, exist_ok=True)
         (self.root / "config_snapshot.json").write_text(json.dumps(config, indent=2))
 
     def write_git_hash(self) -> None:
+        """Record the current git commit hash for reproducibility."""
         try:
             sha = subprocess.check_output(
                 ["git", "rev-parse", "HEAD"], cwd=self.root, stderr=subprocess.DEVNULL

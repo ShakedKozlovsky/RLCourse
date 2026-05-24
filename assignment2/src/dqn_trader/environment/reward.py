@@ -17,6 +17,7 @@ class RewardFunction:
     """Abstract base. Subclasses override ``compute``."""
 
     def compute(self, prev_value: float, new_value: float, initial_value: float) -> float:
+        """Compute the scalar reward for one env step (abstract)."""
         raise NotImplementedError
 
     def reset(self) -> None:
@@ -27,6 +28,7 @@ class BaselineReward(RewardFunction):
     """Normalised change in portfolio value. Friction is baked into ΔV."""
 
     def compute(self, prev_value: float, new_value: float, initial_value: float) -> float:
+        """Return normalised portfolio change: (new - prev) / initial."""
         return (new_value - prev_value) / initial_value
 
 
@@ -43,9 +45,11 @@ class RiskAdjustedReward(RewardFunction):
         self._returns: deque[float] = deque(maxlen=self._window)
 
     def reset(self) -> None:
+        """Clear episode-local state for the risk-adjusted variant."""
         self._returns.clear()
 
     def compute(self, prev_value: float, new_value: float, initial_value: float) -> float:
+        """Baseline delta plus a rolling annualised Sharpe bonus."""
         delta = (new_value - prev_value) / initial_value
         ret = (new_value - prev_value) / prev_value if prev_value > 0 else 0.0
         self._returns.append(ret)

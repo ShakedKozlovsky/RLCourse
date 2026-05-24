@@ -36,6 +36,7 @@ class BacktestService:
         self._agent = agent
 
     def run(self) -> BacktestResult:
+        """Run the agent greedily over the full slice and collect equity + metrics."""
         state, _ = self._env.reset()
         equity = [self._initial_value()]
         actions: list[int] = []
