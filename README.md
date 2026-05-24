@@ -38,7 +38,14 @@ RLCourse/
 │   ├── configs/         # YAML configuration files
 │   └── README.md        # Assignment 1 details
 │
-├── assignment2/          # (Future assignment)
+├── assignment2/          # DQN Stock Trading Agent
+│   ├── src/dqn_trader/  # Dueling + Double DQN + PER
+│   ├── docs/            # PRD, PLAN, per-mechanism specs
+│   ├── tests/           # 135 tests, 97% coverage
+│   ├── configs/         # JSON configuration files
+│   ├── assets/          # Plots + GUI screenshots
+│   └── README.md        # Assignment 2 details
+│
 ├── assignment3/          # (Future assignment)
 └── README.md            # This file
 ```
@@ -60,7 +67,7 @@ Each assignment has its own comprehensive documentation:
 | Assignment | Topic | Status | Link |
 |------------|-------|--------|------|
 | 1 | Grid-based Q-Learning | ✅ Complete | [assignment1/](assignment1/) |
-| 2 | TBD | 🔜 Coming Soon | - |
+| 2 | DQN Stock Trading Agent | ✅ Complete | [assignment2/](assignment2/) |
 | 3 | TBD | 🔜 Coming Soon | - |
 
 ---
@@ -79,4 +86,4 @@ Educational project for Reinforcement Learning course.
 
 ---
 
-**Last Updated:** April 2026
+**Last Updated:** May 2026
