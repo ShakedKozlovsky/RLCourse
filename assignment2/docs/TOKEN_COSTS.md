@@ -10,7 +10,7 @@
 
 ## Token usage estimate
 
-### Session 1: full build (Layers 0–10 + experiments + reports)
+### Full session breakdown (all phases)
 
 | Phase | Turns | Est. input tokens | Est. output tokens | Notes |
 |---|---|---|---|---|
@@ -26,30 +26,37 @@
 | Layer 8: experiments | ~6 | ~200,000 | ~6,000 | 1 source file + 1 test file |
 | Layer 9: README + diagrams | ~5 | ~180,000 | ~10,000 | README.md, 2 Mermaid files, notebook |
 | Layer 10: real experiments | ~15 | ~250,000 | ~8,000 | Scripts, plots, screenshots, patches |
-| Quality pass (docstrings, reports) | ~10 | ~200,000 | ~15,000 | This document, research report, etc. |
-| **Total** | **~115** | **~2,500,000** | **~121,000** | |
+| Quality pass (docstrings, reports) | ~10 | ~200,000 | ~15,000 | RESEARCH_REPORT, CONVERSATION_LOG, PROMPT_LOG, TOKEN_COSTS, 54 docstrings |
+| Excellence differentiators | ~12 | ~250,000 | ~12,000 | Window sweep (4 training runs), action distribution, Q-value heatmap, analysis_service.py + 4 tests |
+| Improvement iteration | ~8 | ~200,000 | ~8,000 | setup_improved.json, 100-episode training, comparison plots, README + research report updates |
+| Polish pass (8 professor points) | ~10 | ~250,000 | ~10,000 | Architecture/class PNGs, interactive CLI menu, GUI usage guide, OOP rationale, DQN analysis, PRD evolution |
+| TODO + token updates | ~3 | ~100,000 | ~5,000 | This update |
+| **Total** | **~148** | **~3,350,000** | **~156,000** | |
 
-### Sub-agents (docstring additions)
+### Sub-agents
 
-| Agent | Model | Est. tokens |
-|---|---|---|
-| Docstrings agent 1 (data/env/model/memory) | Claude Sonnet 4.6 | ~30,000 total |
-| Docstrings agent 2 (services/sdk/interface) | Claude Sonnet 4.6 | ~30,000 total |
+| Agent | Model | Est. tokens | Task |
+|---|---|---|---|
+| Docstrings agent 1 (data/env/model/memory) | Claude Sonnet 4.6 | ~30,000 | 22 docstrings |
+| Docstrings agent 2 (services/sdk/interface) | Claude Sonnet 4.6 | ~37,000 | 31 docstrings |
+| CLI menu agent | Claude Sonnet 4.6 | ~11,000 | Interactive menu command |
+| Audit agent (8 requirements) | Claude Sonnet 4.6 | ~34,000 | Gap analysis |
 
 ## Cost calculation
 
 | Model | Input tokens | Output tokens | Input cost | Output cost | Total |
 |---|---|---|---|---|---|
-| Claude Opus 4.7 | 2,500,000 | 121,000 | $37.50 | $9.08 | **$46.58** |
-| Claude Sonnet 4.6 (sub-agents) | 50,000 | 10,000 | $0.15 | $0.30 | **$0.45** |
-| **Grand total** | **2,560,000** | **131,000** | **$37.65** | **$9.38** | **$47.03** |
+| Claude Opus 4.7 | 3,350,000 | 156,000 | $50.25 | $11.70 | **$61.95** |
+| Claude Sonnet 4.6 (sub-agents) | 100,000 | 12,000 | $0.30 | $0.36 | **$0.66** |
+| **Grand total** | **3,450,000** | **168,000** | **$50.55** | **$12.06** | **$62.61** |
 
 ## Notes
 
 - These are *estimates* based on the conversation length, the number of tool calls, and typical Claude Code token consumption patterns. Exact figures would require access to the Anthropic API usage dashboard.
-- The cached-context ratio is likely high (~70%) because each successive layer re-reads the growing codebase — Anthropic's prompt caching reduces the effective input cost significantly below the headline $37.50 figure.
-- **Effective cost per line of production code:** ~4,900 lines of source + tests → **$0.0096 per line** (~1 cent per line).
-- **Effective cost per test:** 135 tests → **$0.35 per test**.
+- The cached-context ratio is likely high (~70%) because each successive layer re-reads the growing codebase — Anthropic's prompt caching reduces the effective input cost significantly below the headline $50.25 figure.
+- **Effective cost per line of production code:** ~5,200 lines of source + tests → **$0.012 per line** (~1.2 cents per line).
+- **Effective cost per test:** 139 tests → **$0.45 per test**.
+- **Effective cost per commit:** 16 commits → **$3.91 per commit**.
 - No external API costs (yfinance is free; no paid data providers used).
 
 ## Optimization strategies employed

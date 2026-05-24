@@ -6,23 +6,21 @@ Reference: [`PRD.md`](PRD.md), [`PLAN.md`](PLAN.md).
 
 ---
 
-## Layer 0 — Project scaffold + planning docs
+## Layer 0 — Project scaffold + planning docs ✅
 
-Commit: `Layer 0: project scaffold + planning docs`
+Commit: `9dbb167`
 
 - [x] Create directory tree under `assignment2/`
-- [x] `docs/PRD.md` written
-- [x] `docs/PLAN.md` written
-- [~] `docs/TODO.md` (this file)
-- [ ] Per-mechanism PRDs: `PRD_dqn.md`, `PRD_dueling.md`, `PRD_double_dqn.md`, `PRD_per.md`, `PRD_reward.md`, `PRD_env.md`, `PRD_features.md`, `PRD_data_pipeline.md`
-- [ ] `README.md` (placeholder pointing to docs)
-- [ ] `pyproject.toml` + `uv.lock`
-- [ ] `.gitignore`, `.env-example`
-- [ ] `configs/setup.json`, `configs/rate_limits.json`
-- [ ] All `__init__.py` files in `src/dqn_trader/` packages
-- [ ] `src/dqn_trader/shared/version.py` with `__version__ = "1.00"`
-
-**DoD:** repo can be cloned, `uv sync` installs deps, `python -c "import dqn_trader"` works, no code yet beyond shared/version. Docs explain the full plan.
+- [x] `docs/PRD.md` written (with evolution log added in v6)
+- [x] `docs/PLAN.md` written (with 8 ADRs added during build)
+- [x] `docs/TODO.md` (this file)
+- [x] Per-mechanism PRDs: `PRD_dqn.md`, `PRD_dueling.md`, `PRD_double_dqn.md`, `PRD_per.md`, `PRD_reward.md`, `PRD_env.md`, `PRD_features.md`, `PRD_data_pipeline.md`
+- [x] `README.md` (placeholder, replaced in Layer 9)
+- [x] `pyproject.toml` + `uv.lock`
+- [x] `.gitignore`, `.env-example`
+- [x] `configs/setup.json`, `configs/rate_limits.json`
+- [x] All `__init__.py` files in `src/dqn_trader/` packages
+- [x] `src/dqn_trader/shared/version.py` with `__version__ = "1.00"`
 
 ---
 
@@ -217,34 +215,97 @@ Commit: `Layer 9: full README + architecture/class diagrams + analysis notebook 
 
 ---
 
-## Cross-cutting tasks (in parallel with all layers)
+## Cross-cutting tasks ✅
 
-- [ ] `ruff check` returns 0 across the whole repo before each commit
-- [ ] Each commit message follows: `Layer N: <short summary>` + bullet body
-- [ ] No magic numbers introduced in code (everything in `configs/`)
-- [ ] No file exceeds 150 LOC (excluding blanks/comments)
-- [ ] `uv.lock` regenerated when deps change
-- [ ] After each layer: update this `TODO.md` to mark items `[x]` and bump version where applicable
+- [x] `ruff check` returns 0 across the whole repo before each commit — verified on every commit
+- [x] Each commit message follows: `Layer N: <short summary>` + bullet body — 16 commits in this pattern
+- [x] No magic numbers introduced in code (everything in `configs/`) — verified
+- [x] No file exceeds 150 LOC (excluding blanks/comments) — max is 144 (training_service.py)
+- [x] `uv.lock` regenerated when deps change — committed in Layer 1
+- [x] After each layer: this `TODO.md` updated to mark items `[x]` — done throughout
+
+---
 
 ## Layer 10 — Real experiments, plots, GUI screenshots ✅
 
-Commit: `Layer 10: run real experiments + plots + GUI screenshots + report names`
+Commit: `48adbc3`
 
 - [x] Fetched real AAPL + SPY OHLCV (756 daily bars each, 2020-01-01..2023-01-01) into `data/raw/*.parquet`.
-- [x] Reduced training schedule to 30 episodes (from 200) so end-to-end runs fit in a single session; ε decay tightened to 8000 steps and PER β anneal to 13000 steps to match.
-- [x] Ran all four experiments (8 conditions × 30 episodes = 240 training episodes) via `scripts/run_experiments.py` — see `results/experiment_log.txt` (committed) for the full per-episode trace.
-- [x] Numbers reported in the README's §10 are the real outputs of `ExperimentService` on this hardware.
-- [x] Patched `TradingSDK.backtest` with a `report_name` keyword so each condition writes a unique `.npz` instead of overwriting `test_backtest.npz`. Added an SDK test covering the new path.
-- [x] `scripts/rebacktest_all.py` re-emits the 8 per-condition equity curves from the existing checkpoints (no retraining required).
-- [x] `scripts/generate_plots.py` renders training curves, per-experiment metric bar charts, and equity-overlay plots into `assets/plots/`.
-- [x] `scripts/capture_gui_screenshots.py` runs PyQt6 under `QT_QPA_PLATFORM=offscreen` and saves the four GUI tabs into `assets/gui/`.
-- [x] README updated with: real numbers, all 9 generated plots embedded, 4 GUI screenshots, per-experiment commentary on what each result *means*, and a real-data answer to reflection question 11.
-- [x] **135/135 tests pass** (added the SDK report_name test), **97% coverage**, **ruff clean** across `src/`, `tests/`, AND the new `scripts/` directory.
+- [x] Reduced training schedule to 30 episodes (from 200) so end-to-end runs fit in a single session.
+- [x] Ran all four experiments (8 conditions × 30 episodes = 240 training episodes) via `scripts/run_experiments.py`.
+- [x] Patched `TradingSDK.backtest` with `report_name` keyword; added SDK test covering the new path.
+- [x] `scripts/rebacktest_all.py`, `generate_plots.py`, `capture_gui_screenshots.py` all committed.
+- [x] README updated with real numbers, 9 plots, 4 GUI screenshots, per-experiment commentary.
+- [x] **135/135 tests pass**, **97% coverage**, **ruff clean**.
 
-## Excellence extensions (deferred — base is fully green)
+---
 
-- [ ] Window-size sensitivity sweep (10, 20, 30, 50) and plot
-- [ ] Reward-hacking sanity probe: log action distribution per episode, flag if Hold > 95%
-- [ ] Add an attention-based explainability module that highlights which days in the 30-window mattered most for the chosen action
-- [ ] Multi-asset portfolio extension (single-asset → 3-asset basket) — explicitly out of base scope
-- [ ] Longer training schedule (200+ episodes) to see whether Dueling and PER catch up to / exceed their lighter baselines on AAPL.
+## Quality pass — docstrings + reports ✅
+
+Commit: `e6f3757`
+
+- [x] Docstrings added to ALL 54 public functions (0 remaining) — via 2 parallel Sonnet sub-agents.
+- [x] `docs/RESEARCH_REPORT.md` — 4 key findings + improvement iteration.
+- [x] `docs/CONVERSATION_LOG.md` — full back-and-forth record.
+- [x] `docs/PROMPT_LOG.md` — prompt engineering log per coding rules V3 §8.3.
+- [x] `docs/TOKEN_COSTS.md` — token usage + cost breakdown.
+
+---
+
+## Excellence differentiators ✅
+
+Commit: `b1b52a9`
+
+- [x] **Window-size sensitivity sweep** (10, 20, 30, 50) — 4 training runs, finding: window=50 best by Sharpe (−1.58 vs −3.93 for default 30).
+- [x] **Action distribution analysis** — train vs test action fractions, reward-hacking detector (Hold=52.7% on test = not degenerate).
+- [x] **Q-value heatmap** — Q(Sell)/Q(Hold)/Q(Buy) curves over the test slice with buy/sell markers aligned to portfolio value.
+- [x] `services/analysis_service.py` + `tests/unit/test_analysis_service.py` (4 tests).
+- [x] `scripts/run_differentiators.py` + `scripts/plot_differentiators.py`.
+- [x] 3 new plots in `assets/plots/`.
+- [x] **139/139 tests pass**, **97% coverage**.
+
+---
+
+## Improvement iteration ✅
+
+Commit: `600d5c7`
+
+- [x] Applied 4 evidence-based changes: 100 episodes, window=50, uniform replay, lr=2e-4.
+- [x] Results: return −22.3% → **−10.8%**, Sharpe −3.93 → **−1.37**, win rate 36% → **50%**, val return −12.9% → **+5.1%**.
+- [x] `configs/setup_improved.json`, `scripts/run_improved.py`.
+- [x] 2 comparison plots in `assets/plots/`.
+- [x] README + RESEARCH_REPORT updated with improvement findings.
+
+---
+
+## Polish pass (8 professor feedback points) ✅
+
+Commit: `20b0520`
+
+- [x] Architecture + class diagrams rendered as inline PNG images in README (matplotlib-based).
+- [x] Interactive terminal menu: `uv run dqn-trader menu`.
+- [x] GUI usage guide with step-by-step per tab.
+- [x] OOP design rationale table (7 patterns).
+- [x] DQN analysis expansion (Conv1D rationale, stability mechanisms, loss interpretation).
+- [x] PRD evolution log (6 versions across the project lifecycle).
+- [x] GUI → SDK only confirmed clean.
+- [x] DQN "what Q learns vs price prediction" distinction.
+
+---
+
+## Final TODO + token update ✅
+
+Commit: *this commit*
+
+- [x] Updated `docs/TOKEN_COSTS.md` with all phases (differentiators, improvement, polish, sub-agents).
+- [x] Updated this `docs/TODO.md` — all items marked `[x]`, no outstanding tasks.
+
+---
+
+## Future extensions (not in scope — base + excellence are fully green)
+
+- [ ] Attention-based explainability module (which days in the 30-window mattered most)
+- [ ] Multi-asset portfolio extension (single-asset → 3-asset basket)
+- [ ] Longer training schedule (200+ episodes) to test whether Dueling/PER catch up
+- [ ] Dropout / weight decay / early stopping to further reduce overfitting
+- [ ] Feature ablation study (drop one channel at a time)
