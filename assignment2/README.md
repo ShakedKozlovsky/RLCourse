@@ -4,6 +4,10 @@
 > **Author:** Shaked Kozlovsky (ID 208904839)
 > **What this project is:** an educational, full-stack RL system that learns a *daily trading policy* (Sell / Hold / Buy) via Dueling + Double DQN with Prioritized Experience Replay on Yahoo Finance OHLCV data.
 > **What this project is NOT:** a price predictor, a trading recommendation, or a production trading system. The agent learns a decision policy — not a forecast. Backtests are a teaching aid, not an investment claim.
+>
+> **Short on time?** Read [`docs/EXECUTIVE_SUMMARY.md`](docs/EXECUTIVE_SUMMARY.md) — a 2-minute overview of the entire project.
+>
+> **Want to run immediately?** A pre-trained checkpoint is committed at [`saved_models/best_improved.pt`](saved_models/best_improved.pt). See §9 below.
 
 ---
 
@@ -41,7 +45,13 @@ The professor asked to see the *thinking* before the code. The repo's git log is
 | `56c5a65` | **7 — GUI** | PyQt6 on top of the SDK, never touching services directly. |
 | `1fd6679` | **8 — experiments** | Four comparative experiments via config overrides. |
 | `ca15b56` | **9 — README + diagrams + notebook** | Initial grader-facing document, before real experiment numbers. |
-| *this commit* | **10 — run experiments + plots + screenshots** | Trained on AAPL + SPY (756 daily bars each); ran all 8 conditions; rendered training curves, per-experiment metric bars, and equity overlays; captured headless GUI screenshots. Numbers throughout this README are real. |
+| `48adbc3` | **10 — real experiments** | Trained on AAPL + SPY; ran all 8 conditions; rendered plots; captured GUI screenshots. |
+| `e6f3757` | **11 — quality pass** | Docstrings on all 54 public functions + research/conversation/prompt/token reports. |
+| `b1b52a9` | **12 — differentiators** | Window sweep, action distribution analysis, Q-value heatmap. |
+| `600d5c7` | **13 — improvement** | Applied own findings: return −22% → −11%, Sharpe −3.9 → −1.4, win rate 36% → 50%. |
+| `20b0520` | **14 — polish** | Inline diagrams, CLI menu, GUI docs, OOP rationale, DQN analysis, PRD evolution. |
+| `5f7a723` | **15 — audit fixes** | Data preview tables, TDD walkthrough, price chart, feature viz, reproducibility. |
+| `5a2d971` | **16 — final three** | Executed notebook with LaTeX, pre-trained checkpoint, executive summary. |
 
 Two design decisions discovered *during* the build (ADRs in [`docs/PLAN.md`](docs/PLAN.md)):
 
@@ -298,11 +308,14 @@ uv run dqn-trader menu
 uv run dqn-trader data --ticker AAPL
 uv run dqn-trader train
 
-# Backtest a trained checkpoint
-uv run dqn-trader backtest --checkpoint results/run_<ts>/checkpoints/best.pt
+# Backtest using the pre-trained checkpoint (committed, no training needed)
+uv run dqn-trader backtest --checkpoint saved_models/best_improved.pt
 
-# Single-action prediction on the latest test window
-uv run dqn-trader predict --checkpoint results/run_<ts>/checkpoints/best.pt
+# Single-action prediction using the pre-trained checkpoint
+uv run dqn-trader predict --checkpoint saved_models/best_improved.pt
+
+# Or use your own checkpoint after training:
+# uv run dqn-trader backtest --checkpoint results/run_<ts>/checkpoints/best.pt
 
 # Launch the GUI (PyQt6) — needs a display
 uv run python -m dqn_trader.interface.gui
@@ -666,6 +679,19 @@ Drill-down on individual algorithmic pieces:
 - [`docs/PRD_env.md`](docs/PRD_env.md) — `TradingEnv` API and observation assembly.
 - [`docs/PRD_features.md`](docs/PRD_features.md) — the 10 state channels.
 - [`docs/PRD_data_pipeline.md`](docs/PRD_data_pipeline.md) — yfinance → tensors.
-- [`docs/PRD.md`](docs/PRD.md) — top-level PRD.
-- [`docs/PLAN.md`](docs/PLAN.md) — architecture and ADRs.
+- [`docs/PRD.md`](docs/PRD.md) — top-level PRD (with evolution log).
+- [`docs/PLAN.md`](docs/PLAN.md) — architecture and 8 ADRs.
 - [`docs/TODO.md`](docs/TODO.md) — per-layer build log with Definition of Done.
+
+Project reports:
+
+- [`docs/EXECUTIVE_SUMMARY.md`](docs/EXECUTIVE_SUMMARY.md) — 2-minute overview for the grader.
+- [`docs/RESEARCH_REPORT.md`](docs/RESEARCH_REPORT.md) — findings, conclusions, what worked and failed.
+- [`docs/CONVERSATION_LOG.md`](docs/CONVERSATION_LOG.md) — our AI-assisted development back-and-forth.
+- [`docs/PROMPT_LOG.md`](docs/PROMPT_LOG.md) — prompt engineering log per coding rules V3.
+- [`docs/TOKEN_COSTS.md`](docs/TOKEN_COSTS.md) — token usage and cost breakdown (~$63 total).
+
+Other artefacts:
+
+- [`saved_models/best_improved.pt`](saved_models/best_improved.pt) — pre-trained checkpoint (1.6 MB), ready for immediate backtest/predict.
+- [`notebooks/01_results_analysis.ipynb`](notebooks/01_results_analysis.ipynb) — executed analysis notebook with LaTeX formulas and inline plots.
