@@ -293,12 +293,49 @@ Commit: `20b0520`
 
 ---
 
-## Final TODO + token update ✅
+## TODO + token update ✅
 
-Commit: *this commit*
+Commit: `f213137`
 
 - [x] Updated `docs/TOKEN_COSTS.md` with all phases (differentiators, improvement, polish, sub-agents).
-- [x] Updated this `docs/TODO.md` — all items marked `[x]`, no outstanding tasks.
+- [x] Updated this `docs/TODO.md` — all items marked `[x]`.
+
+---
+
+## Outsider audit fixes ✅
+
+Commit: `5f7a723`
+
+- [x] First 5 rows of raw OHLCV + first 5 rows of features embedded as markdown tables in README §4.
+- [x] TDD Red→Green→Refactor walkthrough for 2 components (RewardFunction, PrioritizedReplay) in README §11.
+- [x] Pytest terminal output (`139 passed in 16.58s`) shown in README.
+- [x] Ruff terminal output (`All checks passed!`) shown in README.
+- [x] AAPL price chart with Close, High-Low band, color-coded volume bars (`assets/plots/aapl_price_chart.png`).
+- [x] Feature visualization: 4-panel plot of log_return, RSI, MACD, BB%B (`assets/plots/feature_visualization.png`).
+- [x] Reproducibility section: full clone→install→train→verify command sequence with seed docs.
+- [x] GUI Predict tab: feature contribution explanation (top-3 features by magnitude).
+- [x] Quality metrics consolidated table in README §11.
+
+---
+
+## Final three ✅
+
+Commit: `5a2d971`
+
+- [x] `notebooks/01_results_analysis.ipynb` — full 10-cell notebook with LaTeX formulas (Bellman, Dueling, PER), 5 executable code cells, all outputs populated via `nbconvert --execute`. File size 613 KB.
+- [x] `saved_models/best_improved.pt` — 1.6 MB pre-trained checkpoint (improved config). Grader can immediately run backtest/predict without training.
+- [x] `docs/EXECUTIVE_SUMMARY.md` — 2-minute grader read: what we built, what we found, what differentiates us, quick start.
+
+---
+
+## README final update ✅
+
+Commit: `43bcd25`
+
+- [x] Header links to executive summary and committed checkpoint.
+- [x] §9 install/run defaults to `saved_models/best_improved.pt`.
+- [x] §1 build-log table expanded from 10 to 16 entries.
+- [x] Appendix references all 5 project reports + checkpoint + notebook.
 
 ---
 

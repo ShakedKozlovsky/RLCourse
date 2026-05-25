@@ -20,6 +20,8 @@ This PRD evolved across the project's life — it was not written once and froze
 | v4 (Layer 5) | Backtest | Added `report_name` parameter to `TradingSDK.backtest()` to prevent experiment conditions from overwriting each other's equity curves. |
 | v5 (Layer 10) | Experiments | Added window-size sweep (10/20/30/50) as a new experiment — not in original scope but motivated by Finding 4 (regime specificity). |
 | v6 (post-Layer 10) | Improvement | Applied learnings: changed defaults to window=50, uniform replay, lr=2e-4, 100 episodes. Results improved from −22.3% to −10.8% test return. |
+| v7 (audit) | Quality | Outsider audit found 10 gaps: added data preview tables, TDD walkthrough, price/feature charts, reproducibility section, GUI feature explanation. |
+| v8 (final) | Deliverables | Executed the results notebook (LaTeX + inline plots), committed pre-trained checkpoint (1.6 MB), wrote executive summary for grader quick-read. |
 
 This evolution is the point — a PRD that never changes means the team didn't learn anything during implementation.
 
