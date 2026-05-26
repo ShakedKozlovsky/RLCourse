@@ -128,7 +128,8 @@ class ExperimentService:
                 f"| {c.name} | {ov} | {m.total_return:+.3%} | {m.sharpe:.2f} | "
                 f"{m.max_drawdown:.2%} | {m.win_rate:.2%} | {m.n_trades} |"
             )
-        out.open("a", encoding="utf-8").write("\n".join(lines) + "\n")
+        with out.open("a", encoding="utf-8") as f:
+            f.write("\n".join(lines) + "\n")
         json_out = out.parent / f"{exp.name}.json"
         json_out.write_text(json.dumps({"name": exp.name,
                                          "conditions": [asdict(c) for c in exp.conditions]},

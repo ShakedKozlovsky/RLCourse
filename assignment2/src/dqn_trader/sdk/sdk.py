@@ -86,6 +86,18 @@ class TradingSDK:
         agent = self._build_agent_and_load(checkpoint)
         return InferenceService(agent).decide(market_window, position, pnl_unrealised_scaled)
 
+    def run_experiments(self) -> dict[str, object]:
+        """Run all four comparative experiments via ExperimentService."""
+        from dqn_trader.services.experiment_service import ExperimentService
+
+        svc = ExperimentService(self._cfg, device=self._device)
+        return {
+            "dqn_vs_dueling": svc.run_dqn_vs_dueling(),
+            "uniform_vs_per": svc.run_uniform_vs_per(),
+            "reward_variants": svc.run_reward_variants(),
+            "cross_ticker": svc.run_cross_ticker(),
+        }
+
     def _build_env(self, slc: SliceData) -> TradingEnv:
         env_cfg: dict[str, Any] = self._cfg.setup["env"]
         return TradingEnv(

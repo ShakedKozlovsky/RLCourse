@@ -1,0 +1,9 @@
+{
+  "trained_return": -0.10795439449562619,
+  "random_mean": -0.060286292190724115,
+  "random_std": 0.08770417878144703,
+  "hold_return": 0.0,
+  "trained_sharpe": -1.370273396172355,
+  "trained_trades": 6,
+  "trained_win_rate": 0.5
+}

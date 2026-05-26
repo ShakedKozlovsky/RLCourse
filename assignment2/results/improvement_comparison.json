@@ -1,0 +1,23 @@
+{
+  "config_changes": {
+    "episodes": "30 \u2192 100",
+    "window_size": "30 \u2192 50",
+    "per.enabled": "true \u2192 false (uniform replay)",
+    "lr": "0.0005 \u2192 0.0002"
+  },
+  "baseline_metrics": {
+    "total_return": -0.2231,
+    "sharpe": -3.93,
+    "max_drawdown": -0.2409,
+    "win_rate": 0.3571,
+    "n_trades": 14
+  },
+  "improved_metrics": {
+    "total_return": -0.10795439449562619,
+    "sharpe": -1.370273396172355,
+    "max_drawdown": -0.22957802614422967,
+    "win_rate": 0.5,
+    "n_trades": 6,
+    "final_value": 8920.456055043738
+  }
+}

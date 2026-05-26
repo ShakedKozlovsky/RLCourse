@@ -42,6 +42,8 @@ class TradingEnv:
         self._window_size = slice_data.features.shape[1]
         if slice_data.features.shape[2] != N_MARKET:
             raise ValueError(f"Expected {N_MARKET} market channels, got {slice_data.features.shape[2]}")
+        self._alpha = float(alpha)
+        self._beta = float(beta)
         self._portfolio = Portfolio(initial_capital, alpha, beta)
         self._reward: RewardFunction = (
             reward
@@ -66,8 +68,8 @@ class TradingEnv:
         """Reset portfolio and cursor to step 0; return initial observation."""
         self._portfolio = Portfolio(
             self._portfolio.initial_capital,
-            self._portfolio.friction / 2.0,  # alpha == beta == friction/2 for symmetric default
-            self._portfolio.friction / 2.0,
+            self._alpha,
+            self._beta,
         )
         self._reward.reset()
         self._step_idx = 0

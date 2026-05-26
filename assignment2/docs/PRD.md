@@ -170,7 +170,7 @@ GUI / CLI ──▶ TradingSDK ──▶ Services (training, backtest, inference
 | `ruff check` | 0 errors | linter gate |
 | File size | ≤ 150 lines per .py file | enforced manually + checklist |
 | Train converges | Episode reward trend ↑ across last 30% of training | Loss/Reward plots in `results/` |
-| Backtest beats Buy-and-Hold on at least one of {AAPL, SPY/NVDA} on Sharpe | Reported with full metric table | `results/backtest_*.json` + README |
+| Backtest: honest comparison vs Buy-and-Hold | Report Sharpe, total return, Max DD for both agent and B&H; document why agent under/over-performs | `results/backtest_*.json` + README §"Evidence that DQN is working" |
 | Reproducibility | Same seed → same metrics within tolerance | seed fixed in `configs/setup.json` |
 | Architecture purity | No DQN logic in GUI/CLI; no GUI imports in environment/model | code review + dependency graph |
 

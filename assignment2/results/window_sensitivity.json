@@ -1,0 +1,65 @@
+{
+  "name": "window_sensitivity",
+  "conditions": [
+    {
+      "name": "window_10",
+      "overrides": {
+        "data.window_size": 10
+      },
+      "metrics": {
+        "total_return": -0.23564309659434302,
+        "sharpe": -2.458024903752862,
+        "max_drawdown": -0.2679654504430858,
+        "win_rate": 0.2,
+        "n_trades": 10,
+        "final_value": 7643.56903405657
+      },
+      "run_dir": "/home/corsight/src/RL_Course/assignment2/results/run_1779604632"
+    },
+    {
+      "name": "window_20",
+      "overrides": {
+        "data.window_size": 20
+      },
+      "metrics": {
+        "total_return": -0.24167337317438622,
+        "sharpe": -2.1806311088062853,
+        "max_drawdown": -0.27522079344800116,
+        "win_rate": 0.125,
+        "n_trades": 8,
+        "final_value": 7583.266268256138
+      },
+      "run_dir": "/home/corsight/src/RL_Course/assignment2/results/run_1779604721"
+    },
+    {
+      "name": "window_30",
+      "overrides": {
+        "data.window_size": 30
+      },
+      "metrics": {
+        "total_return": -0.22304868195614408,
+        "sharpe": -3.932972716848273,
+        "max_drawdown": -0.24089348455493867,
+        "win_rate": 0.35714285714285715,
+        "n_trades": 14,
+        "final_value": 7769.513180438559
+      },
+      "run_dir": "/home/corsight/src/RL_Course/assignment2/results/run_1779604816"
+    },
+    {
+      "name": "window_50",
+      "overrides": {
+        "data.window_size": 50
+      },
+      "metrics": {
+        "total_return": -0.1366207554746712,
+        "sharpe": -1.5778491944266015,
+        "max_drawdown": -0.17911225360308416,
+        "win_rate": 0.0,
+        "n_trades": 1,
+        "final_value": 8633.792445253288
+      },
+      "run_dir": "/home/corsight/src/RL_Course/assignment2/results/run_1779604920"
+    }
+  ]
+}

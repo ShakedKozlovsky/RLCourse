@@ -53,8 +53,8 @@ class TrainingService:
         per_cfg = self._cfg.setup["per"]
         env_cfg = self._cfg.setup["env"]
         train_cfg = self._cfg.setup["training"]
-        train_env = self._make_env(self._pipeline.train.__dict__["features"].shape[1], env_cfg)
-        val_env = self._make_env(self._pipeline.val.__dict__["features"].shape[1], env_cfg, "val")
+        train_env = self._make_env(self._pipeline.train.features.shape[1], env_cfg)
+        val_env = self._make_env(self._pipeline.val.features.shape[1], env_cfg, "val")
         replay = self._make_replay(agent_cfg, per_cfg)
         agent = DQNAgent(
             window_size=train_env.observation_shape[0],

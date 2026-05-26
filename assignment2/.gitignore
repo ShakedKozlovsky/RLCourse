@@ -30,6 +30,9 @@ results/*
 !results/uniform_vs_per.json
 !results/reward_variants.json
 !results/cross_ticker.json
+!results/window_sensitivity.json
+!results/improvement_comparison.json
+!results/model_proof.json
 
 # OS junk
 .DS_Store

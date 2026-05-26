@@ -75,7 +75,7 @@ Each layer followed the same pattern:
 | Fractional position sizing (not all-in/all-out) | Rejected in ADR-003: complicates action semantics beyond the educational scope. |
 | Optuna hyperparameter search | Out of scope per PRD §14: manual sweeps only. |
 | Multi-asset portfolio | Explicitly out of scope; flagged as an excellence extension. |
-| Window-size sensitivity sweep | Time constraint; flagged for future work in the research report. |
+| Window-size sensitivity sweep | Initially deferred; later implemented as an excellence differentiator (10/20/30/50 — finding: window=50 best). |
 
 ## Reflection on the AI-assisted workflow
 
