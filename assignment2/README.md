@@ -227,7 +227,7 @@ Q(s, ·) = V(s) + (A(s, ·) − A(s, ·).mean(dim=1, keepdim=True))
 
 ### Evidence that DQN is working
 
-The professor asked: "convince me the model works." Here are 6 proofs:
+Six independent signals confirm that the DQN algorithm is correctly implemented and learning a meaningful policy:
 
 ![Model proof](assets/plots/model_proof.png)
 
