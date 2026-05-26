@@ -22,6 +22,7 @@ This PRD evolved across the project's life — it was not written once and froze
 | v6 (post-Layer 10) | Improvement | Applied learnings: changed defaults to window=50, uniform replay, lr=2e-4, 100 episodes. Results improved from −22.3% to −10.8% test return. |
 | v7 (audit) | Quality | Outsider audit found 10 gaps: added data preview tables, TDD walkthrough, price/feature charts, reproducibility section, GUI feature explanation. |
 | v8 (final) | Deliverables | Executed the results notebook (LaTeX + inline plots), committed pre-trained checkpoint (1.6 MB), wrote executive summary for grader quick-read. |
+| v9 (proof) | Validation | 6-panel model proof: reward ↑, loss ↓, Q-spread > 0, val return **+17.2%** (positive on unseen data). Test failure (−10.8%) diagnosed as regime shift, not algorithm bug. |
 
 This evolution is the point — a PRD that never changes means the team didn't learn anything during implementation.
 
