@@ -50,11 +50,56 @@ def test_concentrated_distribution_has_high_imbalance() -> None:
     assert r < -0.9
 
 
-def test_rest_day_skips_imbalance_penalty() -> None:
+def test_rest_action_skips_imbalance_penalty() -> None:
+    """Layer 11 fix: imbalance is zeroed by the action, not the state's rest_indicator."""
+    from fitness_rl.shared.types import Action
+
     rf = RewardFunction(gain_weight=0.0, overload_lambda=0.0, imbalance_lambda=1.0)
     rf.reset()
-    s = _state(0.0, [0.0, 0.0, 0.0, 0.0, 0.0], rest=True)
-    assert rf.compute(s) == 0.0
+    s = _state(0.0, [1.0, 0.0, 0.0, 0.0, 0.0])  # very concentrated
+    # Without REST action: imbalance penalty applies.
+    assert rf.compute(s, action=int(Action.PUSH)) < -0.9
+    # With REST action: imbalance bypassed.
+    rf.reset()
+    assert rf.compute(s, action=int(Action.REST)) == 0.0
+
+
+def test_state_rest_indicator_no_longer_zeroes_imbalance() -> None:
+    """Audit finding #10: state-based zeroing was an exploit; action-based is correct."""
+    from fitness_rl.shared.types import Action
+
+    rf = RewardFunction(gain_weight=0.0, overload_lambda=0.0, imbalance_lambda=1.0)
+    rf.reset()
+    # Concentrated muscle dist AND rest_indicator=1 — but action is PUSH.
+    s = _state(0.0, [1.0, 0.0, 0.0, 0.0, 0.0], rest=True)
+    assert rf.compute(s, action=int(Action.PUSH)) < -0.9
+
+
+def test_decompose_returns_components() -> None:
+    rf = RewardFunction(gain_weight=1.0, overload_lambda=0.5, imbalance_lambda=1.0)
+    rf.reset()
+    s = _state(0.4, [0.4, 0.2, 0.2, 0.1, 0.1])
+    parts = rf.decompose(s, action=0)
+    assert set(parts) == {"gain", "overload", "imbalance", "total"}
+    assert parts["gain"] == pytest.approx(0.4)
+    assert parts["total"] == pytest.approx(parts["gain"] - parts["overload"] - parts["imbalance"])
+
+
+def test_decompose_does_not_mutate_state() -> None:
+    rf = RewardFunction()
+    rf.reset()
+    s = _state(0.4, [0.2] * 5)
+    snapshot = list(rf._window)  # noqa: SLF001
+    rf.decompose(s, action=0)
+    assert list(rf._window) == snapshot  # noqa: SLF001
+
+
+def test_negative_volume_clamped_in_compute() -> None:
+    """LSTM can predict negative volume; reward should treat it as 0."""
+    rf = RewardFunction(gain_weight=1.0, overload_lambda=0.0, imbalance_lambda=0.0)
+    rf.reset()
+    s = _state(-0.5, [0.2] * 5)
+    assert rf.compute(s, action=0) == 0.0
 
 
 def test_gain_is_volume_weighted() -> None:

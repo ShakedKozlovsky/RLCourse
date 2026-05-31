@@ -107,6 +107,28 @@ class LSTMWorldModel(nn.Module):
             actions = torch.tensor([[a for _, a in history]], dtype=torch.long)
             with torch.no_grad():
                 x = self.encode_inputs(states, actions)
-                return self(x).squeeze(0).cpu().numpy().astype(np.float32)
+                raw = self(x).squeeze(0).cpu().numpy().astype(np.float32)
+            return _clamp_state(raw)
 
         return step
+
+
+def _clamp_state(raw: np.ndarray) -> np.ndarray:
+    """Clamp LSTM-predicted state to valid feature ranges.
+
+    The regression head is unconstrained; without clamping the policy receives
+    out-of-distribution inputs (negative volumes, muscle-distribution sums ≠ 1)
+    that the network was never trained on. See audit finding #12.
+    """
+    out = raw.copy()
+    out[0] = float(np.clip(out[0], 0.0, 1.0))                          # volume_norm
+    muscle = np.maximum(0.0, out[1:6])
+    total = float(muscle.sum())
+    out[1:6] = muscle / total if total > 0 else np.full(5, 0.2, dtype=np.float32)
+    out[6] = float(np.clip(out[6], 0.0, 1.0))                          # session_dur
+    out[7] = float(np.clip(out[7], 0.0, 1.0))                          # week_norm
+    day = np.clip(out[8:15], 0.0, None)
+    if day.sum() > 0:
+        out[8:15] = (day == day.max()).astype(np.float32)             # snap to one-hot
+    out[15] = float(np.clip(out[15], 0.0, 1.0))                        # rest_indicator
+    return out

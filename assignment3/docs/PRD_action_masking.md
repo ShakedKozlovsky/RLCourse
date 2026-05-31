@@ -60,3 +60,13 @@ The base assignment requires implementing REINFORCE and A2C. Action Masking is e
 
 - Hard masking changes the policy's effective support set. The gradient is computed only over the unmasked actions, which can speed up convergence at the cost of removing the policy's ability to "learn" the bad behaviour was bad (it's just forbidden).
 - The choice of mask rules is a domain-expert decision. We document our rules and acknowledge that they're heuristic, not derived from physiological data.
+
+## Known structural weakness (audit finding #13)
+
+The current rule set only forbids 3-in-a-row of the same group. Many *globally* bad schedules pass the mask:
+
+- `PUSH PULL PUSH PULL PUSH PULL …` (never trains LEGS, never rests) — allowed forever.
+- `LEGS LEGS REST LEGS LEGS REST …` (over-training one group) — allowed forever.
+- `PUSH PULL REST PUSH PULL REST …` (no LEGS, no CARDIO at all) — allowed forever.
+
+The imbalance penalty in the reward function is the *only* defence against these patterns, and it is a soft per-step signal rather than a hard structural constraint. A more defensible mask design would additionally enforce a sliding-window quota — e.g. "in any 14-day window, each muscle group must appear at least once and REST at most 5 times". This is **future work** documented here rather than implemented, because the assignment's mask spec is the 3-in-a-row rule and adding a quota would be over-spec'ing for a course project.

@@ -62,7 +62,7 @@ class WorldEnv:
         next_state = self._transition_fn(self._state, int(action)).astype(np.float32, copy=False)
         if next_state.shape != (16,):
             raise ValueError(f"transition_fn produced shape {next_state.shape}; expected (16,)")
-        reward = self._reward_fn.compute(next_state)
+        reward = self._reward_fn.compute(next_state, action=int(action))
         self._step_idx += 1
         self._recent_actions.append(int(action))
         terminated = self._step_idx >= self._episode_length

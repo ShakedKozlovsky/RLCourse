@@ -16,6 +16,11 @@ The PRD evolves as the project advances; each layer's findings feed back into th
 |---|---|---|
 | v1 (Layer 0) | Planning | Initial requirements from the assignment PDF §7 + lecture slides + coding rules V3. |
 | v2 (Layer 1) | Data | Discovered the detailed CSV has no `target_muscle` column — only an `exercise_name` string. Added a heuristic keyword-based `MuscleClassifier` to infer the group, documented as an explicit limitation in PRD_data.md §"Caveats". |
+| v3 (Layer 2) | Env | Dropped the planned `environment/state.py` — the 16-dim state is built by `data/feature_engineer.py` from `DailyStep`; the env owns no richer State object than a flat `np.ndarray`. |
+| v4 (Layer 5) | A2C | The trunk lives under the **actor optimizer only** so it is stepped once per update at `actor_lr`. The naive "trunk-in-both-optimizers" pattern double-steps the trunk with `actor_lr + critic_lr`. A unit test asserts `actor_params ∩ critic_params = ∅`. |
+| v5 (Layer 7) | Reward | `RewardFunction._imbalance` clamps negative muscle-distribution values to 0 before computing entropy — the LSTM is unconstrained and can produce them; reward must be robust to upstream noise. |
+| v6 (Layer 11) | Reward & State | (a) Imbalance is now zeroed by the *action* taken (`action == REST`), not the state's `rest_indicator`. State-based zeroing was an exploit: a policy could collect zero-imbalance reward by steering toward states where the LSTM predicted high `rest_indicator` regardless of the chosen action. (b) The LSTM-as-transition-fn now clamps its predicted state to valid feature ranges (volume ∈ [0,1], muscle distribution renormalised, day-of-week snapped to one-hot). Without clamping the policy received out-of-distribution inputs the network was never trained on. |
+| v7 (Layer 11) | Framing | The policy network is feed-forward `state → logits`, **not** recurrent. The "POMDP-aware via LSTM hidden state" framing applies only to the *world model* (transition function) — the *policy* treats the task as MDP and relies on `day_in_cycle` + `week_index` features for temporal context. A recurrent policy is listed as future work in PRD §F.5. |
 
 ---
 
