@@ -78,16 +78,18 @@ Commit: `Layer 3: LSTMWorldModel + WorldModelService + transition-fn adapter + t
 
 ---
 
-## Layer 4 — REINFORCE (Part D)
+## Layer 4 — REINFORCE (Part D) ✅
 
 Commit: `Layer 4: PolicyNet + ReinforceService + episodic policy gradient + tests`
 
-- [ ] `model/policy_network.py` — 2-layer MLP returning logits
-- [ ] `services/reinforce_service.py` — episode rollout via WorldEnv, reward-to-go G_t, mean-baseline subtraction, ∇_θ log π · (G−b) update
-- [ ] Per-episode metrics: total reward, mean entropy, action distribution
-- [ ] Tests: policy forward shape, episode rollout shape, one update reduces a synthetic loss
+- [x] `model/policy_network.py` — 2-layer MLP (16 → 128 → 128 → 5 logits), accepts batched or single states
+- [x] `services/reinforce_service.py` — episode rollout via `WorldEnv`, reward-to-go `G_t`, mean-baseline subtraction, ∇_θ log π · (G−b) update via Adam
+- [x] Optional **action masking** (uses `WorldEnv.get_mask()`, adds to logits pre-softmax) and **entropy bonus** in the same service — Layer 9 ablation just toggles flags
+- [x] Per-episode `EpisodeMetrics`: total reward, mean entropy, action distribution
+- [x] Tests: forward shape, softmax sums to 1, reward-to-go arithmetic, single-step weight change, masking respected during rollout, entropy-bonus effect
+- [x] **120/120 tests pass**, **96.02% total coverage** (policy_network 100%, reinforce_service 98%), **ruff clean**
 
-**DoD:** REINFORCE trains for 50 episodes on the synthetic LSTM env; reward curve PNG; checkpoint saved.
+**DoD partially met**: REINFORCE update + masked rollout both verified. The 50-episode training run on the LSTM env + reward-curve PNG + checkpoint save will land in Layer 7 SDK alongside the A2C entry-point.
 
 ---
 
