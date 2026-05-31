@@ -1,0 +1,56 @@
+{
+  "version": "1.00",
+  "seed": 208904839,
+  "data": {
+    "raw_dir": "data/raw",
+    "program_summary_csv": "program_summary.csv",
+    "programs_detailed_csv": "programs_detailed_boostcamp_kaggle.csv",
+    "equipment_filter": "Full Gym",
+    "min_program_weeks": 4,
+    "max_program_weeks": 12,
+    "min_time_per_workout": 45,
+    "max_time_per_workout": 120
+  },
+  "env": {
+    "state_dim": 16,
+    "n_actions": 5,
+    "episode_length": 28,
+    "gamma": 0.99,
+    "reward_gain_weight": 1.0,
+    "reward_overload_lambda": 0.2,
+    "reward_imbalance_lambda": 0.3,
+    "action_masking_enabled": false,
+    "max_same_group_consecutive": 2,
+    "max_rest_consecutive": 2
+  },
+  "world_model": {
+    "hidden_size": 64,
+    "num_layers": 1,
+    "window_size": 7,
+    "epochs": 100,
+    "batch_size": 32,
+    "lr": 0.001,
+    "early_stop_patience": 10,
+    "train_pct": 0.8
+  },
+  "reinforce": {
+    "episodes": 300,
+    "lr": 0.001,
+    "use_baseline": true,
+    "policy_hidden": 128,
+    "entropy_bonus": 0.0
+  },
+  "a2c": {
+    "episodes": 300,
+    "actor_lr": 0.0005,
+    "critic_lr": 0.001,
+    "hidden": 128,
+    "entropy_bonus": 0.01
+  },
+  "paths": {
+    "data_raw_dir": "data/raw",
+    "results_dir": "results",
+    "assets_dir": "assets",
+    "checkpoints_dir": "saved_models"
+  }
+}

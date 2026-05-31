@@ -1,0 +1,48 @@
+# Secrets
+.env
+*.key
+*.pem
+credentials.json
+kaggle.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual envs / uv
+.venv/
+.python-version
+
+# Data and run artifacts (rebuildable from config) — ignore most, keep small summaries
+data/raw/*.csv
+data/raw/*.zip
+results/*
+!results/.gitkeep
+!results/experiments_summary.md
+!results/reinforce_metrics.csv
+!results/a2c_metrics.csv
+!results/comparison.json
+
+# OS junk
+.DS_Store
+._.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Allow placeholder dirs
+!data/raw/.gitkeep
+!assets/.gitkeep
+!saved_models/.gitkeep
