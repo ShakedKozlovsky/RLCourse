@@ -125,14 +125,20 @@ Commit: `Layer 6: EvaluationService + ComparisonService + tests`
 
 ---
 
-## Layer 7 — SDK + CLI
+## Layer 7 — SDK + CLI ✅
 
 Commit: `Layer 7: FitnessRL SDK + CLI with interactive menu + tests`
 
-- [ ] `sdk/sdk.py` — facade exposing prepare_data, train_world, train_reinforce, train_a2c, compare, predict
-- [ ] `interface/cli/main.py` — Click subcommands + interactive `menu` command
-- [ ] `tests/integration/test_sdk.py` — end-to-end smoke
-- [ ] `tests/integration/test_cli.py` — Click runner
+- [x] `sdk/sdk.py` — `FitnessRL` facade exposing `prepare_data`, `train_world_model`, `train_reinforce`, `train_a2c`, `compare`, `evaluate`, `predict`; holds state across calls so the GUI can re-run pieces
+- [x] `sdk/env_builder.py` — factored env construction (transition fn from LSTM-or-identity, reward function from config, optional action mask) so SDK stays under 150 LOC and the same builder is shared with evaluation
+- [x] `interface/cli/main.py` — Click subcommands `prepare-data`, `train-world`, `train-reinforce`, `train-a2c`, `compare` (with optional `--out json`), `predict`, and an interactive `menu` command
+- [x] `tests/integration/test_sdk.py` — 10 end-to-end SDK tests (pipeline output, world-model checkpoint save, REINFORCE/A2C history shapes, compare requires both trained, evaluate, predict valid range, unknown-algo error, full pipeline with trained LSTM as the env's transition fn)
+- [x] `tests/integration/test_cli.py` — 7 CliRunner tests (help text, every subcommand exit_code == 0 on the synthetic config, compare writes JSON, predict prints action name, menu quits on `q`)
+- [x] `tests/conftest.py::sdk_config` — extends `minimal_config` with tiny env/world_model/reinforce/a2c hyperparameters so integration tests run in seconds
+- [x] **Fix**: `RewardFunction._imbalance` now clamps negative muscle-distribution values to 0 before computing entropy (the LSTM is unconstrained and can produce them; the reward must be robust to upstream noise)
+- [x] **174/174 tests pass**, **97.03% total coverage** (SDK 96%, CLI 85%, env_builder 100%), **ruff clean**
+
+**DoD met**: `uv run fitness-rl --help` and `uv run fitness-rl menu` both work; all smoke tests pass.
 
 **DoD:** `uv run fitness-rl --help` and `uv run fitness-rl menu` work; smoke tests pass.
 

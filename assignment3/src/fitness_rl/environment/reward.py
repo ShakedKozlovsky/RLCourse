@@ -59,7 +59,9 @@ class RewardFunction:
         """Imbalance ∈ [0, 1]: 0 when distribution is uniform, 1 when concentrated."""
         if state[_REST_IDX] >= 0.5:
             return 0.0  # rest day — don't penalise lack of distribution
-        dist = np.asarray(state[_MUSCLE_SLICE], dtype=np.float64)
+        # Clamp negative values — the LSTM is unconstrained and can produce them,
+        # but entropy on a probability distribution requires p_i ≥ 0.
+        dist = np.maximum(0.0, np.asarray(state[_MUSCLE_SLICE], dtype=np.float64))
         total = dist.sum()
         if total <= 0:
             return 0.0

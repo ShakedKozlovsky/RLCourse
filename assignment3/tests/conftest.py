@@ -85,3 +85,37 @@ def tmp_cwd(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Path]:
     """Run a test from a tmp working directory; restored on teardown."""
     monkeypatch.chdir(tmp_path)
     yield tmp_path
+
+
+@pytest.fixture
+def sdk_config(minimal_config: Path) -> Path:
+    """``minimal_config`` extended with env / world_model / reinforce / a2c sections.
+
+    Tiny hyperparameters so integration tests stay under a few seconds.
+    """
+    cfg = json.loads(minimal_config.read_text())
+    cfg["env"] = {
+        "state_dim": 16, "n_actions": 5,
+        "episode_length": 6, "gamma": 0.99,
+        "reward_gain_weight": 1.0,
+        "reward_overload_lambda": 0.2,
+        "reward_imbalance_lambda": 0.3,
+        "action_masking_enabled": False,
+        "max_same_group_consecutive": 2,
+        "max_rest_consecutive": 2,
+    }
+    cfg["world_model"] = {
+        "hidden_size": 8, "num_layers": 1, "window_size": 4,
+        "epochs": 3, "batch_size": 4, "lr": 0.01,
+        "early_stop_patience": 5, "train_pct": 0.8,
+    }
+    cfg["reinforce"] = {
+        "episodes": 3, "lr": 0.01, "use_baseline": True,
+        "policy_hidden": 16, "entropy_bonus": 0.0,
+    }
+    cfg["a2c"] = {
+        "episodes": 3, "actor_lr": 0.005, "critic_lr": 0.01,
+        "hidden": 16, "entropy_bonus": 0.01,
+    }
+    minimal_config.write_text(json.dumps(cfg))
+    return minimal_config
