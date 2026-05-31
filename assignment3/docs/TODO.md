@@ -201,6 +201,59 @@ Commit: `Layer 10: full README + 5 reflection answers + plots + GUI screenshots`
 
 ---
 
+## Layer 11 — Correctness fixes from professor's audit ✅
+
+Commit: `Layer 11: correctness fixes from professor's audit`
+
+- [x] **Audit #10** — reward imbalance now action-conditional (`action == REST`), not state-conditional. Eliminates the exploit where a policy could collect zero-imbalance reward by steering the LSTM to predict high `rest_indicator`.
+- [x] **Audit #12** — LSTM-as-transition-fn clamps predicted state to valid feature ranges (volume ∈ [0, 1], muscle distribution renormalised, day-of-week snapped to one-hot, rest_indicator ∈ [0, 1]).
+- [x] **Audit #11** — `tests/integration/test_reproducibility.py`: two SDK runs with the same seed produce bit-identical training histories.
+- [x] **Audit #5** — PRD framing fixed (v7): the policy is feed-forward MDP, only the world model is POMDP-aware.
+- [x] **Audit #13** — `docs/PRD_action_masking.md` "Known structural weakness" section: 3-in-a-row rule lets globally bad schedules through.
+- [x] `RewardFunction.decompose()` added now so reward.py only changes once.
+- [x] 189/189 tests pass · ruff clean.
+
+## Layer 12 — Evaluation infrastructure ✅
+
+Commit: `Layer 12: evaluation infrastructure (audit findings #1, #4, #15, #19)`
+
+- [x] **Audit #1** — `services/world_model_evaluator.py`: persistence + linear-OLS baselines vs LSTM, plus multi-step rollout MSE at horizons {1, 7, 28}.
+- [x] **Audit #4** — `services/baseline_policies.py`: `RandomPolicy`, `RoundRobinPolicy`, `KaggleProgramPolicy` + `PolicyBenchmark.run()`.
+- [x] **Audit #15** — `services/diagnostics.py::record_greedy_rollout` returns a `GreedyTrajectory` with per-step `(action, gain, overload, imbalance, total)` decomposition.
+- [x] **Audit #19** — `RewardFunction.decompose()` exposes the three reward terms separately.
+- [x] `sdk/evaluator.py` companion class so SDK proper stays close to the 150-LOC cap (157 LOC documented exception).
+- [x] **Real-data findings**: LSTM beats persistence by 3.2× (0.055 vs 0.175); rollout error compounds 50 % from 1-step to 7-step; **A2C (6.91) and REINFORCE (6.36) both lose to round-robin (6.94) and the Kaggle program (7.28)** on the identity-env baseline run — smoking gun for reward mis-spec.
+- [x] 200/200 tests · ruff clean.
+
+## Layer 13 — Empirical studies ✅
+
+Commit: `Layer 13: empirical studies (audit #2, #3, #6, #7, #14, #18)`
+
+- [x] `services/experiment_base.py` — shared `train_one`, `make_sdk`, `summarise_history`, `aggregate_with_ci` (95 % normal-approx).
+- [x] `services/experiment_studies.py::ExperimentStudies` — 5 audit-driven experiments:
+  - **Audit #3 + #18** — `multi_seed_comparison(seeds)` with 95 % CI on final-30 % reward.
+  - **Audit #2** — `entropy_sweep(bonuses)` proves the reward mis-specification: more entropy → diverse → *lower* reward.
+  - **Audit #7** — `reinforce_variant_chain()` empirically demonstrates the lecture's REINFORCE → +baseline → +advantage chain (final reward 1.87 → 2.35 → 5.22).
+  - **Audit #14** — `gamma_ablation(gammas)`: γ=0.9 outperforms γ=0.99.
+  - **Audit #6** — `masking_on_lstm_env()` re-runs the ablation against the trained LSTM dynamics (not identity); A2C gets 2× the reward when the world model is wired up.
+- [x] All 5 experiments run end-to-end on real Kaggle data in ~160 s.
+- [x] 208/208 tests · ruff clean.
+
+## Layer 14 — Documentation closeout ✅
+
+Commit: `Layer 14: plots + architecture diagram + coverage to 97.5 % + README rewrite`
+
+- [x] **Audit #16** — `scripts/generate_architecture_diagram.py` produces `assets/diagrams/architecture.png`; embedded at the top of the README.
+- [x] `scripts/generate_layer13_plots.py` produces 7 new figures (`multi_seed_ci`, `entropy_sweep`, `reinforce_chain`, `gamma_ablation`, `masking_on_lstm`, `world_model_compounding`, `baselines_vs_trained`).
+- [x] **Audit #20** — Coverage from 96.45 % → **97.56 %** by adding tests for the CLI's `experiments` / `train-world` / `menu` paths and the seed module's CUDA + ImportError branches.
+- [x] **Audit #8** — README §13 explicitly acknowledges the 60-episode budget (vs PRD-stated 300) with instructions to re-run at higher N.
+- [x] **Audit #9** — README §13 documents the reward mis-specification as the headline finding.
+- [x] **Audit #17** — `docs/PRD.md` evolution log extended to v7 (one entry per layer that changed contracts).
+- [x] README rewritten with 14 sections, an audit-findings status table mapping all 20 findings to their fixes, and updated reflection answers F.1–F.5 that cite the new empirical evidence.
+- [x] **216/216 tests pass · ruff clean · 97.56 % coverage**.
+
+---
+
 ## Cross-cutting (every commit)
 
 - [ ] `ruff check` returns 0

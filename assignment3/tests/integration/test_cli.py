@@ -69,3 +69,39 @@ def test_menu_quits_on_q(sdk_config: Path) -> None:
         cli, _runner_args(sdk_config, "menu"), input="q\n", obj={},
     )
     assert result.exit_code == 0
+
+
+def test_menu_runs_prepare_data_then_quits(sdk_config: Path) -> None:
+    """Pick option 1 (prepare-data) then quit — exercises the dispatch path."""
+    result = CliRunner().invoke(
+        cli, _runner_args(sdk_config, "menu"), input="1\nq\n", obj={},
+    )
+    assert result.exit_code == 0
+    assert "Program Match" in result.output
+
+
+def test_menu_unknown_choice_quits(sdk_config: Path) -> None:
+    result = CliRunner().invoke(
+        cli, _runner_args(sdk_config, "menu"), input="zzz\n", obj={},
+    )
+    assert result.exit_code == 0
+
+
+def test_experiments_command_writes_json(sdk_config: Path, tmp_path: Path) -> None:
+    out_dir = tmp_path / "experiments"
+    result = CliRunner().invoke(
+        cli, _runner_args(sdk_config, "experiments", "--episodes", "2",
+                          "--out-dir", str(out_dir)), obj={},
+    )
+    assert result.exit_code == 0, result.output
+    for name in ("masking_ablation", "reward_weight_sweep", "collapse_analysis"):
+        assert (out_dir / f"{name}.json").exists()
+    assert "wrote" in result.output
+
+
+def test_train_world_runs(sdk_config: Path) -> None:
+    result = CliRunner().invoke(
+        cli, _runner_args(sdk_config, "train-world"), obj={},
+    )
+    assert result.exit_code == 0, result.output
+    assert "best_val_loss" in result.output
