@@ -15,6 +15,7 @@ The PRD evolves as the project advances; each layer's findings feed back into th
 | Version | Layer | What changed and why |
 |---|---|---|
 | v1 (Layer 0) | Planning | Initial requirements from the assignment PDF §7 + lecture slides + coding rules V3. |
+| v2 (Layer 1) | Data | Discovered the detailed CSV has no `target_muscle` column — only an `exercise_name` string. Added a heuristic keyword-based `MuscleClassifier` to infer the group, documented as an explicit limitation in PRD_data.md §"Caveats". |
 
 ---
 

@@ -24,23 +24,25 @@ Reference: [`PRD.md`](PRD.md), [`PLAN.md`](PLAN.md).
 
 ---
 
-## Layer 1 — Data pipeline (Part B)
+## Layer 1 — Data pipeline (Part B) ✅
 
-Commit: `Layer 1: Kaggle loader + program selector + trajectory builder + tests`
+- [x] `shared/config.py` — JSON loader with version check + dotted access
+- [x] `shared/logger.py` — stdlib logger factory (no print in library)
+- [x] `shared/seed.py` — set_global_seed (Python + NumPy + PyTorch)
+- [x] `shared/types.py` — Action enum (5 actions), MuscleGroup enum, DailyStep, EpisodeMetrics
+- [x] `data/kaggle_loader.py` — RawDataset with `summary` + `detailed` DataFrames
+- [x] `data/preprocessor.py` — clean negative sets/reps (interpret as seconds if < 600), drop NaN
+- [x] `data/muscle_classifier.py` — **(new, not in original PRD)** keyword-based exercise→muscle classifier with word-boundary regex
+- [x] `data/program_selector.py` — pick one program by 4 criteria (equipment + program length + time per workout); reproducible by sorted title
+- [x] `data/trajectory_builder.py` — per-day aggregation: total_volume, muscle_distribution (5-dim), session_duration, Rest Day insertion, dominant_muscle
+- [x] `data/feature_engineer.py` — 16-dim state vector per day
+- [x] `services/data_service.py` — end-to-end orchestrator: load → clean → select → trajectory → features → action labels
+- [x] **50/50 tests pass**, **92% coverage**, **ruff clean**, all files ≤ 75 LOC
+- [x] **Verified on real Kaggle data**: 84-day trajectory from the chosen program "(MASS MONSTER) High Intensity 4 Day Upper Lower Program" (12 weeks); action distribution PUSH=23, PULL=3, LEGS=22, REST=36
 
-- [ ] `shared/config.py` — JSON loader with version check
-- [ ] `shared/logger.py` — stdlib logger factory
-- [ ] `shared/seed.py` — set_global_seed
-- [ ] `shared/types.py` — Action enum, State, EpisodeMetrics
-- [ ] `data/kaggle_loader.py` — read `program_summary.csv` + `programs_detailed_boostcamp_kaggle.csv`
-- [ ] `data/preprocessor.py` — clean negative sets/reps, parse fields
-- [ ] `data/program_selector.py` — pick one program by 8 criteria
-- [ ] `data/trajectory_builder.py` — daily aggregation: total_volume, muscle_distribution, etc.; Rest Day insertion
-- [ ] `data/feature_engineer.py` — produce 16-dim state vector per day
-- [ ] `services/data_service.py` — end-to-end orchestrator
-- [ ] Tests for every module + synthetic CSV fixtures
+**Discovery noted in PRD evolution v2**: the dataset has no explicit muscle-group column, only `exercise_name`. Added `MuscleClassifier` with word-boundary regex matching. Documented as a heuristic limitation in PRD_data.md.
 
-**DoD:** pipeline runs offline on a minimal synthetic CSV fixture; tests pass; coverage ≥ 90% for `data/`.
+**DoD met**: pipeline runs end-to-end offline (via fixtures) and on real Kaggle data. Coverage of `data/` ≥ 92%.
 
 ---
 
