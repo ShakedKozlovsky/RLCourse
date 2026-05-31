@@ -1,28 +1,23 @@
-"""Three differentiator experiments for the README's analysis section:
+"""Layer-9 differentiator experiments (originals):
 
 1. Action-masking ablation — REINFORCE + A2C with masking on/off
 2. Reward-weight sweep — vary λ_1 (overload) and λ_2 (imbalance)
 3. Action-distribution collapse detection — flag policies that collapse
 
-Each method returns a JSON-serialisable dict so the README can embed it
-directly and the GUI/CLI can dump it to disk.
+Layer-13 audit-driven experiments live in :class:`ExperimentStudies`.
 """
 
 from __future__ import annotations
 
 import json
-from copy import deepcopy
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 
-import numpy as np
-
-from fitness_rl.sdk.sdk import FitnessRL
 from fitness_rl.services.evaluation_service import EvaluationService
-from fitness_rl.shared.logger import get_logger
-from fitness_rl.shared.types import EpisodeMetrics
-
-_logger = get_logger(__name__)
+from fitness_rl.services.experiment_base import (
+    make_sdk,
+    summarise_history,
+    train_one,
+)
 
 
 class ExperimentService:
@@ -41,8 +36,11 @@ class ExperimentService:
         for algo in ("reinforce", "a2c"):
             for masking in (False, True):
                 key = f"{algo}_mask_{'on' if masking else 'off'}"
-                history = self._train_one(algo=algo, mask_enabled=masking)
-                results[key] = self._summarise_history(history)
+                history = train_one(
+                    self._base_cfg, algo=algo, episodes=self._episodes,
+                    mask_enabled=masking,
+                )
+                results[key] = summarise_history(history)
         return results
 
     def run_reward_weight_sweep(
@@ -57,15 +55,18 @@ class ExperimentService:
                 key = f"overload={lo}_imbalance={li}"
                 overrides = {"env": {"reward_overload_lambda": float(lo),
                                      "reward_imbalance_lambda": float(li)}}
-                history = self._train_one(algo="a2c", extra_overrides=overrides)
-                results[key] = self._summarise_history(history)
+                history = train_one(
+                    self._base_cfg, algo="a2c", episodes=self._episodes,
+                    extra_overrides=overrides,
+                )
+                results[key] = summarise_history(history)
         return results
 
     def run_collapse_analysis(self) -> dict:
         """Train both algos, then evaluate; report whether either collapsed."""
         out: dict[str, dict] = {}
         for algo in ("reinforce", "a2c"):
-            sdk = self._make_sdk()
+            sdk = make_sdk(self._base_cfg)
             sdk.prepare_data()
             history = (sdk.train_reinforce(self._episodes) if algo == "reinforce"
                        else sdk.train_a2c(self._episodes))
@@ -78,49 +79,3 @@ class ExperimentService:
                 "final_reward": float(history[-1].total_reward),
             }
         return out
-
-    def _train_one(
-        self,
-        algo: str,
-        mask_enabled: bool = False,
-        extra_overrides: dict | None = None,
-    ) -> list[EpisodeMetrics]:
-        overrides: dict = {"env": {"action_masking_enabled": bool(mask_enabled)}}
-        if extra_overrides is not None:
-            for k, v in extra_overrides.items():
-                overrides.setdefault(k, {}).update(v)
-        sdk = self._make_sdk(overrides=overrides)
-        sdk.prepare_data()
-        if algo == "reinforce":
-            return sdk.train_reinforce(self._episodes)
-        return sdk.train_a2c(self._episodes)
-
-    def _make_sdk(self, overrides: dict | None = None) -> FitnessRL:
-        """Build a FitnessRL using a temp config file with optional overrides."""
-        merged = deepcopy(self._base_cfg)
-        for section, vals in (overrides or {}).items():
-            merged.setdefault(section, {}).update(vals)
-        tmp = NamedTemporaryFile(  # noqa: SIM115 - kept alive via path
-            mode="w", suffix=".json", delete=False)
-        tmp.write(json.dumps(merged))
-        tmp.flush()
-        tmp.close()
-        return FitnessRL(config_path=Path(tmp.name))
-
-    @staticmethod
-    def _summarise_history(history: list[EpisodeMetrics]) -> dict:
-        rewards = np.array([m.total_reward for m in history], dtype=np.float64)
-        counts = np.zeros_like(history[0].action_counts, dtype=np.float64)
-        for m in history:
-            counts += m.action_counts
-        total = float(counts.sum())
-        return {
-            "n_episodes": int(rewards.size),
-            "mean_reward": float(rewards.mean()),
-            "std_reward": float(rewards.std()) if rewards.size > 1 else 0.0,
-            "final_reward": float(rewards[-1]),
-            "action_distribution": (
-                (counts / total).tolist() if total > 0
-                else [0.0] * counts.size
-            ),
-        }
