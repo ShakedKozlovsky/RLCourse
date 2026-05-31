@@ -63,16 +63,18 @@ Commit: `Layer 2: ActionSpace + RewardFunction + ActionMask + WorldEnv + tests`
 
 ---
 
-## Layer 3 — LSTM World Model (Part C)
+## Layer 3 — LSTM World Model (Part C) ✅
 
-Commit: `Layer 3: LSTMWorldModel + supervised training service + tests`
+Commit: `Layer 3: LSTMWorldModel + WorldModelService + transition-fn adapter + tests`
 
-- [ ] `model/lstm_world_model.py` — LSTM(input=state+action, hidden=64) + linear head
-- [ ] `services/world_model_service.py` — supervised training on rolling windows from trajectory
-- [ ] Loss curve plot + early stopping by validation
-- [ ] Tests: forward shape, training one step reduces loss on synthetic data, save/load round-trip
+- [x] `model/lstm_world_model.py` — LSTM(input=state+action=21, hidden=64, batch_first) + Linear(64, 16) head, `save`/`load` round-trip, `encode_inputs` static helper
+- [x] `model/lstm_world_model.py::as_transition_fn` — stateful closure that matches Layer 2's `TransitionFn` callable signature so the trained LSTM plugs straight into `WorldEnv`
+- [x] `services/world_model_service.py` — `build_windows`, supervised training (Adam + MSE), chronological 80/20 split, early stopping on val loss with patience
+- [x] `TrainResult` dataclass — per-epoch train/val loss arrays for plotting in the GUI
+- [x] Tests: forward shape, finiteness, encode-inputs, save/load round-trip, transition-fn adapter, window construction + targets, training reduces loss on synthetic data, early stopping triggers
+- [x] **105/105 tests pass**, **95.56% total coverage** (lstm_world_model 100%, world_model_service 98%), **ruff clean**
 
-**DoD:** smoke training on synthetic trajectory completes; `world_model.pt` saved; loss curve PNG in `assets/plots/`.
+**DoD partially met**: smoke training works (`test_training_reduces_loss`); checkpoint round-trip works. The actual `world_model.pt` save + loss curve PNG will land in Layer 7 SDK (training entry-point) rather than the model layer itself.
 
 ---
 
