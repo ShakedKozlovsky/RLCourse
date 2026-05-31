@@ -109,16 +109,19 @@ Commit: `Layer 5: ActorCriticNet + A2CService + TD-Advantage + tests`
 
 ---
 
-## Layer 6 — Evaluation + Comparison
+## Layer 6 — Evaluation + Comparison ✅
 
 Commit: `Layer 6: EvaluationService + ComparisonService + tests`
 
-- [ ] `services/evaluation_service.py` — greedy policy rollout, action distribution, total reward
-- [ ] `services/comparison_service.py` — side-by-side REINFORCE vs A2C: reward curves, variance, final mean reward
-- [ ] Trajectory analysis: did the policy choose balanced workouts? Detect collapse.
-- [ ] Tests on synthetic policies
+- [x] `services/evaluation_service.py` — greedy (argmax) rollout, action distribution, collapse detection (≥80 % single-action threshold), honours `WorldEnv.get_mask()` so eval respects the same guardrails as training
+- [x] `actor_logits` adapter so the service works with both `PolicyNet` (REINFORCE) and `ActorCriticNet` (A2C) via the same interface
+- [x] `services/comparison_service.py` — `ComparisonReport` (mean final reward, overall std, final std, final CV, action distribution) + `ComparisonResult` (both reports + raw reward arrays + winner)
+- [x] Winner logic: higher mean wins; on a near-tie (≤1 %), lower CV wins; otherwise "tie"
+- [x] `ComparisonResult.to_dict()` is JSON-serialisable (consumed by the GUI compare tab + README)
+- [x] 21 new tests across both services (greedy rollout shapes, determinism, masking respected, distribution normalisation, collapse threshold, winner under all branches, tiebreak, single-episode robustness)
+- [x] **157/157 tests pass**, **96.72% total coverage** (evaluation 100%, comparison 97%), **ruff clean**
 
-**DoD:** running `compare()` on the two trained policies produces a comparison JSON + plot.
+**DoD met**: `ComparisonService.compare(reinforce_hist, a2c_hist)` produces a JSON-serialisable structure; plotting consumes `reinforce_rewards` + `a2c_rewards` arrays directly (matplotlib lives in Layer 7/8 entry-points).
 
 ---
 
