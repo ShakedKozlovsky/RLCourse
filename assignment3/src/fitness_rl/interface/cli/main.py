@@ -119,6 +119,27 @@ def gui(ctx: click.Context) -> None:  # pragma: no cover - launches QApplication
     launch(config_path=ctx.obj["config"])
 
 
+@cli.command("experiments")
+@click.option("--episodes", type=int, default=30,
+              help="Episodes per training run inside each experiment.")
+@click.option("--out-dir", type=click.Path(path_type=Path), default=Path("results"),
+              help="Directory to write JSON outputs into.")
+@click.pass_context
+def experiments(ctx: click.Context, episodes: int, out_dir: Path) -> None:
+    """Run masking ablation + reward-weight sweep + collapse analysis."""
+    from fitness_rl.services.experiment_service import ExperimentService
+    out_dir.mkdir(parents=True, exist_ok=True)
+    svc = ExperimentService(config_path=ctx.obj["config"], episodes=episodes)
+    for name, runner in (
+        ("masking_ablation", svc.run_action_masking_ablation),
+        ("reward_weight_sweep", svc.run_reward_weight_sweep),
+        ("collapse_analysis", svc.run_collapse_analysis),
+    ):
+        result = runner()
+        (out_dir / f"{name}.json").write_text(json.dumps(result, indent=2))
+        click.echo(f"wrote {out_dir / (name + '.json')}")
+
+
 @cli.command("menu")
 @click.pass_context
 def menu(ctx: click.Context) -> None:
