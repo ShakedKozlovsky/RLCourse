@@ -28,6 +28,35 @@ cd RLCourse/assignment1
 
 ---
 
+### [Assignment 3: REINFORCE + A2C Fitness Recommender](assignment3/)
+**Policy-gradient daily workout recommendation over an LSTM-learned world model**
+
+- **Algorithms:** REINFORCE (Williams 1992) + A2C (Mnih et al. 2016)
+- **World model:** 1-layer LSTM trained supervised on the per-day trajectory (3.2× lower MSE than persistence)
+- **Dataset:** Kaggle "600K+ Fitness Exercise & Workout Program" — 2 598 programs, 605 033 detailed rows
+- **Action space:** 5 discrete actions — `PUSH / PULL / LEGS / CARDIO / REST`
+- **Features:**
+  - Full SDK + Click CLI + 5-tab PyQt6 GUI
+  - Multi-seed comparison with 95 % CI, entropy sweep, γ ablation, REINFORCE → +baseline → +advantage chain
+  - Baseline policies (random, round-robin, Kaggle program) to anchor the trained-agent reward
+  - Per-step reward decomposition + qualitative 28-day rollout
+  - Action masking as the excellence differentiator
+- **Tech Stack:** Python 3.12, PyTorch, NumPy, Gymnasium, PyQt6, Click, matplotlib, ruff, pytest, uv
+- **Quality bar:** 216 tests · 97.56 % branch coverage · ruff clean · every src file ≤ 150 LOC
+- **Status:** ✅ Complete (14 layers — incl. 4-layer professor's-audit response)
+
+**Quick Start:**
+```bash
+cd RLCourse/assignment3
+uv sync --extra dev
+# place Kaggle CSVs in data/raw/
+uv run fitness-rl menu          # interactive numeric menu
+uv run fitness-rl gui           # PyQt6 GUI
+uv run fitness-rl compare --episodes 60
+```
+
+---
+
 ## 🗂️ Repository Structure
 
 ```
@@ -46,7 +75,17 @@ RLCourse/
 │   ├── assets/          # Plots + GUI screenshots
 │   └── README.md        # Assignment 2 details
 │
-├── assignment3/          # (Future assignment)
+├── assignment3/          # REINFORCE + A2C Fitness Recommender
+│   ├── src/fitness_rl/   # SDK, services, models, environment, GUI, CLI
+│   ├── docs/             # PRD + 7 per-mechanism PRDs + PLAN + TODO
+│   ├── tests/            # 216 tests, 97.56% coverage
+│   ├── configs/          # setup.json (versioned)
+│   ├── assets/           # plots, GUI screenshots, architecture diagram
+│   ├── results/          # experiment outputs (layer12, layer13, experiments)
+│   ├── saved_models/     # pre-trained world_model.pt
+│   ├── scripts/          # plot + diagram + experiment runners
+│   └── README.md         # Assignment 3 details
+│
 └── README.md            # This file
 ```
 
@@ -68,7 +107,7 @@ Each assignment has its own comprehensive documentation:
 |------------|-------|--------|------|
 | 1 | Grid-based Q-Learning | ✅ Complete | [assignment1/](assignment1/) |
 | 2 | DQN Stock Trading Agent | ✅ Complete | [assignment2/](assignment2/) |
-| 3 | TBD | 🔜 Coming Soon | - |
+| 3 | REINFORCE + A2C over LSTM world model (fitness) | ✅ Complete | [assignment3/](assignment3/) |
 
 ---
 
@@ -86,4 +125,4 @@ Educational project for Reinforcement Learning course.
 
 ---
 
-**Last Updated:** May 2026
+**Last Updated:** May 2026 (assignment 3 added)
