@@ -93,17 +93,19 @@ Commit: `Layer 4: PolicyNet + ReinforceService + episodic policy gradient + test
 
 ---
 
-## Layer 5 — A2C (Part E)
+## Layer 5 — A2C (Part E) ✅
 
 Commit: `Layer 5: ActorCriticNet + A2CService + TD-Advantage + tests`
 
-- [ ] `model/actor_critic_network.py` — shared trunk + actor head + critic head
-- [ ] `services/a2c_service.py` — one-step TD updates: δ = r + γV(s') − V(s), actor and critic both updated
-- [ ] Optional entropy bonus
-- [ ] Per-episode metrics + variance comparison vs REINFORCE
-- [ ] Tests: AC forward shapes, TD error sign on synthetic transitions, one update step
+- [x] `model/actor_critic_network.py` — shared MLP trunk (16 → 128 → 128) + actor head (128 → 5 logits) + critic head (128 → 1)
+- [x] `actor_params()` / `critic_params()` partition: trunk lives under the actor optimizer so it's stepped once per update at `actor_lr`; critic optimizer only touches the critic head — verified by a partition-test (`actor_ids.isdisjoint(critic_ids)`)
+- [x] `services/a2c_service.py` — per-step TD updates: δ = r + γ·V(s') − V(s), bootstrap zeroed on terminal; actor + critic optimizers stepped together; `td_error` static helper for unit testing
+- [x] Entropy bonus on the actor loss (default 0.01 from `configs/setup.json`); action masking flag (Layer 9 ablation)
+- [x] Per-episode `EpisodeMetrics`
+- [x] Tests: forward shapes, TD-error sign (positive/negative/terminal), parameter partition, single-episode weight delta on both heads, V(s) drift across training, action masking respected
+- [x] **136/136 tests pass**, **96.48% total coverage** (ActorCriticNet 100%, A2CService 99%), **ruff clean**
 
-**DoD:** A2C trains for 50 episodes; reward curve PNG; checkpoint saved; variance comparison plot vs REINFORCE.
+**DoD partially met**: A2C update verified end-to-end. Reward-curve PNG, checkpoint save, and REINFORCE-vs-A2C variance plot will land in Layer 6 (evaluation/comparison) + Layer 7 (SDK entry-points).
 
 ---
 
