@@ -111,6 +111,14 @@ def predict(ctx: click.Context, algo: str, episodes: int) -> None:
     click.echo(f"action={Action(action).name} (idx={action})")
 
 
+@cli.command("gui")
+@click.pass_context
+def gui(ctx: click.Context) -> None:  # pragma: no cover - launches QApplication
+    """Launch the PyQt6 GUI."""
+    from fitness_rl.interface.gui.main_window import launch
+    launch(config_path=ctx.obj["config"])
+
+
 @cli.command("menu")
 @click.pass_context
 def menu(ctx: click.Context) -> None:

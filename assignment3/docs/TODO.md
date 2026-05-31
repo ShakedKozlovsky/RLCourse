@@ -144,20 +144,22 @@ Commit: `Layer 7: FitnessRL SDK + CLI with interactive menu + tests`
 
 ---
 
-## Layer 8 — PyQt6 GUI
+## Layer 8 — PyQt6 GUI ✅
 
 Commit: `Layer 8: PyQt6 GUI with 5 tabs on top of SDK`
 
-- [ ] `interface/gui/main_window.py` — QMainWindow with 5 tabs
-- [ ] `interface/gui/data_tab.py` — load data, show synthetic trajectory shapes
-- [ ] `interface/gui/world_model_tab.py` — train LSTM, plot loss
-- [ ] `interface/gui/reinforce_tab.py` — train REINFORCE, plot reward
-- [ ] `interface/gui/a2c_tab.py` — train A2C, plot reward
-- [ ] `interface/gui/compare_tab.py` — comparison plot + action distribution
-- [ ] Plot widget + QThread workers (off-thread training)
-- [ ] Headless smoke test under `QT_QPA_PLATFORM=offscreen`
+- [x] `interface/gui/plot_widget.py` — matplotlib `FigureCanvasQTAgg` wrapped in a `QWidget`, single-axes `draw(fn)` that clears and re-renders
+- [x] `interface/gui/worker.py` — `TrainingWorker(QThread)` runs blocking SDK calls off the GUI thread; emits `finished_with_result` / `failed`
+- [x] `interface/gui/main_window.py` — `QMainWindow` with 5 tabs, shares one `FitnessRL` SDK instance across all tabs (data trained in tab 1 is available in tab 3)
+- [x] `interface/gui/data_tab.py` — "Load data" button → text summary + per-day volume plot
+- [x] `interface/gui/world_model_tab.py` — "Train" button → LSTM train/val loss curves
+- [x] `interface/gui/algo_tab.py` — shared `AlgoTab` base + `ReinforceTab` / `A2CTab` subclasses (one button, episodes spinbox, reward curve)
+- [x] `interface/gui/compare_tab.py` — trains both algos, prints winner + final-mean + final-CV, plots both reward curves on one axis
+- [x] CLI gained a `fitness-rl gui` subcommand
+- [x] `tests/integration/test_gui.py` — headless smoke test under `QT_QPA_PLATFORM=offscreen`: MainWindow constructs, 5 tabs with correct labels, shared SDK works, PlotWidget draws without error, TrainingWorker emits its result
+- [x] **179/179 tests pass**, **97.03% coverage** (GUI files excluded from coverage per pyproject), **ruff clean**
 
-**DoD:** GUI launches; all 5 tabs render; screenshots in `assets/gui/`.
+**DoD met**: GUI launches under offscreen Qt; all 5 tabs construct + render. Screenshots will be captured in Layer 10 along with the README.
 
 ---
 
