@@ -46,18 +46,20 @@ Reference: [`PRD.md`](PRD.md), [`PLAN.md`](PLAN.md).
 
 ---
 
-## Layer 2 — Environment (state, action, reward, mask)
+## Layer 2 — Environment (state, action, reward, mask) ✅
 
-Commit: `Layer 2: State + ActionSpace + RewardFunction + WorldEnv + tests`
+Commit: `Layer 2: ActionSpace + RewardFunction + ActionMask + WorldEnv + tests`
 
-- [ ] `environment/state.py` — State dataclass and state-vector construction
-- [ ] `environment/action_space.py` — Discrete(5) with named actions
-- [ ] `environment/reward.py` — gain − λ_1·overload − λ_2·imbalance
-- [ ] `environment/action_mask.py` — guardrails: no 3-consecutive-same-group, no 3-consecutive-rest
-- [ ] `environment/world_env.py` — Gymnasium-style env wrapping the world model (placeholder until Layer 3)
-- [ ] Tests for reward arithmetic, action masking, env reset/step shapes
+- [x] `environment/action_space.py` — Discrete(5) with named actions
+- [x] `environment/reward.py` — gain − λ_1·overload − λ_2·imbalance, stateful rolling window
+- [x] `environment/action_mask.py` — guardrails: no 3-consecutive-same-group, no 3-consecutive-rest (excellence differentiator)
+- [x] `environment/world_env.py` — Gymnasium-style env over an injectable `TransitionFn` callable (LSTM plugs in at Layer 3)
+- [x] Tests for reward arithmetic, action masking, env reset/step/terminate, mask propagation
+- [x] **88/88 tests pass**, **94% total coverage** (all four environment modules at 100%), **ruff clean**
 
-**DoD:** env reset/step contract tested with a stub world model that returns identity transitions; reward unit tests pass; coverage ≥ 90% for `environment/`.
+**Scope note**: dropped the originally-planned `environment/state.py` — the 16-dim state is built by `data/feature_engineer.py` from `DailyStep` (Layer 1) and the env never owns a richer State object than a flat `np.ndarray`.
+
+**DoD met**: env reset/step contract tested with a stub identity transition + a stub bump transition; reward unit tests pass; coverage 100% for `environment/`.
 
 ---
 
