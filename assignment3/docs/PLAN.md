@@ -93,6 +93,8 @@ src/fitness_rl/
 
 Every file ≤ 150 LOC. When approaching, split by responsibility.
 
+**Documented exception** (Layer 12): `sdk/sdk.py` is the public facade and is currently 157 LOC. Splitting further would either inline tiny accessors as one-liners (hurts readability) or move private helpers to a separate module that re-imports the SDK's private state (anti-pattern). The Layer-12 evaluator / baseline / diagnostic methods all live in `sdk/evaluator.py` so the SDK proper only carries training, prediction, and the env-construction passthrough. The exception is scoped strictly to `sdk/sdk.py`.
+
 ## 3. Class diagram (textual UML)
 
 ```

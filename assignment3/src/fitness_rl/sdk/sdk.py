@@ -52,6 +52,17 @@ class FitnessRL:
     def config(self) -> ConfigManager:
         return self._cfg
 
+    @property
+    def world_model(self) -> LSTMWorldModel | None:
+        return self._world_model
+
+    @property
+    def data(self) -> PipelineOutput | None:
+        return self._data
+
+    def make_env(self) -> WorldEnv:
+        return self._make_env()
+
     def prepare_data(self) -> PipelineOutput:
         """Load + clean Kaggle CSVs, build trajectory + states."""
         self._data = DataService(self._cfg).run()
@@ -73,7 +84,9 @@ class FitnessRL:
             train_pct=float(self._cfg.get("world_model.train_pct")),
         )
         result = svc.train(self._world_model, data.states, data.actions)
-        self._save_world_model_checkpoint()
+        ckpt = Path(self._cfg.path("checkpoints_dir")) / "world_model.pt"
+        self._world_model.save(ckpt)
+        _logger.info("world model saved to %s", ckpt)
         return result
 
     def train_reinforce(self, episodes: int | None = None) -> list[EpisodeMetrics]:
@@ -142,8 +155,3 @@ class FitnessRL:
             return self._a2c_net
         raise ValueError(f"unknown algo {algo!r}; expected 'reinforce' or 'a2c'")
 
-    def _save_world_model_checkpoint(self) -> None:
-        assert self._world_model is not None
-        ckpt = Path(self._cfg.path("checkpoints_dir")) / "world_model.pt"
-        self._world_model.save(ckpt)
-        _logger.info("world model saved to %s", ckpt)

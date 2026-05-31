@@ -1,0 +1,257 @@
+{
+  "steps": [
+    {
+      "step": 1,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.35768923163414,
+      "overload": 0.07153784632682801,
+      "imbalance": 0.0,
+      "total_reward": 0.286151385307312
+    },
+    {
+      "step": 2,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.2943568527698517,
+      "overload": 0.06520460844039917,
+      "imbalance": 0.0,
+      "total_reward": 0.22915224432945253
+    },
+    {
+      "step": 3,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.3471132516860962,
+      "overload": 0.06661062240600586,
+      "imbalance": 0.0,
+      "total_reward": 0.28050262928009034
+    },
+    {
+      "step": 4,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.3284895122051239,
+      "overload": 0.06638244241476059,
+      "imbalance": 0.0,
+      "total_reward": 0.2621070697903633
+    },
+    {
+      "step": 5,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.3756539225578308,
+      "overload": 0.06813211083412171,
+      "imbalance": 0.0,
+      "total_reward": 0.30752181172370907
+    },
+    {
+      "step": 6,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.397014319896698,
+      "overload": 0.07001056969165802,
+      "imbalance": 0.0,
+      "total_reward": 0.32700375020503997
+    },
+    {
+      "step": 7,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.40134093165397644,
+      "overload": 0.07147594349724906,
+      "imbalance": 0.0,
+      "total_reward": 0.3298649881567274
+    },
+    {
+      "step": 8,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.40830206871032715,
+      "overload": 0.07274900227785111,
+      "imbalance": 0.0,
+      "total_reward": 0.33555306643247607
+    },
+    {
+      "step": 9,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.3311240077018738,
+      "overload": 0.07208487167954446,
+      "imbalance": 0.0,
+      "total_reward": 0.2590391360223293
+    },
+    {
+      "step": 10,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.3817506432533264,
+      "overload": 0.07426971644163131,
+      "imbalance": 0.0,
+      "total_reward": 0.3074809268116951
+    },
+    {
+      "step": 11,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.3553619980812073,
+      "overload": 0.0744759351015091,
+      "imbalance": 0.0,
+      "total_reward": 0.2808860629796982
+    },
+    {
+      "step": 12,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.39890867471694946,
+      "overload": 0.07623641416430474,
+      "imbalance": 0.0,
+      "total_reward": 0.32267226055264475
+    },
+    {
+      "step": 13,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.41337794065475464,
+      "overload": 0.07717951461672784,
+      "imbalance": 0.0,
+      "total_reward": 0.3361984260380268
+    },
+    {
+      "step": 14,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.41607287526130676,
+      "overload": 0.07765597850084305,
+      "imbalance": 0.0,
+      "total_reward": 0.3384168967604637
+    },
+    {
+      "step": 15,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.41839227080345154,
+      "overload": 0.07808226197957993,
+      "imbalance": 0.0,
+      "total_reward": 0.34031000882387163
+    },
+    {
+      "step": 16,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.3381519913673401,
+      "overload": 0.07632851004600526,
+      "imbalance": 0.0,
+      "total_reward": 0.2618234813213348
+    },
+    {
+      "step": 17,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.3874800205230713,
+      "overload": 0.0777374103665352,
+      "imbalance": 0.0,
+      "total_reward": 0.3097426101565361
+    },
+    {
+      "step": 18,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.35948440432548523,
+      "overload": 0.07718075439333916,
+      "imbalance": 0.0,
+      "total_reward": 0.2823036499321461
+    },
+    {
+      "step": 19,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.40210285782814026,
+      "overload": 0.07834927588701249,
+      "imbalance": 0.0,
+      "total_reward": 0.3237535819411278
+    },
+    {
+      "step": 20,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.41570550203323364,
+      "overload": 0.0787691965699196,
+      "imbalance": 0.0,
+      "total_reward": 0.33693630546331405
+    },
+    {
+      "step": 21,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.4178401827812195,
+      "overload": 0.07888075262308121,
+      "imbalance": 0.0,
+      "total_reward": 0.3389594301581383
+    },
+    {
+      "step": 22,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.4196855425834656,
+      "overload": 0.07897106930613518,
+      "imbalance": 0.0,
+      "total_reward": 0.3407144732773304
+    },
+    {
+      "step": 23,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.3390464782714844,
+      "overload": 0.076987424492836,
+      "imbalance": 0.0,
+      "total_reward": 0.26205905377864835
+    },
+    {
+      "step": 24,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.3881998658180237,
+      "overload": 0.07823862135410309,
+      "imbalance": 0.0,
+      "total_reward": 0.3099612444639206
+    },
+    {
+      "step": 25,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.359997034072876,
+      "overload": 0.07755154669284821,
+      "imbalance": 0.0,
+      "total_reward": 0.2824454873800278
+    },
+    {
+      "step": 26,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.4024985432624817,
+      "overload": 0.07862690016627312,
+      "imbalance": 0.0,
+      "total_reward": 0.3238716430962086
+    },
+    {
+      "step": 27,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.41599541902542114,
+      "overload": 0.07897421419620515,
+      "imbalance": 0.0,
+      "total_reward": 0.337021204829216
+    },
+    {
+      "step": 28,
+      "action": 4,
+      "action_name": "REST",
+      "gain": 0.41805896162986755,
+      "overload": 0.07903305068612099,
+      "imbalance": 0.0,
+      "total_reward": 0.33902591094374657
+    }
+  ],
+  "total_reward": 8.591478739955596
+}

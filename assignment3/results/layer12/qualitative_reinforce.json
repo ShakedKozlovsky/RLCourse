@@ -1,0 +1,257 @@
+{
+  "steps": [
+    {
+      "step": 1,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.2928057909011841,
+      "overload": 0.05856115818023682,
+      "imbalance": 0.04628036117393359,
+      "total_reward": 0.18796427154701367
+    },
+    {
+      "step": 2,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.22211875021457672,
+      "overload": 0.05149245411157608,
+      "imbalance": 0.06601058047270805,
+      "total_reward": 0.1046157156302926
+    },
+    {
+      "step": 3,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.28055256605148315,
+      "overload": 0.05303180714448294,
+      "imbalance": 0.09175689227748486,
+      "total_reward": 0.13576386662951534
+    },
+    {
+      "step": 4,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.2960778474807739,
+      "overload": 0.0545777477324009,
+      "imbalance": 0.08272711334674368,
+      "total_reward": 0.15877298640162935
+    },
+    {
+      "step": 5,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.32087695598602295,
+      "overload": 0.056497276425361634,
+      "imbalance": 0.059517137526288476,
+      "total_reward": 0.20486254203437285
+    },
+    {
+      "step": 6,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.31630414724349976,
+      "overload": 0.05762453526258469,
+      "imbalance": 0.05453353073388921,
+      "total_reward": 0.20414608124702582
+    },
+    {
+      "step": 7,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.3113444149494171,
+      "overload": 0.05828801350934165,
+      "imbalance": 0.054659025810818586,
+      "total_reward": 0.19839737562925688
+    },
+    {
+      "step": 8,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.3274803161621094,
+      "overload": 0.05918901972472668,
+      "imbalance": 0.030046109077994997,
+      "total_reward": 0.2382451873593877
+    },
+    {
+      "step": 9,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.31450799107551575,
+      "overload": 0.05973157472908497,
+      "imbalance": 0.08010211919214977,
+      "total_reward": 0.174674297154281
+    },
+    {
+      "step": 10,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.3177211284637451,
+      "overload": 0.06212163418531418,
+      "imbalance": 0.08108010497390396,
+      "total_reward": 0.17451938930452698
+    },
+    {
+      "step": 11,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.33365708589553833,
+      "overload": 0.06344924718141556,
+      "imbalance": 0.06278199603076498,
+      "total_reward": 0.20742584268335781
+    },
+    {
+      "step": 12,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.35426992177963257,
+      "overload": 0.06490404903888702,
+      "imbalance": 0.05124507300484392,
+      "total_reward": 0.2381207997359016
+    },
+    {
+      "step": 13,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.34154385328292847,
+      "overload": 0.06542072147130966,
+      "imbalance": 0.05278627808490499,
+      "total_reward": 0.2233368537267138
+    },
+    {
+      "step": 14,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.3257344961166382,
+      "overload": 0.06565648019313812,
+      "imbalance": 0.054115507222613275,
+      "total_reward": 0.20596250870088678
+    },
+    {
+      "step": 15,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.3227427899837494,
+      "overload": 0.06594143956899644,
+      "imbalance": 0.07493019820970433,
+      "total_reward": 0.18187115220504863
+    },
+    {
+      "step": 16,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.3197983503341675,
+      "overload": 0.06574939042329789,
+      "imbalance": 0.07810381798546757,
+      "total_reward": 0.17594514192540206
+    },
+    {
+      "step": 17,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.33487316966056824,
+      "overload": 0.0662585198879242,
+      "imbalance": 0.060726934834324564,
+      "total_reward": 0.20788771493831948
+    },
+    {
+      "step": 18,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.3552940785884857,
+      "overload": 0.06719784364104271,
+      "imbalance": 0.049633084780151146,
+      "total_reward": 0.23846315016729186
+    },
+    {
+      "step": 19,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.3403911292552948,
+      "overload": 0.06736619472503662,
+      "imbalance": 0.05266644955988182,
+      "total_reward": 0.22035848497037636
+    },
+    {
+      "step": 20,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.35499903559684753,
+      "overload": 0.06738442257046699,
+      "imbalance": 0.041772461605646016,
+      "total_reward": 0.2458421514207345
+    },
+    {
+      "step": 21,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.33817026019096375,
+      "overload": 0.06730008274316789,
+      "imbalance": 0.08585310583800401,
+      "total_reward": 0.18501707160979183
+    },
+    {
+      "step": 22,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.33252933621406555,
+      "overload": 0.06746995374560356,
+      "imbalance": 0.0820585231895398,
+      "total_reward": 0.1830008592789222
+    },
+    {
+      "step": 23,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.343380868434906,
+      "overload": 0.06798590570688248,
+      "imbalance": 0.06206449892498994,
+      "total_reward": 0.2133304638030336
+    },
+    {
+      "step": 24,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.3302236497402191,
+      "overload": 0.06824653819203377,
+      "imbalance": 0.05598852318537657,
+      "total_reward": 0.2059885883628088
+    },
+    {
+      "step": 25,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.3376162648200989,
+      "overload": 0.06831511557102203,
+      "imbalance": 0.07105452850236184,
+      "total_reward": 0.198246620746715
+    },
+    {
+      "step": 26,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.31728488206863403,
+      "overload": 0.06736488565802574,
+      "imbalance": 0.06473669778634747,
+      "total_reward": 0.18518329862426083
+    },
+    {
+      "step": 27,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.32191339135169983,
+      "overload": 0.06690294221043587,
+      "imbalance": 0.07074440705012297,
+      "total_reward": 0.184266042091141
+    },
+    {
+      "step": 28,
+      "action": 2,
+      "action_name": "LEGS",
+      "gain": 0.3356793522834778,
+      "overload": 0.06641995012760163,
+      "imbalance": 0.05973232303051303,
+      "total_reward": 0.20952707912536314
+    }
+  ],
+  "total_reward": 5.491735537053371
+}
