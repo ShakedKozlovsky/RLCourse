@@ -15,7 +15,7 @@ A complete policy-gradient RL system that learns daily workout recommendations (
 | C | LSTM world model + supervised training | [§ 5](../README.md#5-lstm-world-model-part-c--with-baselines) + 3.2× lower MSE than persistence |
 | D | REINFORCE with reward-to-go + baseline | [§ 6](../README.md#6-reinforce-part-d) |
 | E | A2C with TD-error advantage | [§ 7](../README.md#7-a2c-part-e) |
-| F | 5 reflection answers + Action Masking (excellence) | [§ 12](../README.md#12-five-reflection-answers-part-f) + [`docs/PRD_action_masking.md`](PRD_action_masking.md) |
+| F | 5 reflection answers (verbatim from PDF § 7.6) + Action Masking (excellence) | [§ 12](../README.md#12-five-reflection-answers-part-f) + [`docs/PRD_action_masking.md`](PRD_action_masking.md) |
 | F+ | PPO (beyond-spec extension) | [`docs/PRD_ppo.md`](PRD_ppo.md) + [§ 9.1](../README.md#91-multi-seed-comparison-with-95-ci-audit-3--18) |
 
 ## Headline empirical results (3 seeds × 300 episodes, post-reward-fix)

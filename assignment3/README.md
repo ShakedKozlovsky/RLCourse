@@ -378,36 +378,69 @@ uv run ruff check src/ tests/
 
 ## 12. Five reflection answers (Part F)
 
-### F.1 — How realistic is the synthetic trainee?
+> The five questions below are quoted **verbatim** from the assignment PDF (§ 7.6 / page 30, Dr. Yoram Segal, L07 – REINFORCE, A2C & Exercise 3). My answers cite the specific empirical evidence behind each conclusion.
 
-The trainee is **structurally** realistic and **physiologically** not. The 84-day trajectory mirrors a real Kaggle hypertrophy program's cadence (week-of-cycle, day-of-week, per-day volume). It does **not** model fatigue, recovery, injury risk, sleep, or progressive overload — those are physiological outcomes the dataset doesn't contain. The Layer 13 evidence makes this concrete: under our reward function the optimal policy is "rest forever" ([§ 9.2](#92-entropy-bonus-sweep--reward-mis-specification-evidence)) because there's no physiological cost to rest. A medical-grade simulator would need real biological signals.
+### F.1 — Does the LSTM look like it learned realistic temporal structure from the chosen program?
 
-### F.2 — Why an LSTM world model instead of model-free RL?
+**Yes, partially.** Three pieces of evidence:
 
-Two reasons. **Sample efficiency:** an 84-day trajectory is far too small for direct policy gradient — there's almost no signal per epoch. Learning dynamics first (supervised, dense per-step signal) and training the policy *inside* the model sidesteps the sample-budget problem. **Pedagogical:** it's the cleanest illustration of Ha & Schmidhuber's idea. The Layer-12 baselines show the LSTM beats persistence by 3.2× ([§ 5](#5-lstm-world-model-part-c--with-baselines)), confirming the model captures useful temporal structure. But the rollout error compounds (1-step 0.045 → 7-step 0.069), and Layer 13's γ ablation finds γ=0.9 outperforms γ=0.99 specifically because shorter horizons sidestep this compounding — a real cost of the model-based approach that's worth quantifying.
+1. **The LSTM beats persistence by 3.2×** ([`services/world_model_evaluator.py`](src/fitness_rl/services/world_model_evaluator.py)): 1-step MSE is **0.055** vs the persistence baseline `s_{t+1} = s_t` at **0.175**. So the model learned non-trivial structure beyond "predict the same state".
+2. **Training and validation MSE both converge** without a divergence gap ([`assets/plots/world_model_loss.png`](assets/plots/world_model_loss.png)) — best val MSE 0.056 at epoch 29, early-stopping triggered. No obvious over-fitting.
+3. **But the structure is shallow.** Rollout MSE compounds 50 % from horizon 1 → 7 (0.045 → 0.069 — see [`assets/plots/world_model_compounding.png`](assets/plots/world_model_compounding.png)). The model captures *short-term* temporal pattern (intra-week cadence) but degrades over multi-week horizons. The γ ablation ([§ 9.4](#94-discount-factor-γ-ablation-audit-14)) corroborates this: γ=0.9 outperforms γ=0.99 precisely because shorter effective horizons sidestep the compounding error.
 
-### F.3 — When did REINFORCE beat A2C and when didn't it?
+**Honest limitation**: the LSTM trained on a 67-row train slice (80 % of an 84-day trajectory). Larger trajectories or multiple programs would tighten the fit but were out of scope.
 
-After multi-seed averaging (5 seeds, [§ 9.1](#91-multi-seed-comparison-with-95-ci-audit-3--18)): **A2C wins decisively** (5.38 ± 0.05 vs 2.45 ± 0.26) with non-overlapping 95 % CIs. The seed-to-seed variance of REINFORCE is 10 % of its mean; A2C's is 1 % — A2C is also markedly more stable across seeds. REINFORCE never wins on either reward or stability after a fair multi-seed comparison.
+### F.2 — Did the policy learn balanced recommendations, or did it "collapse" to a small number of actions?
 
-The original single-seed run reported overall variance the other way (REINFORCE 0.17 std vs A2C 0.26 std). That metric measures *within-run* fluctuation, which differs from across-seed reproducibility — A2C learns more aggressively per step, then settles. The two metrics tell different stories and both are worth keeping.
+**It collapsed pre-fix; after fix it stays balanced during training but greedy rollouts still concentrate.** Layered evidence:
 
-### F.4 — What goes wrong when the critic learns too fast?
+- **Pre-Layer-11 reward** (REST allowed to earn LSTM-predicted volume): A2C collapsed to **57 % REST**, and Layer 13's entropy sweep ([§ 9.2](#92-entropy-bonus-sweep--reward-mis-specification-evidence)) proved this was *reward mis-specification*, not an algorithmic bug — higher entropy bonus diversified the actions *but lowered reward*, meaning the collapse was the reward-maximizing strategy.
+- **Post-Layer-15 reward fix** (REST gain = 0): the multi-seed run ([§ 9.0](#90-headline-3-algorithm-chain-at-full-budget-layer-15)) shows training-time stochastic distributions that are diverse, and `EvaluationService.collapsed(threshold=0.8)` returns False for trained policies at 60+ episodes.
+- **But greedy rollouts still concentrate**: REINFORCE → PUSH 28/28, A2C → CARDIO 28/28, PPO → 8 PUSH + 20 CARDIO ([`results/layer15/full_budget_multiseed.json`](results/layer15/full_budget_multiseed.json)). The stochastic policy keeps balance during training (via entropy bonus + sampling), but the argmax sits on one dominant local optimum. This is a real residual collapse mode, and the README documents it honestly rather than tuning it away.
 
-Two distinct failure modes show up.
+**Action masking** ([`environment/action_mask.py`](src/fitness_rl/environment/action_mask.py)) is the structural mitigation — forbidding 3-in-a-row of the same group prevents the worst patterns at the logits level. PRD acknowledges the mask's limits (audit #13).
 
-1. **Actor collapse to REST** — Layer 13's entropy sweep is the empirical proof. At default entropy bonus 0.01 the critic learns the (deterministic-per-state) reward fast; once `δ ≈ 0` for "average" actions, the actor only sees signal on outliers, and REST (which zeroes the imbalance penalty) is locally low-risk. The policy concentrates 84 % on REST. Cranking entropy bonus to 0.1 fixes the diversity (REST drops to 45 %) but *drops reward by 50 %* — proving the collapse isn't a bug in A2C, it's a *correct response* to a mis-specified reward.
-2. **Trunk double-step** — the naive "put the trunk in both optimisers" pattern updates the trunk with `actor_lr + critic_lr` per step. Our [`actor_critic_network.py::critic_params`](src/fitness_rl/model/actor_critic_network.py) excludes the trunk from the critic optimiser; a unit test asserts the partition.
+### F.3 — Did A2C produce more stability than REINFORCE in this context?
 
-### F.5 — What would you change with another week?
+**The answer depends on what we mean by "stability".** Three orthogonal measurements:
 
-Now that Layer 11–13 has eliminated the obvious empirical gaps:
+| Stability metric | Layer-13 (60 ep, identity env, pre-fix reward) | Layer-15 (300 ep × 3 seeds, LSTM env, fixed reward) |
+|---|---|---|
+| Final-30 % CV (within run) | A2C **0.011** vs REINFORCE 0.024 — A2C 2× more stable | A2C and REINFORCE comparable; PPO noisiest |
+| Multi-seed CI on final reward | A2C ± 0.05 vs REINFORCE ± 0.26 — A2C much tighter | A2C ± 1.73, REINFORCE ± 2.23, PPO ± 3.64 — A2C tightest |
+| Final reward magnitude | A2C **5.38** > REINFORCE 2.45 | **REINFORCE 8.20** > A2C 5.24 > PPO 4.06 (!) |
 
-1. **Re-design the reward function.** The proven mis-specification ([§ 9.2](#92-entropy-bonus-sweep--reward-mis-specification-evidence)) is the headline issue. `gain` should require `action != REST`. A schedule-quality signal (mutual information with the Kaggle program?) would help.
-2. **Recurrent policy.** The PRD framed this as POMDP but we used an MLP policy ([§ 1](#1-project-goal--rl-framing)). A GRU policy that reads the day_one_hot + recent action history would be the next architectural step.
-3. **GAE(λ)** advantage between A2C's one-step TD and REINFORCE's full episode return — bridges the bias/variance trade-off.
-4. **PPO** — adds a trust-region clip to prevent the catastrophic-update mode A2C exhibits at higher learning rates.
-5. **Action-mask quota system** — extend the 3-in-a-row rule with a sliding-window "each muscle group must appear at least once in 14 days" quota to catch the globally bad schedules ([`docs/PRD_action_masking.md`](docs/PRD_action_masking.md) § "Known structural weakness").
+The lecture's slide-21 claim ("A2C reduces variance") holds at the level of update-to-update fluctuation and across-seed reproducibility — **yes, A2C is more stable in both senses**. But this **does not translate to higher final reward** under all reward shapes. Under the corrected reward (Layer 15), REINFORCE's noisier exploration finds higher-volume training patterns; A2C's lower-variance updates settle into a CARDIO-dominant local optimum faster.
+
+So my honest answer to "Did A2C produce more stability than REINFORCE?": **yes on variance, no on quality of policy at full budget after the reward fix**. The lecture's claim is correct as stated; it just doesn't imply A2C is uniformly the better algorithm.
+
+### F.4 — What are the main limitations of using training-program data instead of true user-outcome data?
+
+The dataset says **what a coach prescribed**, not **what happened to the trainee**. Four direct consequences:
+
+1. **Reward proxies can't be validated**. `gain` is total per-day volume (sets × reps), not real muscle hypertrophy. `overload_penalty` is rolling-mean volume, not real autonomic stress (HR, sleep quality, RPE). `imbalance_penalty` is entropy of the per-day muscle distribution, not actual neuromuscular soreness. Layer 13's reward-weight sweep showed these *react* to weight changes monotonically (sanity check passed), but we can't ground-truth them against biology.
+2. **Muscle classifier is heuristic**. The dataset has only `exercise_name` strings; [`data/muscle_classifier.py`](src/fitness_rl/data/muscle_classifier.py) uses keyword regex (`"bench" → PUSH`, etc.). Mis-classifications produce wrong per-day muscle distributions, which silently degrade the imbalance signal.
+3. **No injury / fatigue / overtraining model**. The reward function has no concept of accumulated fatigue beyond a 7-day rolling-volume mean. A real recommender would integrate RPE, deload weeks, and recovery markers.
+4. **The Kaggle program loses under our reward** ([§ 9.0](#90-headline-3-algorithm-chain-at-full-budget-layer-15)). The actual program from the dataset scores **−1.47** because its dense workout schedule triggers our overload penalty. Either the program is poorly designed by a real coach's standards (unlikely — the dataset has 2 598 vetted programs), or our reward function over-penalises load relative to what a real coach would. We argue the latter: real coaches reward progression which we can't measure, so we lean harder on penalising the things we *can* measure (volume), inverting the cost-benefit calculus.
+
+### F.5 — How could the system be improved with measurements of pulse, muscle pain, recovery, or strength progression?
+
+**A direct redesign of the reward + state — every component above gets a measurable replacement:**
+
+| Current heuristic | Real-signal replacement |
+|---|---|
+| `gain_t = volume_t` (proxy for usefulness) | `gain_t = strength_progression_t` (1RM delta, lift PRs, or hypertrophy from circumference measurements) |
+| `overload_penalty = rolling_volume_mean` | `overload_penalty = HRV_drop + RPE_rolling_mean + sleep_quality_drop` — direct autonomic stress signals |
+| `imbalance_penalty = 1 − entropy(distribution)` | `imbalance_penalty = local_soreness_imbalance` — DOMS scores per muscle group |
+| Rest day = action choice | Rest day = recommended after HRV < threshold or DOMS > threshold — physiologically gated |
+| State vector | Extended with HR, HRV, RPE, sleep_hours, DOMS_per_muscle, recovery_score |
+
+**Architecturally the changes are minor**: extend the state dim from 16 to ~24, swap the `RewardFunction` body, and re-train. The SDK / CLI / GUI / `recommend` feature would not change. This is the highest-impact future iteration and is documented in [`docs/TODO.md`](docs/TODO.md) "Future extensions" + [§ 13](#13-honest-acknowledgements) of this README.
+
+**Secondary improvements** that physiological data would unlock:
+- **Per-user personalization**: the current system trains one policy from one synthetic trainee; HR/RPE data per user would let us fine-tune per individual.
+- **Safety gating**: hard constraints like "no leg day if HRV is 2σ below baseline" become enforceable via the existing `ActionMask` machinery.
+- **Online learning**: the current pipeline is offline (Kaggle CSVs); real biometric feeds would enable on-the-fly policy updates after each session.
 
 ## 13. Honest acknowledgements
 
@@ -419,13 +452,22 @@ Now that Layer 11–13 has eliminated the obvious empirical gaps:
 
 ## 14. Sources
 
-- Williams, R. J. (1992). *Simple statistical gradient-following algorithms for connectionist reinforcement learning.*
-- Mnih, V., et al. (2016). *Asynchronous methods for deep reinforcement learning* (A3C / A2C).
-- Sutton, R. S., & Barto, A. G. (2018). *Reinforcement Learning: An Introduction*, Chapter 13.
-- Ha, D., & Schmidhuber, J. (2018). *World Models.*
-- Huang, S., & Ontañón, S. (2022). *A closer look at invalid action masking in policy gradient algorithms.*
-- L07 lecture slides — REINFORCE, A2C, Exercise 3 spec.
-- Kaggle — *600K+ Fitness Exercise & Workout Program Dataset* (Adnan Elouardi).
+Quoting the PDF's bibliography (§ 8) verbatim — all 8 references that the assignment cites, in the same order:
+
+1. R. S. Sutton & A. G. Barto, *Reinforcement Learning: An Introduction*, 2nd ed., MIT Press, 2018.
+2. L. P. Kaelbling, M. L. Littman & A. R. Cassandra, "Planning and acting in partially observable stochastic domains," *Artificial Intelligence*, vol. 101, no. 1–2, pp. 99–134, 1998.
+3. R. J. Williams, "Simple statistical gradient-following algorithms for connectionist reinforcement learning," *Machine Learning*, vol. 8, no. 3–4, pp. 229–256, 1992.
+4. R. S. Sutton, D. McAllester, S. Singh & Y. Mansour, "Policy gradient methods for reinforcement learning with function approximation," *NeurIPS 12*, pp. 1057–1063, 1999.
+5. J. Schulman, P. Moritz, S. Levine, M. Jordan & P. Abbeel, "High-dimensional continuous control using generalized advantage estimation," *ICLR*, 2016.
+6. V. Mnih et al., "Asynchronous methods for deep reinforcement learning," *ICML 33*, pp. 1928–1937, 2016.
+7. D. Ha & J. Schmidhuber, "Recurrent world models facilitate policy evolution," *NeurIPS 31*, 2018.
+8. S. Huang & S. Ontañón, "A closer look at invalid action masking in policy gradient algorithms," *FLAIRS 35*, 2022.
+
+**Additional sources used in this implementation (beyond the assignment's bibliography):**
+
+- J. Schulman, F. Wolski, P. Dhariwal, A. Radford & O. Klimov, "Proximal Policy Optimization Algorithms," arXiv:1707.06347, 2017 — cited by the Layer-15 beyond-spec PPO addition ([`docs/PRD_ppo.md`](docs/PRD_ppo.md)).
+- L07 lecture slides (Dr. Yoram Segal, May 2026) — REINFORCE, A2C, Exercise 3 specification.
+- Kaggle — *600K+ Fitness Exercise & Workout Program Dataset* (Adnan Louardi).
 
 ---
 
