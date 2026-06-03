@@ -1,16 +1,20 @@
 """Click-based CLI — thin wrapper over the FitnessRL SDK.
 
-Each subcommand is a one-liner over the SDK so the CLI tests can stay
-focused on Click plumbing without re-testing the underlying services.
+Long command bodies (``compare``, ``experiments``, ``menu``) live in
+``cli/commands.py`` so this file stays under the 150-LOC cap.
 """
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import click
 
+from fitness_rl.interface.cli.commands import (
+    compare_cmd,
+    experiments_cmd,
+    menu_cmd,
+)
 from fitness_rl.sdk.sdk import FitnessRL
 from fitness_rl.shared.types import Action
 
@@ -72,27 +76,6 @@ def train_a2c(ctx: click.Context, episodes: int | None) -> None:
     click.echo(f"episodes={len(history)} final_reward={history[-1].total_reward:.4f}")
 
 
-@cli.command("compare")
-@click.option("--episodes", type=int, default=20, help="Episodes per algorithm.")
-@click.option("--out", type=click.Path(path_type=Path), default=None,
-              help="Optional JSON output path.")
-@click.pass_context
-def compare(ctx: click.Context, episodes: int, out: Path | None) -> None:
-    """Train both algos for ``--episodes`` episodes and compare them."""
-    sdk = _sdk(ctx.obj["config"])
-    sdk.prepare_data()
-    sdk.train_reinforce(episodes=episodes)
-    sdk.train_a2c(episodes=episodes)
-    result = sdk.compare()
-    click.echo(f"winner={result.winner} "
-               f"reinforce_final={result.reinforce.mean_final_reward:.4f} "
-               f"a2c_final={result.a2c.mean_final_reward:.4f}")
-    if out is not None:
-        out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(json.dumps(result.to_dict(), indent=2))
-        click.echo(f"wrote {out}")
-
-
 @cli.command("predict")
 @click.option("--algo", type=click.Choice(["reinforce", "a2c"]), default="a2c")
 @click.option("--episodes", type=int, default=5,
@@ -119,50 +102,9 @@ def gui(ctx: click.Context) -> None:  # pragma: no cover - launches QApplication
     launch(config_path=ctx.obj["config"])
 
 
-@cli.command("experiments")
-@click.option("--episodes", type=int, default=30,
-              help="Episodes per training run inside each experiment.")
-@click.option("--out-dir", type=click.Path(path_type=Path), default=Path("results"),
-              help="Directory to write JSON outputs into.")
-@click.pass_context
-def experiments(ctx: click.Context, episodes: int, out_dir: Path) -> None:
-    """Run masking ablation + reward-weight sweep + collapse analysis."""
-    from fitness_rl.services.experiment_service import ExperimentService
-    out_dir.mkdir(parents=True, exist_ok=True)
-    svc = ExperimentService(config_path=ctx.obj["config"], episodes=episodes)
-    for name, runner in (
-        ("masking_ablation", svc.run_action_masking_ablation),
-        ("reward_weight_sweep", svc.run_reward_weight_sweep),
-        ("collapse_analysis", svc.run_collapse_analysis),
-    ):
-        result = runner()
-        (out_dir / f"{name}.json").write_text(json.dumps(result, indent=2))
-        click.echo(f"wrote {out_dir / (name + '.json')}")
-
-
-@cli.command("menu")
-@click.pass_context
-def menu(ctx: click.Context) -> None:
-    """Interactive menu — pick steps to run."""
-    options = {
-        "1": ("Prepare data", "prepare-data"),
-        "2": ("Train world model", "train-world"),
-        "3": ("Train REINFORCE", "train-reinforce"),
-        "4": ("Train A2C", "train-a2c"),
-        "5": ("Compare REINFORCE vs A2C", "compare"),
-        "6": ("Predict next action", "predict"),
-        "q": ("Quit", None),
-    }
-    while True:
-        for k, (label, _) in options.items():
-            click.echo(f"  {k}) {label}")
-        choice = click.prompt("Choice", default="q").strip().lower()
-        if choice == "q" or choice not in options:
-            return
-        sub = options[choice][1]
-        if sub is None:
-            return
-        ctx.invoke(cli.get_command(ctx, sub))
+cli.add_command(compare_cmd)
+cli.add_command(experiments_cmd)
+cli.add_command(menu_cmd)
 
 
 if __name__ == "__main__":  # pragma: no cover
