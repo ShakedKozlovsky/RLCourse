@@ -22,17 +22,20 @@ Strict layering — inner layers must never import from outer layers. The SDK is
 ┌──────────────────────────────────────────────────────────┐
 │  Services  (src/fitness_rl/services/)                    │
 │    DataService · WorldModelService                       │
-│    ReinforceService · A2CService                         │
+│    ReinforceService · A2CService · PPOService            │
 │    EvaluationService · ComparisonService                 │
+│    WorldModelEvaluator · BaselinePolicies (Layer 12)     │
+│    Diagnostics · Recommender (Layer 12/15)               │
+│    ExperimentService · ExperimentStudies (Layer 9/13)    │
 └──────┬────────────┬───────────┬────────────┬─────────────┘
        │            │           │            │
        ▼            ▼           ▼            ▼
 ┌─────────────┐ ┌──────────┐ ┌────────┐ ┌────────────┐
 │ environment/│ │ model/   │ │ data/  │ │ shared/    │
-│ State       │ │ LSTMWorld│ │ Kaggle │ │ config     │
-│ ActionSpace │ │ PolicyNet│ │ Selector│ │ logger     │
-│ Reward      │ │ ActorCrit│ │ TrajBld │ │ seed       │
-│ WorldEnv    │ │ Mask     │ │ FeatEng │ │ types      │
+│ ActionSpace │ │ LSTMWorld│ │ Kaggle │ │ config     │
+│ Reward      │ │ PolicyNet│ │ Selector│ │ logger     │
+│ ActionMask  │ │ ActorCrit│ │ TrajBld │ │ seed       │
+│ WorldEnv    │ │ MuscleCls│ │ FeatEng │ │ types      │
 └─────────────┘ └──────────┘ └────────┘ └────────────┘
 ```
 
@@ -61,33 +64,48 @@ src/fitness_rl/
 │   ├── program_selector.py           # pick one program by 8 criteria
 │   ├── trajectory_builder.py         # daily aggregation → trajectory
 │   └── feature_engineer.py           # state vector construction
+├── data/
+│   └── muscle_classifier.py          # keyword→muscle group (Layer 1 discovery)
 ├── environment/
-│   ├── state.py                      # State dataclass + state_vec()
 │   ├── action_space.py               # 5-action discrete space
-│   ├── reward.py                     # gain − λ·overload − λ·imbalance
+│   ├── reward.py                     # gain − λ·overload − λ·imbalance (Layer 15: REST=0 gain)
 │   ├── action_mask.py                # guardrails (3-consecutive-same-group block)
 │   └── world_env.py                  # Env wrapping the LSTM transition model
+│       (note: state.py was dropped — see PRD evolution v3)
 ├── model/
-│   ├── lstm_world_model.py           # f_φ(s_t, a_t, h_t) → s_{t+1}
+│   ├── lstm_world_model.py           # f_φ(s_t, a_t, h_t) → s_{t+1}; also clamps output (Layer 11)
 │   ├── policy_network.py             # REINFORCE actor π_θ
-│   └── actor_critic_network.py       # A2C: shared trunk + actor + critic heads
+│   └── actor_critic_network.py       # A2C/PPO: shared trunk + actor + critic heads
 ├── services/
 │   ├── data_service.py               # end-to-end data pipeline
 │   ├── world_model_service.py        # supervised LSTM training
+│   ├── world_model_evaluator.py      # persistence + linear baselines + rollout MSE (Layer 12)
 │   ├── reinforce_service.py          # REINFORCE training loop
 │   ├── a2c_service.py                # A2C training loop
+│   ├── ppo_service.py                # PPO clipped surrogate (Layer 15, beyond-spec)
 │   ├── evaluation_service.py         # greedy policy rollout + metrics
-│   └── comparison_service.py         # REINFORCE vs A2C side-by-side
+│   ├── comparison_service.py         # REINFORCE vs A2C side-by-side
+│   ├── baseline_policies.py          # Random/RoundRobin/KaggleProgram (Layer 12)
+│   ├── diagnostics.py                # greedy trajectory + reward decomposition (Layer 12)
+│   ├── recommender.py                # WorkoutRecommender — user-facing (Layer 15)
+│   ├── experiment_base.py            # shared train_one, make_sdk, aggregate_with_ci
+│   ├── experiment_service.py         # Layer 9: 3 original differentiator experiments
+│   └── experiment_studies.py         # Layer 13: 5 audit-driven studies
 ├── sdk/
-│   └── sdk.py                        # FitnessRL facade
+│   ├── sdk.py                        # FitnessRL training facade
+│   ├── evaluator.py                  # FitnessRLEvaluator — diagnostics companion (Layer 12)
+│   ├── env_builder.py                # build_env(cfg, init, world_model) helper
+│   └── trainers.py                   # build_*_service constructors (Layer 15)
 └── interface/
-    ├── cli/main.py                   # Click CLI with interactive menu
+    ├── cli/main.py                   # Click CLI group
+    ├── cli/commands.py               # bulky command bodies (compare/menu/recommend/experiments)
     └── gui/                          # PyQt6 GUI (5 tabs)
         ├── main_window.py
+        ├── plot_widget.py            # matplotlib FigureCanvasQTAgg wrapper
+        ├── worker.py                 # QThread for off-main-thread training
         ├── data_tab.py
         ├── world_model_tab.py
-        ├── reinforce_tab.py
-        ├── a2c_tab.py
+        ├── algo_tab.py               # shared base for REINFORCE + A2C tabs
         └── compare_tab.py
 ```
 
@@ -98,35 +116,68 @@ Every file ≤ 150 LOC. When approaching, split by responsibility.
 ## 3. Class diagram (textual UML)
 
 ```
-                       ┌──────────────┐
-                       │ FitnessRL    │
-                       │--------------│
-                       │ prepare_data │
-                       │ train_world  │
-                       │ train_reinf  │
-                       │ train_a2c    │
-                       │ compare      │
-                       │ predict      │
-                       └──┬───────────┘
-                          │ uses
-   ┌──────────────────────┼──────────────────────────┐
-   ▼                      ▼                          ▼
-┌──────────────┐  ┌──────────────────┐  ┌────────────────────┐
-│ DataService  │  │ WorldModelService│  │ ReinforceService   │
-│ A2CService   │  │ EvaluationService│  │ ComparisonService  │
-└──────┬───────┘  └─────────┬────────┘  └─────────┬──────────┘
-       │                    │                     │
-       ▼                    ▼                     ▼
-┌──────────────┐    ┌──────────────────┐  ┌────────────────┐
-│ KaggleLoader │    │ LSTMWorldModel   │  │ WorldEnv       │
-│ Selector     │    │ PolicyNet        │  │ State          │
-│ Trajectory   │    │ ActorCriticNet   │  │ ActionSpace    │
-│ FeatureEng   │    │                  │  │ RewardFunction │
-└──────────────┘    └──────────────────┘  │ ActionMask     │
-                                          └────────────────┘
+                          ┌──────────────────┐
+                          │ FitnessRL        │
+                          │ (sdk/sdk.py)     │
+                          │------------------│
+                          │ prepare_data     │
+                          │ train_world_model│
+                          │ train_reinforce  │
+                          │ train_a2c        │
+                          │ train_ppo  (L15) │
+                          │ compare          │
+                          │ evaluate         │
+                          │ predict          │
+                          └──┬───────────────┘
+                             │ uses
+       ┌──────────────────-──┼──────────────────────────────────┐
+       ▼                     ▼                                  ▼
+┌──────────────┐  ┌──────────────────┐               ┌─────────────────────┐
+│ DataService  │  │ WorldModelService│               │ ReinforceService    │
+│              │  │ EvaluationService│               │ A2CService          │
+│              │  │ ComparisonService│               │ PPOService    (L15) │
+└──────┬───────┘  └─────────┬────────┘               └─────────┬───────────┘
+       │                    │                                  │
+       ▼                    ▼                                  ▼
+┌──────────────┐    ┌──────────────────┐               ┌────────────────┐
+│ KaggleLoader │    │ LSTMWorldModel   │               │ WorldEnv       │
+│ Preprocessor │    │ PolicyNet        │               │ ActionSpace    │
+│ Selector     │    │ ActorCriticNet   │               │ RewardFunction │
+│ Trajectory   │    │                  │               │ ActionMask     │
+│ FeatureEng   │    └──────────────────┘               └────────────────┘
+│ MuscleClass. │
+└──────────────┘
+
+                          ┌──────────────────────┐
+                          │ FitnessRLEvaluator   │     ← Layer 12 companion
+                          │ (sdk/evaluator.py)   │
+                          │----------------------│
+                          │ evaluate_world_model │ → WorldModelEvaluator
+                          │ benchmark_baselines  │ → RandomPolicy / RoundRobin / Kaggle
+                          │ qualitative_rollout  │ → GreedyTrajectory.as_table()
+                          └──────────────────────┘
+
+                          ┌──────────────────────┐
+                          │ ExperimentStudies    │     ← Layer 13 audit-driven
+                          │----------------------│
+                          │ multi_seed_comparison│
+                          │ entropy_sweep        │
+                          │ reinforce_variant    │
+                          │ gamma_ablation       │
+                          │ masking_on_lstm_env  │
+                          └──────────────────────┘
+
+                          ┌──────────────────────┐
+                          │ WorkoutRecommender   │     ← Layer 15 user-facing
+                          │ (recommender.py)     │
+                          │----------------------│
+                          │ recommend(net, env,  │ → WorkoutPlan with per-day
+                          │   reward_fn, n_days, │   (gain, overload, imbalance,
+                          │   recent_actions)    │    total) breakdown
+                          └──────────────────────┘
 ```
 
-`ReinforceService` and `A2CService` share an `RLAgent` interface (acts via `act()`, learns via `update()`). The same `WorldEnv` instance is used for both — that's the comparison's fairness guarantee.
+`ReinforceService`, `A2CService`, `PPOService` each implement a `.fit(net, env, episodes)` method returning `list[EpisodeMetrics]`. The same `WorldEnv` instance is used for all three — that's the comparison's fairness guarantee.
 
 ## 4. Data flow
 
@@ -228,6 +279,20 @@ Same trunk size as REINFORCE for fair comparison (only the critic head is extra)
 
 - **ADR-006: Action Masking as opt-in differentiator.** Rationale: the assignment §F.1 explicitly calls this out as an excellence direction. Implemented but disabled by default so the comparison is "vanilla" REINFORCE vs A2C; enabled in one experiment to demonstrate effect.
 
+- **ADR-007 (Layer 5): A2C trunk owned by actor optimizer only.** Rationale: the naive "trunk in both optimizers" pattern double-steps the trunk with `actor_lr + critic_lr` per update. `ActorCriticNet.actor_params()` returns trunk + actor head; `critic_params()` returns only the critic head. A unit test asserts the partition is disjoint.
+
+- **ADR-008 (Layer 11): Reward imbalance is action-conditional, not state-conditional.** Rationale: with state-based conditioning, a policy could exploit the LSTM's `rest_indicator` prediction to collect zero-imbalance reward regardless of action. Fix: `RewardFunction.compute(state, action)` zeroes imbalance only when `action == REST`. See PRD evolution v6.
+
+- **ADR-009 (Layer 11): LSTM rollouts clamp predicted state to valid feature ranges.** Rationale: the LSTM is an unconstrained regression head; without clamping it can produce negative volumes / muscle distributions summing ≠ 1, feeding OOD states to the policy. `_clamp_state()` in `lstm_world_model.py` snaps volume to [0,1], renormalises muscle distribution, snaps day-of-week to one-hot, clips rest_indicator.
+
+- **ADR-010 (Layer 12): SDK companion class for diagnostics, not method explosion.** Rationale: adding `evaluate_world_model` + `benchmark_baselines` + `qualitative_rollout` to `FitnessRL` would push it well past the 150-LOC cap. They live on `FitnessRLEvaluator(sdk)` instead — same SDK state, separate file.
+
+- **ADR-011 (Layer 13): `ExperimentStudies` as a separate class from `ExperimentService`.** Rationale: the Layer-9 originals (`run_action_masking_ablation`, `run_reward_weight_sweep`, `run_collapse_analysis`) and the Layer-13 audit-driven additions share infrastructure (`train_one`, `make_sdk`, `aggregate_with_ci`) but answer different questions. Split into two classes with shared `experiment_base.py` helpers.
+
+- **ADR-012 (Layer 15): REST earns zero gain.** Rationale: Layer 13's entropy sweep proved the prior reward made "rest forever" optimal — higher entropy bonus diversified actions but lowered reward. Direct fix: `gain = volume if action != REST else 0`. REST still pays the overload penalty so resting still has a cost. See PRD evolution v8.
+
+- **ADR-013 (Layer 15): PPO added as third algorithm, beyond-spec.** Rationale: the assignment requires REINFORCE + A2C only, but the lecture's REINFORCE → A2C arc naturally extends to PPO. Implementing it shows depth without competing with the spec deliverables. Documented as beyond-spec in `PRD_ppo.md` and the executive summary.
+
 ## 10. Configuration schema
 
 `configs/setup.json`:
@@ -281,6 +346,14 @@ Same trunk size as REINFORCE for fair comparison (only the critic head is extra)
     "hidden": 128,
     "entropy_bonus": 0.01
   },
+  "ppo": {                                  // Layer 15
+    "episodes": 300,
+    "lr": 0.0005,
+    "hidden": 128,
+    "clip_eps": 0.2,
+    "n_epochs_per_batch": 4,
+    "entropy_coef": 0.01
+  },
   "paths": {
     "data_raw_dir": "data/raw",
     "results_dir": "results",
@@ -299,9 +372,25 @@ Same trunk size as REINFORCE for fair comparison (only the critic head is extra)
 ## 12. Testing strategy
 
 - Unit tests mirror `src/` under `tests/unit/`. Integration tests under `tests/integration/`.
-- Coverage gate: ≥ 85% statements and branches.
+- Coverage gate: ≥ 85 % statements and branches. **Actual: 97.07 %**.
 - TDD pairs documented in README:
   1. `RewardFunction.compute` — write test first (specific reward values for known inputs).
   2. `LSTMWorldModel.forward` — write test first (shape contract + finite outputs).
 - Smoke training tests run for 2 episodes on the synthetic trajectory in seconds.
 - GUI smoke under `QT_QPA_PLATFORM=offscreen`.
+- **Reproducibility test** (Layer 11): two SDK runs with the same seed produce bit-identical training histories — catches silent `torch.manual_seed` regressions.
+- **PPO importance-ratio test** (Layer 15): direct check of the clipped surrogate math (`min(r·A, clip(r, 1-ε, 1+ε)·A)`) at the tensor level — independent of training-loop behaviour.
+
+## 13. Audit-driven layers (Layers 11–15)
+
+After Layer 10 the project was subjected to an adversarial review surfacing 20 weaknesses; Layers 11–15 closed every one. Each layer is one commit + one section in README §9 + one set of result files:
+
+| Layer | Theme | Headline deliverable |
+|---|---|---|
+| 11 | Correctness | Reward action-conditional + LSTM state clamping + reproducibility test + POMDP framing fix |
+| 12 | Evaluation infra | `WorldModelEvaluator` (baselines + rollout MSE) + `BaselinePolicies` (random / round-robin / Kaggle) + `Diagnostics` (qualitative + decomposition) |
+| 13 | Empirical studies | Multi-seed CI + entropy sweep proving reward mis-spec + REINFORCE chain + γ ablation + masking on LSTM env |
+| 14 | Documentation closeout | Architecture diagram + Layer-13 plots + README §9 audit-findings table + coverage 96.6 → 97.5 % |
+| 15 | Beyond-spec polish | Reward fix (REST = 0 gain) + PPO + `recommend` feature + 300-episode × 3-seed run + Jupyter notebook + executive summary |
+
+The full mapping of all 20 audit findings to their fixes is in the README's §9.7 status table.
