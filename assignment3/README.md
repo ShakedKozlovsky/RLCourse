@@ -1,8 +1,10 @@
-# Assignment 3 — REINFORCE + A2C Fitness Recommender
+# Assignment 3 — REINFORCE + A2C (+ PPO) Fitness Recommender
 
 > **Course:** Reinforcement Learning with Deep Learning · **Author:** Shaked Kozlovsky (ID 208904839)
 >
-> A complete, object-oriented policy-gradient RL system that learns a daily **workout-recommendation policy** (`PUSH / PULL / LEGS / CARDIO / REST`) over an **LSTM-learned world model** built from the Kaggle 600 K+ Fitness Exercise & Workout Program dataset. Two algorithms compared: **REINFORCE** (Williams 1992) and **A2C** (Mnih et al. 2016).
+> **For graders:** start with [`docs/EXECUTIVE_SUMMARY.md`](docs/EXECUTIVE_SUMMARY.md) (1-pager) or [`notebooks/fitness_rl_walkthrough.ipynb`](notebooks/fitness_rl_walkthrough.ipynb) (6-cell guided tour).
+>
+> A complete, object-oriented policy-gradient RL system that learns a daily **workout-recommendation policy** (`PUSH / PULL / LEGS / CARDIO / REST`) over an **LSTM-learned world model** built from the Kaggle 600 K+ Fitness Exercise & Workout Program dataset. Three algorithms compared: **REINFORCE** (Williams 1992), **A2C** (Mnih et al. 2016), and **PPO** (Schulman et al. 2017, beyond-spec).
 >
 > **This is a *learning* project about Reinforcement Learning, not a fitness coach.** See [§ Honest acknowledgements](#13-honest-acknowledgements) — the empirical sections below also include findings where the trained agent *does not* outperform a naive baseline, kept in honestly rather than tuned away.
 
@@ -18,8 +20,8 @@
 6. [REINFORCE (Part D)](#6-reinforce-part-d)
 7. [A2C (Part E)](#7-a2c-part-e)
 8. [Comparison & experiments](#8-comparison--experiments)
-9. [Audit-driven empirical studies (Layers 11–13)](#9-audit-driven-empirical-studies-layers-1113)
-10. [GUI / CLI / SDK](#10-gui--cli--sdk)
+9. [Audit-driven empirical studies (Layers 11–15)](#9-audit-driven-empirical-studies-layers-1113) — **[§ 9.0 headline](#90-headline-3-algorithm-chain-at-full-budget-layer-15)**
+10. [GUI / CLI / SDK + recommend feature](#10-gui--cli--sdk)
 11. [Quality bar — tests, ruff, coverage](#11-quality-bar--tests-ruff-coverage)
 12. [Five reflection answers (Part F)](#12-five-reflection-answers-part-f)
 13. [Honest acknowledgements](#13-honest-acknowledgements)
@@ -158,6 +160,33 @@ After the Layer-11 reward fix made the imbalance penalty action-conditional (was
 ## 9. Audit-driven empirical studies (Layers 11–13)
 
 After Layer 10, an adversarial review surfaced 20 weaknesses. Layers 11–13 address every one of them; the bullets below cite each finding number and link to its evidence.
+
+### 9.0 Headline: 3-algorithm chain at full budget (Layer 15)
+
+The **300-episode × 3-seed multi-seed run** with the corrected reward function (REST = 0 gain) and the third algorithm (PPO) added. This is the headline result:
+
+![Three-algo learning curves](assets/plots/three_algo_curves.png)
+![Three-algo final CI](assets/plots/three_algo_final_ci.png)
+
+| Algorithm | Final-30 % mean reward | 95 % CI across 3 seeds |
+|---|---|---|
+| **REINFORCE** | **8.20** | ± 2.23 |
+| A2C | 5.24 | ± 1.73 |
+| PPO | 4.06 | ± 3.64 |
+
+**All three trained agents beat all three baselines** after the Layer-15 reward fix:
+
+![Baselines vs trained post-fix](assets/plots/baselines_vs_trained_post_fix.png)
+
+| Reference policy | Reward |
+|---|---|
+| random | +0.14 |
+| round-robin | +1.64 |
+| **Kaggle program (actual data)** | **−1.47** |
+
+The Kaggle program *loses* under the corrected reward — over-training pattern triggers the overload penalty. Trained agents learn to space workouts. The original audit critique ("trained agent doesn't beat baselines") is **resolved**.
+
+**Surprising flip vs Layer 13**: at full 300-episode budget REINFORCE outperforms both A2C and PPO. With the corrected reward the high-variance Monte-Carlo updates of REINFORCE explore more of the volume-action space; A2C and PPO settle into local optima sooner. This is the *opposite* of the Layer-13 finding under the buggy reward, where A2C won at 60 episodes — showing how reward shape interacts with algorithm choice in ways the lecture's slide-21 claim doesn't fully capture.
 
 ### 9.1 Multi-seed comparison with 95 % CI (audit #3 + #18)
 
@@ -302,8 +331,11 @@ uv run fitness-rl prepare-data
 uv run fitness-rl train-world
 uv run fitness-rl train-reinforce --episodes 60
 uv run fitness-rl train-a2c --episodes 60
+uv run fitness-rl train-ppo --episodes 60                                      # Layer 15
 uv run fitness-rl compare --episodes 60 --out results/compare.json
 uv run fitness-rl predict --algo a2c --episodes 10
+uv run fitness-rl recommend --algo a2c --days 7 \                              # Layer 15
+                            --history "PUSH,PULL,REST" --episodes 30
 uv run fitness-rl experiments --episodes 20 --out-dir results/experiments
 uv run fitness-rl gui     # launches the PyQt6 GUI
 uv run fitness-rl menu    # interactive numeric menu
@@ -331,10 +363,10 @@ print(qualitative.as_table())
 
 ## 11. Quality bar — tests, ruff, coverage
 
-- **216 tests** (unit + integration + headless-Qt GUI smoke), all green.
-- **97.56 % branch coverage** (gate is 85 %).
+- **235 tests** (unit + integration + headless-Qt GUI smoke), all green.
+- **97.5 % branch coverage** (gate is 85 %).
 - `ruff check src/ tests/` returns 0.
-- Every source file ≤ 150 LOC except [`sdk/sdk.py`](src/fitness_rl/sdk/sdk.py) at 157 LOC — exception documented in [`docs/PLAN.md`](docs/PLAN.md).
+- Every source file ≤ 150 LOC except [`sdk/sdk.py`](src/fitness_rl/sdk/sdk.py) at 154 LOC — exception documented in [`docs/PLAN.md`](docs/PLAN.md).
 - No magic numbers in source — everything lives in [`configs/setup.json`](configs/setup.json).
 - Every commit is `Layer N: <summary>` + bullet body — the [git log](https://github.com/ShakedKozlovsky/RLCourse/commits/main) reads as a build story planning → data → environment → world model → REINFORCE → A2C → eval → SDK → GUI → experiments → README → audit response.
 

@@ -51,14 +51,19 @@ class RewardFunction:
         self._window.clear()
 
     def compute(self, state: np.ndarray, action: int | None = None) -> float:
-        """Compute reward from a 16-dim state vector + the action that produced it."""
+        """Compute reward from a 16-dim state vector + the action that produced it.
+
+        **Layer 15 fix**: REST earns zero gain — only workout actions accumulate
+        training volume. Without this, the optimal greedy policy was "rest forever"
+        because REST still picked up LSTM-predicted next-state volume.
+        """
         if state.shape[-1] != 16:
             raise ValueError(f"expected 16-dim state, got shape {state.shape}")
         volume = max(0.0, float(state[_VOL_IDX]))  # clamp negative LSTM outputs
         self._window.append(volume)
-        gain = self._gain_weight * volume
-        overload = self._lambda_overload * float(np.mean(self._window))
         is_rest_action = action is not None and int(action) == int(Action.REST)
+        gain = 0.0 if is_rest_action else self._gain_weight * volume
+        overload = self._lambda_overload * float(np.mean(self._window))
         imbalance = 0.0 if is_rest_action else self._lambda_imbalance * self._imbalance(state)
         return gain - overload - imbalance
 
@@ -68,9 +73,9 @@ class RewardFunction:
             raise ValueError(f"expected 16-dim state, got shape {state.shape}")
         volume = max(0.0, float(state[_VOL_IDX]))
         window_with_new = list(self._window) + [volume]
-        gain = self._gain_weight * volume
-        overload = self._lambda_overload * float(np.mean(window_with_new))
         is_rest_action = action is not None and int(action) == int(Action.REST)
+        gain = 0.0 if is_rest_action else self._gain_weight * volume
+        overload = self._lambda_overload * float(np.mean(window_with_new))
         imbalance = 0.0 if is_rest_action else self._lambda_imbalance * self._imbalance(state)
         return {"gain": gain, "overload": overload, "imbalance": imbalance,
                 "total": gain - overload - imbalance}

@@ -14,6 +14,7 @@ from fitness_rl.interface.cli.commands import (
     compare_cmd,
     experiments_cmd,
     menu_cmd,
+    recommend_cmd,
 )
 from fitness_rl.sdk.sdk import FitnessRL
 from fitness_rl.shared.types import Action
@@ -105,6 +106,18 @@ def gui(ctx: click.Context) -> None:  # pragma: no cover - launches QApplication
 cli.add_command(compare_cmd)
 cli.add_command(experiments_cmd)
 cli.add_command(menu_cmd)
+cli.add_command(recommend_cmd)
+
+
+@cli.command("train-ppo")
+@click.option("--episodes", type=int, default=None, help="Override config episodes.")
+@click.pass_context
+def train_ppo(ctx: click.Context, episodes: int | None) -> None:
+    """Train PPO on the current env."""
+    sdk = _sdk(ctx.obj["config"])
+    sdk.prepare_data()
+    history = sdk.train_ppo(episodes=episodes)
+    click.echo(f"episodes={len(history)} final_reward={history[-1].total_reward:.4f}")
 
 
 if __name__ == "__main__":  # pragma: no cover

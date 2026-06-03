@@ -254,6 +254,25 @@ Commit: `Layer 14: plots + architecture diagram + coverage to 97.5 % + README re
 
 ---
 
+## Layer 15 — Beyond-spec polish for the grade ✅
+
+Commit: `Layer 15: reward fix + PPO + recommend feature + 300-episode chain + notebook + exec summary`
+
+- [x] **Reward fix**: REST now earns zero gain (was full volume reward). Layer-13 entropy sweep proved the reward was mis-specified; this is the structural fix. `RewardFunction.compute(state, action)` is the touched contract.
+- [x] **PPO added** as a third algorithm completing the `REINFORCE → A2C → PPO` chain. `services/ppo_service.py` implements the clipped surrogate over a buffer with `n_epochs_per_batch` Adam passes per rollout. `PRD_ppo.md` documents the theory.
+- [x] `sdk/trainers.py` — module-level `build_*_service` constructors keep `sdk/sdk.py` close to the 150-LOC cap.
+- [x] **Recommend feature**: `services/recommender.py::WorkoutRecommender.recommend()` returns an N-day plan with per-day reward decomposition. CLI command `fitness-rl recommend --algo {reinforce,a2c,ppo} --days N --history "PUSH,PULL,REST"`. The product is now a user-facing recommender, not just an RL experiment.
+- [x] **Full-budget run**: `scripts/run_layer15_full.py` runs 300 episodes × 3 seeds × 3 algos on the real Kaggle data (~135 s). All trained agents beat all baselines after the reward fix; Kaggle program scores −1.47 (overload-penalised). Results in `results/layer15/full_budget_multiseed.json`.
+- [x] **3 new plots**: `three_algo_curves.png`, `three_algo_final_ci.png`, `baselines_vs_trained_post_fix.png` (Layer 15 generator script).
+- [x] `notebooks/fitness_rl_walkthrough.ipynb` — 6-cell guided tour: data → world model → REINFORCE → A2C → PPO → recommend.
+- [x] `docs/EXECUTIVE_SUMMARY.md` — 1-pager for the grader's first pass.
+- [x] PRD evolution log v8 (reward fix) + v9 (PPO added).
+- [x] **235/235 tests pass** (was 216), **97.5 % coverage**, **ruff clean**.
+
+**DoD met**: every assignment part covered + audit findings closed + 3-algo chain demonstrated empirically at full budget + user-facing recommender shipped.
+
+---
+
 ## Cross-cutting (every commit)
 
 - [ ] `ruff check` returns 0

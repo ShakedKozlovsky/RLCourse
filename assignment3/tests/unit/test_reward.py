@@ -64,6 +64,35 @@ def test_rest_action_skips_imbalance_penalty() -> None:
     assert rf.compute(s, action=int(Action.REST)) == 0.0
 
 
+def test_rest_action_earns_zero_gain() -> None:
+    """Layer 15 fix: REST earns no volume reward even when LSTM predicts high volume."""
+    from fitness_rl.shared.types import Action
+
+    rf = RewardFunction(gain_weight=1.0, overload_lambda=0.0, imbalance_lambda=0.0)
+    rf.reset()
+    s = _state(0.8, [0.2] * 5)  # LSTM predicts high volume
+    # PUSH: full volume reward
+    assert rf.compute(s, action=int(Action.PUSH)) == pytest.approx(0.8)
+    # REST: zero gain even though volume is 0.8
+    rf.reset()
+    assert rf.compute(s, action=int(Action.REST)) == 0.0
+
+
+def test_rest_action_still_pays_overload_penalty() -> None:
+    """REST does not earn gain, but the rolling overload window still counts the
+    volume so resting after heavy days still triggers the penalty."""
+    from fitness_rl.shared.types import Action
+
+    rf = RewardFunction(gain_weight=1.0, overload_lambda=1.0, imbalance_lambda=0.0,
+                         rolling_window=3)
+    rf.reset()
+    rf.compute(_state(1.0, [0.2] * 5), action=int(Action.PUSH))   # window [1.0]
+    rf.compute(_state(1.0, [0.2] * 5), action=int(Action.PUSH))   # window [1.0, 1.0]
+    r = rf.compute(_state(0.5, [0.2] * 5), action=int(Action.REST))
+    # gain = 0 (REST), overload = mean([1, 1, 0.5]) = 0.833, imbalance = 0
+    assert r == pytest.approx(-(1.0 + 1.0 + 0.5) / 3.0)
+
+
 def test_state_rest_indicator_no_longer_zeroes_imbalance() -> None:
     """Audit finding #10: state-based zeroing was an exploit; action-based is correct."""
     from fitness_rl.shared.types import Action

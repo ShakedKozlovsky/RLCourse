@@ -78,7 +78,23 @@ def test_predict_unknown_algo_raises(sdk_config: Path) -> None:
     sdk.prepare_data()
     sdk.train_a2c()
     with pytest.raises(ValueError):
-        sdk.predict(np.zeros(16, dtype=np.float32), algo="ppo")
+        sdk.predict(np.zeros(16, dtype=np.float32), algo="dqn")
+
+
+def test_train_ppo_returns_history(sdk_config: Path) -> None:
+    sdk = FitnessRL(config_path=sdk_config)
+    sdk.prepare_data()
+    history = sdk.train_ppo()
+    # episodes default falls back to a2c.episodes = 3 from sdk_config
+    assert len(history) == 3
+
+
+def test_predict_with_ppo(sdk_config: Path) -> None:
+    sdk = FitnessRL(config_path=sdk_config)
+    sdk.prepare_data()
+    sdk.train_ppo()
+    action = sdk.predict(np.zeros(16, dtype=np.float32), algo="ppo")
+    assert 0 <= action < 5
 
 
 def test_predict_untrained_raises(sdk_config: Path) -> None:

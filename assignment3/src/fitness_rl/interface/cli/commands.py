@@ -61,13 +61,54 @@ def experiments_cmd(ctx: click.Context, episodes: int, out_dir: Path) -> None:
         click.echo(f"wrote {out_dir / (name + '.json')}")
 
 
+@click.command("recommend")
+@click.option("--algo", type=click.Choice(["reinforce", "a2c", "ppo"]), default="a2c")
+@click.option("--days", type=int, default=7,
+              help="How many days to recommend forward.")
+@click.option("--history", type=str, default="",
+              help="Comma-separated recent actions (e.g. 'PUSH,PULL,REST').")
+@click.option("--episodes", type=int, default=5,
+              help="Quick training episodes before recommending.")
+@click.pass_context
+def recommend_cmd(ctx: click.Context, algo: str, days: int, history: str,
+                    episodes: int) -> None:
+    """Recommend the next N days of workouts."""
+    from fitness_rl.environment.reward import RewardFunction
+    from fitness_rl.services.recommender import WorkoutRecommender
+
+    sdk = _sdk(ctx)
+    sdk.prepare_data()
+    if algo == "reinforce":
+        sdk.train_reinforce(episodes=episodes)
+    elif algo == "a2c":
+        sdk.train_a2c(episodes=episodes)
+    else:
+        sdk.train_ppo(episodes=episodes)
+    cfg = sdk.config
+    reward_fn = RewardFunction(
+        gain_weight=float(cfg.get("env.reward_gain_weight")),
+        overload_lambda=float(cfg.get("env.reward_overload_lambda")),
+        imbalance_lambda=float(cfg.get("env.reward_imbalance_lambda")),
+    )
+    plan = WorkoutRecommender().recommend(
+        net=sdk._require_net(algo),  # noqa: SLF001
+        env=sdk.make_env(),
+        reward_fn=reward_fn,
+        n_days=days,
+        recent_actions=WorkoutRecommender.parse_history(history),
+    )
+    click.echo(plan.as_table())
+
+
 _MENU_OPTIONS = {
     "1": ("Prepare data", "prepare-data"),
     "2": ("Train world model", "train-world"),
     "3": ("Train REINFORCE", "train-reinforce"),
     "4": ("Train A2C", "train-a2c"),
-    "5": ("Compare REINFORCE vs A2C", "compare"),
-    "6": ("Predict next action", "predict"),
+    "5": ("Train PPO", "train-ppo"),
+    "6": ("Compare REINFORCE vs A2C", "compare"),
+    "7": ("Predict next action", "predict"),
+    "8": ("Recommend next N days", "recommend"),
     "q": ("Quit", None),
 }
 
