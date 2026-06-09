@@ -1,0 +1,47 @@
+{
+  "label": "lambda_sweep",
+  "cells": [
+    {
+      "name": "lambda=0.0",
+      "n_seeds": 1,
+      "final_reward_mean": -258.88400344848634,
+      "final_reward_ci_95": 0.0,
+      "overall_reward_mean": -258.88400344848634
+    },
+    {
+      "name": "lambda=0.5",
+      "n_seeds": 1,
+      "final_reward_mean": -230.02953453063964,
+      "final_reward_ci_95": 0.0,
+      "overall_reward_mean": -230.02953453063964
+    },
+    {
+      "name": "lambda=0.9",
+      "n_seeds": 1,
+      "final_reward_mean": -238.69118957519532,
+      "final_reward_ci_95": 0.0,
+      "overall_reward_mean": -238.69118957519532
+    },
+    {
+      "name": "lambda=0.95",
+      "n_seeds": 1,
+      "final_reward_mean": -226.30011959075927,
+      "final_reward_ci_95": 0.0,
+      "overall_reward_mean": -226.30011959075927
+    },
+    {
+      "name": "lambda=0.99",
+      "n_seeds": 1,
+      "final_reward_mean": -252.57012100219725,
+      "final_reward_ci_95": 0.0,
+      "overall_reward_mean": -252.57012100219725
+    },
+    {
+      "name": "lambda=1.0",
+      "n_seeds": 1,
+      "final_reward_mean": -268.8884559631348,
+      "final_reward_ci_95": 0.0,
+      "overall_reward_mean": -268.8884559631348
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "label": "gamma_sweep",
+  "cells": [
+    {
+      "name": "gamma=0.9",
+      "n_seeds": 1,
+      "final_reward_mean": -220.337300491333,
+      "final_reward_ci_95": 0.0,
+      "overall_reward_mean": -220.337300491333
+    },
+    {
+      "name": "gamma=0.95",
+      "n_seeds": 1,
+      "final_reward_mean": -236.2988010406494,
+      "final_reward_ci_95": 0.0,
+      "overall_reward_mean": -236.2988010406494
+    },
+    {
+      "name": "gamma=0.99",
+      "n_seeds": 1,
+      "final_reward_mean": -226.30011959075927,
+      "final_reward_ci_95": 0.0,
+      "overall_reward_mean": -226.30011959075927
+    },
+    {
+      "name": "gamma=0.999",
+      "n_seeds": 1,
+      "final_reward_mean": -214.2033535003662,
+      "final_reward_ci_95": 0.0,
+      "overall_reward_mean": -214.2033535003662
+    }
+  ]
+}

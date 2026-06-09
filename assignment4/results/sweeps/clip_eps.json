@@ -1,0 +1,33 @@
+{
+  "label": "clip_eps_sweep",
+  "cells": [
+    {
+      "name": "clip_eps=0.1",
+      "n_seeds": 1,
+      "final_reward_mean": -266.70647354125975,
+      "final_reward_ci_95": 0.0,
+      "overall_reward_mean": -266.70647354125975
+    },
+    {
+      "name": "clip_eps=0.2",
+      "n_seeds": 1,
+      "final_reward_mean": -226.30011959075927,
+      "final_reward_ci_95": 0.0,
+      "overall_reward_mean": -226.30011959075927
+    },
+    {
+      "name": "clip_eps=0.3",
+      "n_seeds": 1,
+      "final_reward_mean": -214.08692932128906,
+      "final_reward_ci_95": 0.0,
+      "overall_reward_mean": -214.08692932128906
+    },
+    {
+      "name": "clip_eps=0.5",
+      "n_seeds": 1,
+      "final_reward_mean": -221.6063346862793,
+      "final_reward_ci_95": 0.0,
+      "overall_reward_mean": -221.6063346862793
+    }
+  ]
+}
