@@ -57,6 +57,36 @@ uv run fitness-rl compare --episodes 60
 
 ---
 
+### [Assignment 4: PPO + GAE on MuJoCo Continuous Control](assignment4/)
+**Proximal Policy Optimization + Generalized Advantage Estimation laboratory**
+
+- **Algorithms:** PPO (Schulman et al. 2017) + GAE (Schulman et al. 2016)
+- **Environments:** HalfCheetah-v5 (primary) + Walker2d-v5 (secondary) — canonical PPO MuJoCo benchmarks
+- **Action space:** Continuous `Box(-1, 1, (6,))` torque control
+- **Networks:** Gaussian actor + scalar critic, separate networks, Engstrom 2020 orthogonal init
+- **Features:**
+  - Verbatim PPO clipped surrogate + GAE recursion with 4-test math batteries each
+  - Multi-seed λ/γ/clip-ε empirical sweeps with 95% CIs
+  - λ-sweep empirically validates the slide-16 bias-variance dial (peak at λ=0.95)
+  - Cross-env transfer (best HalfCheetah config → Walker2d +381 reward in 30k steps)
+  - **Mini-Graphify tool** (the originality hook) — walks the project's Python AST and emits an Obsidian-compatible knowledge graph (70 nodes, 128 edges)
+  - SDK + Click CLI + 3-tab PyQt6 GUI + executed Jupyter walkthrough
+- **Tech Stack:** Python 3.12, PyTorch, MuJoCo, Gymnasium, NumPy, PyQt6, Click, matplotlib, ruff, pytest, uv
+- **Quality bar:** 120 tests · 97.25% branch coverage · ruff clean · every src file ≤ 150 LOC
+- **Status:** ✅ Complete (15 layers)
+
+**Quick Start:**
+```bash
+cd RLCourse/assignment4
+uv sync --extra dev
+uv run proximal-lab train --env-id HalfCheetah-v5 --total-timesteps 50000
+uv run proximal-lab sweep lambda                # λ-sweep
+uv run proximal-lab graphify                     # build docs/wiki/
+uv run proximal-lab gui                          # PyQt6 GUI
+```
+
+---
+
 ## 🗂️ Repository Structure
 
 ```
@@ -86,6 +116,19 @@ RLCourse/
 │   ├── scripts/          # plot + diagram + experiment runners
 │   └── README.md         # Assignment 3 details
 │
+│
+├── assignment4/          # PPO + GAE on MuJoCo continuous control
+│   ├── src/proximal_lab/ # SDK, services, models, environment, GUI, CLI, tools/graphify
+│   ├── docs/             # PRD + 5 per-mechanism PRDs + PLAN + TODO + EXECUTIVE_SUMMARY + wiki/
+│   ├── tests/            # 120 tests, 97.25% coverage
+│   ├── configs/          # setup.json (versioned)
+│   ├── assets/           # plots, GUI screenshots
+│   ├── results/          # experiment outputs (sweeps, layer11/cross-env)
+│   ├── saved_models/     # pre-trained HalfCheetah + Walker2d checkpoints
+│   ├── scripts/          # sweep + plot + GUI capture drivers
+│   ├── notebooks/        # executed Jupyter walkthrough
+│   └── README.md         # Assignment 4 details
+│
 └── README.md            # This file
 ```
 
@@ -108,6 +151,7 @@ Each assignment has its own comprehensive documentation:
 | 1 | Grid-based Q-Learning | ✅ Complete | [assignment1/](assignment1/) |
 | 2 | DQN Stock Trading Agent | ✅ Complete | [assignment2/](assignment2/) |
 | 3 | REINFORCE + A2C over LSTM world model (fitness) | ✅ Complete | [assignment3/](assignment3/) |
+| 4 | PPO + GAE on MuJoCo continuous control | ✅ Complete | [assignment4/](assignment4/) |
 
 ---
 
