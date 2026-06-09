@@ -1,0 +1,47 @@
+{
+  "label": "lambda_sweep",
+  "cells": [
+    {
+      "name": "lambda=0.0",
+      "n_seeds": 3,
+      "final_reward_mean": -284.19194825490314,
+      "final_reward_ci_95": 11.55065506905858,
+      "overall_reward_mean": -284.19194825490314
+    },
+    {
+      "name": "lambda=0.5",
+      "n_seeds": 3,
+      "final_reward_mean": -267.84206406275433,
+      "final_reward_ci_95": 15.406364585208266,
+      "overall_reward_mean": -267.84206406275433
+    },
+    {
+      "name": "lambda=0.9",
+      "n_seeds": 3,
+      "final_reward_mean": -260.1323866844177,
+      "final_reward_ci_95": 19.85330419995383,
+      "overall_reward_mean": -260.1323866844177
+    },
+    {
+      "name": "lambda=0.95",
+      "n_seeds": 3,
+      "final_reward_mean": -250.43581573168436,
+      "final_reward_ci_95": 12.333244013993845,
+      "overall_reward_mean": -250.43581573168436
+    },
+    {
+      "name": "lambda=0.99",
+      "n_seeds": 3,
+      "final_reward_mean": -265.4065448443095,
+      "final_reward_ci_95": 7.096511932528838,
+      "overall_reward_mean": -265.4065448443095
+    },
+    {
+      "name": "lambda=1.0",
+      "n_seeds": 3,
+      "final_reward_mean": -294.436828772227,
+      "final_reward_ci_95": 17.774434420170977,
+      "overall_reward_mean": -294.436828772227
+    }
+  ]
+}
