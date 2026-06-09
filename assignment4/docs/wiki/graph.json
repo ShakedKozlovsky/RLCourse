@@ -298,6 +298,30 @@
       "docstring_first_line": "Run ``n_episodes`` evaluation rollouts and aggregate the returns."
     },
     {
+      "id": "module:proximal_lab.services.experiment_service",
+      "type": "module",
+      "module": "proximal_lab.services.experiment_service",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/experiment_service.py",
+      "lineno": 0,
+      "docstring_first_line": "Empirical sweeps: \u03bb-sweep, \u03b3-sweep, clip-\u03b5 sweep with multi-seed CIs."
+    },
+    {
+      "id": "class:proximal_lab.services.experiment_service.ExperimentService",
+      "type": "class",
+      "module": "proximal_lab.services.experiment_service",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/experiment_service.py",
+      "lineno": 24,
+      "docstring_first_line": "Run a sweep over one hyperparameter, aggregating across seeds."
+    },
+    {
+      "id": "function:proximal_lab.services.experiment_service.aggregate_seeds",
+      "type": "function",
+      "module": "proximal_lab.services.experiment_service",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/experiment_service.py",
+      "lineno": 105,
+      "docstring_first_line": "Mean \u00b1 std + final reward summary; exposed for tests."
+    },
+    {
       "id": "module:proximal_lab.services.gae",
       "type": "module",
       "module": "proximal_lab.services.gae",
@@ -906,6 +930,51 @@
     {
       "src": "module:proximal_lab.services.evaluation_service",
       "dst": "class:proximal_lab.services.evaluation_service.EvaluationService",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.services.experiment_service",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.experiment_service",
+      "dst": "module:copy",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.experiment_service",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.experiment_service",
+      "dst": "module:tempfile",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.experiment_service",
+      "dst": "module:proximal_lab.sdk.sdk",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.experiment_service",
+      "dst": "module:proximal_lab.services.comparison_service",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.experiment_service",
+      "dst": "module:proximal_lab.shared.logger",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.experiment_service",
+      "dst": "class:proximal_lab.services.experiment_service.ExperimentService",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.services.experiment_service",
+      "dst": "function:proximal_lab.services.experiment_service.aggregate_seeds",
       "type": "contains"
     },
     {

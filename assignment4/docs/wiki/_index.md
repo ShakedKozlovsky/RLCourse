@@ -12,6 +12,7 @@
 - [[proximal_lab_sdk_trainers|proximal_lab.sdk.trainers]] — Module-level constructors so ``sdk/sdk.py`` stays close to the 150-LOC cap.
 - [[proximal_lab_services_comparison_service|proximal_lab.services.comparison_service]] — Cross-config comparison — aggregate seeds with mean ± 95 % CI.
 - [[proximal_lab_services_evaluation_service|proximal_lab.services.evaluation_service]] — Greedy / stochastic evaluation rollouts for a trained ``ActorCriticNet``.
+- [[proximal_lab_services_experiment_service|proximal_lab.services.experiment_service]] — Empirical sweeps: λ-sweep, γ-sweep, clip-ε sweep with multi-seed CIs.
 - [[proximal_lab_services_gae|proximal_lab.services.gae]] — Generalized Advantage Estimation — Schulman et al. 2016.
 - [[proximal_lab_services_ppo_clip|proximal_lab.services.ppo_clip]] — PPO clipped surrogate — the headline math (Schulman et al. 2017 Eq. 7).
 - [[proximal_lab_services_ppo_service|proximal_lab.services.ppo_service]] — End-to-end PPO + GAE training loop (slide-18 pipeline).
