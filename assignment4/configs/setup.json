@@ -1,0 +1,52 @@
+{
+  "version": "1.00",
+  "seed": 208904839,
+  "env": {
+    "id": "HalfCheetah-v4",
+    "secondary_id": "Walker2d-v4",
+    "max_episode_steps": 1000,
+    "n_parallel_envs": 4,
+    "gamma": 0.99
+  },
+  "gae": {
+    "lambda": 0.95
+  },
+  "actor_critic": {
+    "hidden_sizes": [64, 64],
+    "activation": "tanh",
+    "shared_trunk": false,
+    "log_std_init": -0.5,
+    "log_std_min": -5.0,
+    "log_std_max": 2.0
+  },
+  "ppo": {
+    "total_timesteps": 1000000,
+    "steps_per_rollout": 2048,
+    "minibatch_size": 64,
+    "n_epochs_per_update": 10,
+    "clip_eps": 0.2,
+    "lr": 0.0003,
+    "value_coef": 0.5,
+    "entropy_coef": 0.0,
+    "max_grad_norm": 0.5,
+    "target_kl_stop": null
+  },
+  "experiments": {
+    "lambda_sweep": [0.0, 0.5, 0.9, 0.95, 0.99, 1.0],
+    "gamma_sweep": [0.9, 0.95, 0.99, 0.999],
+    "clip_eps_sweep": [0.1, 0.2, 0.3, 0.5],
+    "seeds": [0, 1, 2]
+  },
+  "paths": {
+    "results_dir": "results",
+    "assets_dir": "assets",
+    "checkpoints_dir": "saved_models",
+    "wiki_dir": "docs/wiki"
+  },
+  "graphify": {
+    "src_dir": "src/proximal_lab",
+    "output_dir": "docs/wiki",
+    "include_docstrings": true,
+    "include_call_graph": true
+  }
+}
