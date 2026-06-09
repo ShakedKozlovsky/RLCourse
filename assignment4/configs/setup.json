@@ -2,8 +2,8 @@
   "version": "1.00",
   "seed": 208904839,
   "env": {
-    "id": "HalfCheetah-v4",
-    "secondary_id": "Walker2d-v4",
+    "id": "HalfCheetah-v5",
+    "secondary_id": "Walker2d-v5",
     "max_episode_steps": 1000,
     "n_parallel_envs": 4,
     "gamma": 0.99
