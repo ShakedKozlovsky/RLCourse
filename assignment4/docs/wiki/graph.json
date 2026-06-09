@@ -1,0 +1,1207 @@
+{
+  "version": "1.00",
+  "nodes": [
+    {
+      "id": "module:proximal_lab.environment.mujoco_env",
+      "type": "module",
+      "module": "proximal_lab.environment.mujoco_env",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/environment/mujoco_env.py",
+      "lineno": 0,
+      "docstring_first_line": "MuJoCo env wrapper + running-mean / running-std observation normaliser."
+    },
+    {
+      "id": "class:proximal_lab.environment.mujoco_env.RunningMeanStd",
+      "type": "class",
+      "module": "proximal_lab.environment.mujoco_env",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/environment/mujoco_env.py",
+      "lineno": 19,
+      "docstring_first_line": "Welford's online algorithm \u2014 numerically stable streaming mean + variance."
+    },
+    {
+      "id": "class:proximal_lab.environment.mujoco_env.NormalisedEnv",
+      "type": "class",
+      "module": "proximal_lab.environment.mujoco_env",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/environment/mujoco_env.py",
+      "lineno": 52,
+      "docstring_first_line": "``gym.Env`` wrapper that maintains a ``RunningMeanStd`` over observations."
+    },
+    {
+      "id": "function:proximal_lab.environment.mujoco_env.make_env",
+      "type": "function",
+      "module": "proximal_lab.environment.mujoco_env",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/environment/mujoco_env.py",
+      "lineno": 88,
+      "docstring_first_line": "Construct a single ``NormalisedEnv`` ready for PPO use."
+    },
+    {
+      "id": "module:proximal_lab.environment.vector_env",
+      "type": "module",
+      "module": "proximal_lab.environment.vector_env",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/environment/vector_env.py",
+      "lineno": 0,
+      "docstring_first_line": "Synchronous vectorised env \u2014 n parallel ``NormalisedEnv`` instances stepped in lockstep."
+    },
+    {
+      "id": "class:proximal_lab.environment.vector_env.SyncVectorEnv",
+      "type": "class",
+      "module": "proximal_lab.environment.vector_env",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/environment/vector_env.py",
+      "lineno": 15,
+      "docstring_first_line": "Drives ``n`` ``NormalisedEnv`` instances in lockstep with a shared RMS."
+    },
+    {
+      "id": "module:proximal_lab.interface.cli.main",
+      "type": "module",
+      "module": "proximal_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/interface/cli/main.py",
+      "lineno": 0,
+      "docstring_first_line": "proximal-lab CLI \u2014 thin Click wrapper over the SDK."
+    },
+    {
+      "id": "function:proximal_lab.interface.cli.main.cli",
+      "type": "function",
+      "module": "proximal_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/interface/cli/main.py",
+      "lineno": 23,
+      "docstring_first_line": "proximal-lab: PPO + GAE on MuJoCo continuous control."
+    },
+    {
+      "id": "function:proximal_lab.interface.cli.main.train",
+      "type": "function",
+      "module": "proximal_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/interface/cli/main.py",
+      "lineno": 35,
+      "docstring_first_line": "Train PPO on the chosen env."
+    },
+    {
+      "id": "function:proximal_lab.interface.cli.main.evaluate",
+      "type": "function",
+      "module": "proximal_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/interface/cli/main.py",
+      "lineno": 50,
+      "docstring_first_line": "Evaluate the most-recently-trained policy."
+    },
+    {
+      "id": "function:proximal_lab.interface.cli.main.graphify",
+      "type": "function",
+      "module": "proximal_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/interface/cli/main.py",
+      "lineno": 64,
+      "docstring_first_line": "Generate the Obsidian-compatible wiki from the project's Python AST."
+    },
+    {
+      "id": "function:proximal_lab.interface.cli.main.sweep",
+      "type": "function",
+      "module": "proximal_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/interface/cli/main.py",
+      "lineno": 78,
+      "docstring_first_line": "Run one of the empirical sweeps: lambda / gamma / clip_eps."
+    },
+    {
+      "id": "function:proximal_lab.interface.cli.main.gui",
+      "type": "function",
+      "module": "proximal_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/interface/cli/main.py",
+      "lineno": 93,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:proximal_lab.model.actor",
+      "type": "module",
+      "module": "proximal_lab.model.actor",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/model/actor.py",
+      "lineno": 0,
+      "docstring_first_line": "Gaussian actor for continuous action spaces \u2014 \u03bc(s) MLP + state-independent log_std."
+    },
+    {
+      "id": "class:proximal_lab.model.actor.GaussianActor",
+      "type": "class",
+      "module": "proximal_lab.model.actor",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/model/actor.py",
+      "lineno": 15,
+      "docstring_first_line": "\u03bc(s) = MLP(obs); log_std is a separate learned parameter vector."
+    },
+    {
+      "id": "module:proximal_lab.model.actor_critic_network",
+      "type": "module",
+      "module": "proximal_lab.model.actor_critic_network",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/model/actor_critic_network.py",
+      "lineno": 0,
+      "docstring_first_line": "ActorCriticNet \u2014 separate actor + critic networks bundled for PPO."
+    },
+    {
+      "id": "class:proximal_lab.model.actor_critic_network.ActorCriticNet",
+      "type": "class",
+      "module": "proximal_lab.model.actor_critic_network",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/model/actor_critic_network.py",
+      "lineno": 19,
+      "docstring_first_line": "Bundles a :class:`GaussianActor` and a :class:`Critic`."
+    },
+    {
+      "id": "module:proximal_lab.model.critic",
+      "type": "module",
+      "module": "proximal_lab.model.critic",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/model/critic.py",
+      "lineno": 0,
+      "docstring_first_line": "Value-function critic \u2014 MLP returning scalar V(s)."
+    },
+    {
+      "id": "class:proximal_lab.model.critic.Critic",
+      "type": "class",
+      "module": "proximal_lab.model.critic",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/model/critic.py",
+      "lineno": 14,
+      "docstring_first_line": "obs \u2192 tanh-MLP \u2192 scalar V(s)."
+    },
+    {
+      "id": "module:proximal_lab.model.init",
+      "type": "module",
+      "module": "proximal_lab.model.init",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/model/init.py",
+      "lineno": 0,
+      "docstring_first_line": "Orthogonal initialisation \u2014 the PPO recipe (Engstrom et al. 2020)."
+    },
+    {
+      "id": "function:proximal_lab.model.init.orthogonal_",
+      "type": "function",
+      "module": "proximal_lab.model.init",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/model/init.py",
+      "lineno": 18,
+      "docstring_first_line": "In-place orthogonal init with zero bias."
+    },
+    {
+      "id": "function:proximal_lab.model.init.init_mlp",
+      "type": "function",
+      "module": "proximal_lab.model.init",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/model/init.py",
+      "lineno": 25,
+      "docstring_first_line": "Initialise a list of ``nn.Linear`` \u2014 all but the last with hidden gain."
+    },
+    {
+      "id": "module:proximal_lab.sdk.env_builder",
+      "type": "module",
+      "module": "proximal_lab.sdk.env_builder",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/sdk/env_builder.py",
+      "lineno": 0,
+      "docstring_first_line": "Build a vectorised env from config."
+    },
+    {
+      "id": "function:proximal_lab.sdk.env_builder.build_vector_env",
+      "type": "function",
+      "module": "proximal_lab.sdk.env_builder",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/sdk/env_builder.py",
+      "lineno": 9,
+      "docstring_first_line": "Create ``SyncVectorEnv`` sized per config."
+    },
+    {
+      "id": "module:proximal_lab.sdk.sdk",
+      "type": "module",
+      "module": "proximal_lab.sdk.sdk",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/sdk/sdk.py",
+      "lineno": 0,
+      "docstring_first_line": "ProximalLab SDK \u2014 the single facade the CLI and GUI both call into."
+    },
+    {
+      "id": "class:proximal_lab.sdk.sdk.ProximalLab",
+      "type": "class",
+      "module": "proximal_lab.sdk.sdk",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/sdk/sdk.py",
+      "lineno": 24,
+      "docstring_first_line": "High-level facade. Holds state across calls (env, net, train result)."
+    },
+    {
+      "id": "module:proximal_lab.sdk.trainers",
+      "type": "module",
+      "module": "proximal_lab.sdk.trainers",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/sdk/trainers.py",
+      "lineno": 0,
+      "docstring_first_line": "Module-level constructors so ``sdk/sdk.py`` stays close to the 150-LOC cap."
+    },
+    {
+      "id": "function:proximal_lab.sdk.trainers.build_actor_critic",
+      "type": "function",
+      "module": "proximal_lab.sdk.trainers",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/sdk/trainers.py",
+      "lineno": 10,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "function:proximal_lab.sdk.trainers.build_ppo_service",
+      "type": "function",
+      "module": "proximal_lab.sdk.trainers",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/sdk/trainers.py",
+      "lineno": 22,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:proximal_lab.services.comparison_service",
+      "type": "module",
+      "module": "proximal_lab.services.comparison_service",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/comparison_service.py",
+      "lineno": 0,
+      "docstring_first_line": "Cross-config comparison \u2014 aggregate seeds with mean \u00b1 95 % CI."
+    },
+    {
+      "id": "class:proximal_lab.services.comparison_service.CellSummary",
+      "type": "class",
+      "module": "proximal_lab.services.comparison_service",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/comparison_service.py",
+      "lineno": 11,
+      "docstring_first_line": "One config \u00d7 seeds aggregate \u2014 used for sweep cells + cross-env cells."
+    },
+    {
+      "id": "class:proximal_lab.services.comparison_service.ComparisonReport",
+      "type": "class",
+      "module": "proximal_lab.services.comparison_service",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/comparison_service.py",
+      "lineno": 25,
+      "docstring_first_line": "A full sweep / comparison result for a configurable list of cells."
+    },
+    {
+      "id": "function:proximal_lab.services.comparison_service.aggregate_with_ci",
+      "type": "function",
+      "module": "proximal_lab.services.comparison_service",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/comparison_service.py",
+      "lineno": 35,
+      "docstring_first_line": "Mean \u00b1 95 % normal-approx CI of a list of per-seed final rewards."
+    },
+    {
+      "id": "class:proximal_lab.services.comparison_service.ComparisonService",
+      "type": "class",
+      "module": "proximal_lab.services.comparison_service",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/comparison_service.py",
+      "lineno": 48,
+      "docstring_first_line": "Build a :class:`ComparisonReport` from a dict ``{cell_name: [per-seed finals]}``."
+    },
+    {
+      "id": "module:proximal_lab.services.evaluation_service",
+      "type": "module",
+      "module": "proximal_lab.services.evaluation_service",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/evaluation_service.py",
+      "lineno": 0,
+      "docstring_first_line": "Greedy / stochastic evaluation rollouts for a trained ``ActorCriticNet``."
+    },
+    {
+      "id": "class:proximal_lab.services.evaluation_service.EvaluationResult",
+      "type": "class",
+      "module": "proximal_lab.services.evaluation_service",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/evaluation_service.py",
+      "lineno": 15,
+      "docstring_first_line": "Summary of an n-episode evaluation rollout."
+    },
+    {
+      "id": "class:proximal_lab.services.evaluation_service.EvaluationService",
+      "type": "class",
+      "module": "proximal_lab.services.evaluation_service",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/evaluation_service.py",
+      "lineno": 25,
+      "docstring_first_line": "Run ``n_episodes`` evaluation rollouts and aggregate the returns."
+    },
+    {
+      "id": "module:proximal_lab.services.gae",
+      "type": "module",
+      "module": "proximal_lab.services.gae",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/gae.py",
+      "lineno": 0,
+      "docstring_first_line": "Generalized Advantage Estimation \u2014 Schulman et al. 2016."
+    },
+    {
+      "id": "function:proximal_lab.services.gae.compute_gae",
+      "type": "function",
+      "module": "proximal_lab.services.gae",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/gae.py",
+      "lineno": 17,
+      "docstring_first_line": "Compute GAE advantages over one rollout."
+    },
+    {
+      "id": "module:proximal_lab.services.ppo_clip",
+      "type": "module",
+      "module": "proximal_lab.services.ppo_clip",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/ppo_clip.py",
+      "lineno": 0,
+      "docstring_first_line": "PPO clipped surrogate \u2014 the headline math (Schulman et al. 2017 Eq. 7)."
+    },
+    {
+      "id": "function:proximal_lab.services.ppo_clip.ppo_clip_loss",
+      "type": "function",
+      "module": "proximal_lab.services.ppo_clip",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/ppo_clip.py",
+      "lineno": 14,
+      "docstring_first_line": "Compute the PPO clipped surrogate loss."
+    },
+    {
+      "id": "function:proximal_lab.services.ppo_clip.approx_kl",
+      "type": "function",
+      "module": "proximal_lab.services.ppo_clip",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/ppo_clip.py",
+      "lineno": 47,
+      "docstring_first_line": "Approximate KL divergence per Schulman's blog: ``E[log(p_old) \u2212 log(p_new)]``."
+    },
+    {
+      "id": "module:proximal_lab.services.ppo_service",
+      "type": "module",
+      "module": "proximal_lab.services.ppo_service",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/ppo_service.py",
+      "lineno": 0,
+      "docstring_first_line": "End-to-end PPO + GAE training loop (slide-18 pipeline)."
+    },
+    {
+      "id": "class:proximal_lab.services.ppo_service.PPOService",
+      "type": "class",
+      "module": "proximal_lab.services.ppo_service",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/ppo_service.py",
+      "lineno": 26,
+      "docstring_first_line": "Train an :class:`ActorCriticNet` with PPO + GAE on a :class:`SyncVectorEnv`."
+    },
+    {
+      "id": "module:proximal_lab.services.ppo_update",
+      "type": "module",
+      "module": "proximal_lab.services.ppo_update",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/ppo_update.py",
+      "lineno": 0,
+      "docstring_first_line": "PPO update step + diagnostics aggregation \u2014 factored out of ``ppo_service.py``."
+    },
+    {
+      "id": "function:proximal_lab.services.ppo_update.ppo_update",
+      "type": "function",
+      "module": "proximal_lab.services.ppo_update",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/ppo_update.py",
+      "lineno": 14,
+      "docstring_first_line": "Run K-epoch minibatch PPO update on a filled buffer; return diagnostics."
+    },
+    {
+      "id": "module:proximal_lab.services.rollout_buffer",
+      "type": "module",
+      "module": "proximal_lab.services.rollout_buffer",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/rollout_buffer.py",
+      "lineno": 0,
+      "docstring_first_line": "Rollout buffer \u2014 stores ``T \u00d7 n_envs`` transitions per PPO iteration."
+    },
+    {
+      "id": "class:proximal_lab.services.rollout_buffer.RolloutBuffer",
+      "type": "class",
+      "module": "proximal_lab.services.rollout_buffer",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/services/rollout_buffer.py",
+      "lineno": 17,
+      "docstring_first_line": "Fixed-size buffer for one PPO rollout \u2014 shape ``(T, n_envs, \u2026)``."
+    },
+    {
+      "id": "module:proximal_lab.shared.config",
+      "type": "module",
+      "module": "proximal_lab.shared.config",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/shared/config.py",
+      "lineno": 0,
+      "docstring_first_line": "Configuration loader. Single source of truth \u2014 no hardcoded values in code."
+    },
+    {
+      "id": "class:proximal_lab.shared.config.ConfigError",
+      "type": "class",
+      "module": "proximal_lab.shared.config",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/shared/config.py",
+      "lineno": 23,
+      "docstring_first_line": "Raised on missing / malformed / version-mismatched config."
+    },
+    {
+      "id": "class:proximal_lab.shared.config.ConfigManager",
+      "type": "class",
+      "module": "proximal_lab.shared.config",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/shared/config.py",
+      "lineno": 27,
+      "docstring_first_line": "Loads JSON config and exposes it via dotted access."
+    },
+    {
+      "id": "module:proximal_lab.shared.logger",
+      "type": "module",
+      "module": "proximal_lab.shared.logger",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/shared/logger.py",
+      "lineno": 0,
+      "docstring_first_line": "Stdlib logger factory \u2014 single configuration point for the whole project."
+    },
+    {
+      "id": "function:proximal_lab.shared.logger.get_logger",
+      "type": "function",
+      "module": "proximal_lab.shared.logger",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/shared/logger.py",
+      "lineno": 26,
+      "docstring_first_line": "Return a module-level logger; the first call configures root output."
+    },
+    {
+      "id": "module:proximal_lab.shared.seed",
+      "type": "module",
+      "module": "proximal_lab.shared.seed",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/shared/seed.py",
+      "lineno": 0,
+      "docstring_first_line": "Global seed plumbing \u2014 one place to make a run deterministic."
+    },
+    {
+      "id": "function:proximal_lab.shared.seed.set_global_seed",
+      "type": "function",
+      "module": "proximal_lab.shared.seed",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/shared/seed.py",
+      "lineno": 11,
+      "docstring_first_line": "Seed Python, NumPy, and PyTorch (CPU + CUDA if available)."
+    },
+    {
+      "id": "module:proximal_lab.shared.types",
+      "type": "module",
+      "module": "proximal_lab.shared.types",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/shared/types.py",
+      "lineno": 0,
+      "docstring_first_line": "Typed structures shared across layers (rollouts, episode metrics, train results)."
+    },
+    {
+      "id": "class:proximal_lab.shared.types.RolloutBatch",
+      "type": "class",
+      "module": "proximal_lab.shared.types",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/shared/types.py",
+      "lineno": 11,
+      "docstring_first_line": "One PPO rollout's worth of transitions, post-GAE."
+    },
+    {
+      "id": "class:proximal_lab.shared.types.EpisodeMetrics",
+      "type": "class",
+      "module": "proximal_lab.shared.types",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/shared/types.py",
+      "lineno": 25,
+      "docstring_first_line": "Per-episode aggregates emitted by the env wrappers + collector."
+    },
+    {
+      "id": "class:proximal_lab.shared.types.IterationDiagnostics",
+      "type": "class",
+      "module": "proximal_lab.shared.types",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/shared/types.py",
+      "lineno": 35,
+      "docstring_first_line": "Per-PPO-iteration diagnostics \u2014 slide-21 stability pillars in one struct."
+    },
+    {
+      "id": "class:proximal_lab.shared.types.TrainResult",
+      "type": "class",
+      "module": "proximal_lab.shared.types",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/shared/types.py",
+      "lineno": 50,
+      "docstring_first_line": "Outcome of ``PPOService.fit`` \u2014 per-iteration diagnostics for plotting + analysis."
+    },
+    {
+      "id": "module:proximal_lab.shared.version",
+      "type": "module",
+      "module": "proximal_lab.shared.version",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/shared/version.py",
+      "lineno": 0,
+      "docstring_first_line": "Single source of truth for the package version. Mirrored in pyproject.toml + configs/setup.json."
+    },
+    {
+      "id": "module:proximal_lab.tools.graphify.emitter",
+      "type": "module",
+      "module": "proximal_lab.tools.graphify.emitter",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/tools/graphify/emitter.py",
+      "lineno": 0,
+      "docstring_first_line": "Emit ``graph.json`` + one Markdown file per module \u2014 Obsidian-compatible."
+    },
+    {
+      "id": "function:proximal_lab.tools.graphify.emitter.emit",
+      "type": "function",
+      "module": "proximal_lab.tools.graphify.emitter",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/tools/graphify/emitter.py",
+      "lineno": 19,
+      "docstring_first_line": "Write ``graph.json`` + one ``.md`` per module to ``out_dir``."
+    },
+    {
+      "id": "module:proximal_lab.tools.graphify.runner",
+      "type": "module",
+      "module": "proximal_lab.tools.graphify.runner",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/tools/graphify/runner.py",
+      "lineno": 0,
+      "docstring_first_line": "Graphify CLI entry \u2014 walk src/proximal_lab and emit docs/wiki/."
+    },
+    {
+      "id": "function:proximal_lab.tools.graphify.runner.run_graphify",
+      "type": "function",
+      "module": "proximal_lab.tools.graphify.runner",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/tools/graphify/runner.py",
+      "lineno": 15,
+      "docstring_first_line": "Walk ``src_dir`` and write Obsidian wiki to ``out_dir``."
+    },
+    {
+      "id": "module:proximal_lab.tools.graphify.walker",
+      "type": "module",
+      "module": "proximal_lab.tools.graphify.walker",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/tools/graphify/walker.py",
+      "lineno": 0,
+      "docstring_first_line": "AST walker \u2014 extract modules, classes, public functions, and import edges."
+    },
+    {
+      "id": "class:proximal_lab.tools.graphify.walker.Node",
+      "type": "class",
+      "module": "proximal_lab.tools.graphify.walker",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/tools/graphify/walker.py",
+      "lineno": 14,
+      "docstring_first_line": "One symbol in the knowledge graph."
+    },
+    {
+      "id": "class:proximal_lab.tools.graphify.walker.Edge",
+      "type": "class",
+      "module": "proximal_lab.tools.graphify.walker",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/tools/graphify/walker.py",
+      "lineno": 26,
+      "docstring_first_line": "One relation between two nodes."
+    },
+    {
+      "id": "class:proximal_lab.tools.graphify.walker.GraphifyResult",
+      "type": "class",
+      "module": "proximal_lab.tools.graphify.walker",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/tools/graphify/walker.py",
+      "lineno": 35,
+      "docstring_first_line": "Container for walker output."
+    },
+    {
+      "id": "function:proximal_lab.tools.graphify.walker.walk_source_tree",
+      "type": "function",
+      "module": "proximal_lab.tools.graphify.walker",
+      "path": "/home/corsight/src/RL_Course/assignment4/src/proximal_lab/tools/graphify/walker.py",
+      "lineno": 42,
+      "docstring_first_line": "Walk every ``.py`` file under ``src_root`` (excluding __init__.py)."
+    }
+  ],
+  "edges": [
+    {
+      "src": "module:proximal_lab.environment.mujoco_env",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.environment.mujoco_env",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.environment.mujoco_env",
+      "dst": "class:proximal_lab.environment.mujoco_env.RunningMeanStd",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.environment.mujoco_env",
+      "dst": "class:proximal_lab.environment.mujoco_env.NormalisedEnv",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.environment.mujoco_env",
+      "dst": "function:proximal_lab.environment.mujoco_env.make_env",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.environment.vector_env",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.environment.vector_env",
+      "dst": "module:proximal_lab.environment.mujoco_env",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.environment.vector_env",
+      "dst": "class:proximal_lab.environment.vector_env.SyncVectorEnv",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.interface.cli.main",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.interface.cli.main",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.interface.cli.main",
+      "dst": "module:proximal_lab.sdk.sdk",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.interface.cli.main",
+      "dst": "function:proximal_lab.interface.cli.main.cli",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.interface.cli.main",
+      "dst": "function:proximal_lab.interface.cli.main.train",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.interface.cli.main",
+      "dst": "function:proximal_lab.interface.cli.main.evaluate",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.interface.cli.main",
+      "dst": "function:proximal_lab.interface.cli.main.graphify",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.interface.cli.main",
+      "dst": "function:proximal_lab.interface.cli.main.sweep",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.interface.cli.main",
+      "dst": "function:proximal_lab.interface.cli.main.gui",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.model.actor",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.model.actor",
+      "dst": "module:torch",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.model.actor",
+      "dst": "module:torch.distributions",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.model.actor",
+      "dst": "module:proximal_lab.model.init",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.model.actor",
+      "dst": "class:proximal_lab.model.actor.GaussianActor",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.model.actor_critic_network",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.model.actor_critic_network",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.model.actor_critic_network",
+      "dst": "module:torch",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.model.actor_critic_network",
+      "dst": "module:proximal_lab.model.actor",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.model.actor_critic_network",
+      "dst": "module:proximal_lab.model.critic",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.model.actor_critic_network",
+      "dst": "class:proximal_lab.model.actor_critic_network.ActorCriticNet",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.model.critic",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.model.critic",
+      "dst": "module:torch",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.model.critic",
+      "dst": "module:proximal_lab.model.init",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.model.critic",
+      "dst": "class:proximal_lab.model.critic.Critic",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.model.init",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.model.init",
+      "dst": "module:torch",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.model.init",
+      "dst": "function:proximal_lab.model.init.orthogonal_",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.model.init",
+      "dst": "function:proximal_lab.model.init.init_mlp",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.sdk.env_builder",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.env_builder",
+      "dst": "module:proximal_lab.environment.vector_env",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.env_builder",
+      "dst": "module:proximal_lab.shared.config",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.env_builder",
+      "dst": "function:proximal_lab.sdk.env_builder.build_vector_env",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.sdk.sdk",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.sdk",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.sdk",
+      "dst": "module:proximal_lab.model.actor_critic_network",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.sdk",
+      "dst": "module:proximal_lab.sdk.env_builder",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.sdk",
+      "dst": "module:proximal_lab.sdk.trainers",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.sdk",
+      "dst": "module:proximal_lab.services.evaluation_service",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.sdk",
+      "dst": "module:proximal_lab.shared.config",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.sdk",
+      "dst": "module:proximal_lab.shared.logger",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.sdk",
+      "dst": "module:proximal_lab.shared.seed",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.sdk",
+      "dst": "module:proximal_lab.shared.types",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.sdk",
+      "dst": "class:proximal_lab.sdk.sdk.ProximalLab",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.sdk.trainers",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.trainers",
+      "dst": "module:proximal_lab.model.actor_critic_network",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.trainers",
+      "dst": "module:proximal_lab.services.ppo_service",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.trainers",
+      "dst": "module:proximal_lab.shared.config",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.sdk.trainers",
+      "dst": "function:proximal_lab.sdk.trainers.build_actor_critic",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.sdk.trainers",
+      "dst": "function:proximal_lab.sdk.trainers.build_ppo_service",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.services.comparison_service",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.comparison_service",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.comparison_service",
+      "dst": "class:proximal_lab.services.comparison_service.CellSummary",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.services.comparison_service",
+      "dst": "class:proximal_lab.services.comparison_service.ComparisonReport",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.services.comparison_service",
+      "dst": "function:proximal_lab.services.comparison_service.aggregate_with_ci",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.services.comparison_service",
+      "dst": "class:proximal_lab.services.comparison_service.ComparisonService",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.services.evaluation_service",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.evaluation_service",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.evaluation_service",
+      "dst": "module:proximal_lab.environment.mujoco_env",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.evaluation_service",
+      "dst": "module:proximal_lab.model.actor_critic_network",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.evaluation_service",
+      "dst": "class:proximal_lab.services.evaluation_service.EvaluationResult",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.services.evaluation_service",
+      "dst": "class:proximal_lab.services.evaluation_service.EvaluationService",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.services.gae",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.gae",
+      "dst": "function:proximal_lab.services.gae.compute_gae",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_clip",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_clip",
+      "dst": "function:proximal_lab.services.ppo_clip.ppo_clip_loss",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_clip",
+      "dst": "function:proximal_lab.services.ppo_clip.approx_kl",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_service",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_service",
+      "dst": "module:torch",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_service",
+      "dst": "module:proximal_lab.environment.vector_env",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_service",
+      "dst": "module:proximal_lab.model.actor_critic_network",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_service",
+      "dst": "module:proximal_lab.services.ppo_update",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_service",
+      "dst": "module:proximal_lab.services.rollout_buffer",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_service",
+      "dst": "module:proximal_lab.shared.logger",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_service",
+      "dst": "module:proximal_lab.shared.types",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_service",
+      "dst": "class:proximal_lab.services.ppo_service.PPOService",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_update",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_update",
+      "dst": "module:torch",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_update",
+      "dst": "module:proximal_lab.model.actor_critic_network",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_update",
+      "dst": "module:proximal_lab.services.ppo_clip",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_update",
+      "dst": "module:proximal_lab.services.rollout_buffer",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.ppo_update",
+      "dst": "function:proximal_lab.services.ppo_update.ppo_update",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.services.rollout_buffer",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.rollout_buffer",
+      "dst": "module:collections.abc",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.services.rollout_buffer",
+      "dst": "class:proximal_lab.services.rollout_buffer.RolloutBuffer",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.shared.config",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.shared.config",
+      "dst": "module:collections.abc",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.shared.config",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.shared.config",
+      "dst": "module:typing",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.shared.config",
+      "dst": "module:proximal_lab.shared.version",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.shared.config",
+      "dst": "class:proximal_lab.shared.config.ConfigError",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.shared.config",
+      "dst": "class:proximal_lab.shared.config.ConfigManager",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.shared.logger",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.shared.logger",
+      "dst": "function:proximal_lab.shared.logger.get_logger",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.shared.seed",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.shared.seed",
+      "dst": "function:proximal_lab.shared.seed.set_global_seed",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.shared.types",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.shared.types",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.shared.types",
+      "dst": "class:proximal_lab.shared.types.RolloutBatch",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.shared.types",
+      "dst": "class:proximal_lab.shared.types.EpisodeMetrics",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.shared.types",
+      "dst": "class:proximal_lab.shared.types.IterationDiagnostics",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.shared.types",
+      "dst": "class:proximal_lab.shared.types.TrainResult",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.emitter",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.emitter",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.emitter",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.emitter",
+      "dst": "module:proximal_lab.tools.graphify.walker",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.emitter",
+      "dst": "function:proximal_lab.tools.graphify.emitter.emit",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.runner",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.runner",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.runner",
+      "dst": "module:proximal_lab.shared.config",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.runner",
+      "dst": "module:proximal_lab.shared.logger",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.runner",
+      "dst": "module:proximal_lab.tools.graphify.emitter",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.runner",
+      "dst": "module:proximal_lab.tools.graphify.walker",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.runner",
+      "dst": "function:proximal_lab.tools.graphify.runner.run_graphify",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.walker",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.walker",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.walker",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.walker",
+      "dst": "class:proximal_lab.tools.graphify.walker.Node",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.walker",
+      "dst": "class:proximal_lab.tools.graphify.walker.Edge",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.walker",
+      "dst": "class:proximal_lab.tools.graphify.walker.GraphifyResult",
+      "type": "contains"
+    },
+    {
+      "src": "module:proximal_lab.tools.graphify.walker",
+      "dst": "function:proximal_lab.tools.graphify.walker.walk_source_tree",
+      "type": "contains"
+    }
+  ]
+}

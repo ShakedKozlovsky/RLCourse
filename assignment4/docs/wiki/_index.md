@@ -1,0 +1,27 @@
+# Project Wiki Index
+
+- [[proximal_lab_environment_mujoco_env|proximal_lab.environment.mujoco_env]] — MuJoCo env wrapper + running-mean / running-std observation normaliser.
+- [[proximal_lab_environment_vector_env|proximal_lab.environment.vector_env]] — Synchronous vectorised env — n parallel ``NormalisedEnv`` instances stepped in lockstep.
+- [[proximal_lab_interface_cli_main|proximal_lab.interface.cli.main]] — proximal-lab CLI — thin Click wrapper over the SDK.
+- [[proximal_lab_model_actor|proximal_lab.model.actor]] — Gaussian actor for continuous action spaces — μ(s) MLP + state-independent log_std.
+- [[proximal_lab_model_actor_critic_network|proximal_lab.model.actor_critic_network]] — ActorCriticNet — separate actor + critic networks bundled for PPO.
+- [[proximal_lab_model_critic|proximal_lab.model.critic]] — Value-function critic — MLP returning scalar V(s).
+- [[proximal_lab_model_init|proximal_lab.model.init]] — Orthogonal initialisation — the PPO recipe (Engstrom et al. 2020).
+- [[proximal_lab_sdk_env_builder|proximal_lab.sdk.env_builder]] — Build a vectorised env from config.
+- [[proximal_lab_sdk_sdk|proximal_lab.sdk.sdk]] — ProximalLab SDK — the single facade the CLI and GUI both call into.
+- [[proximal_lab_sdk_trainers|proximal_lab.sdk.trainers]] — Module-level constructors so ``sdk/sdk.py`` stays close to the 150-LOC cap.
+- [[proximal_lab_services_comparison_service|proximal_lab.services.comparison_service]] — Cross-config comparison — aggregate seeds with mean ± 95 % CI.
+- [[proximal_lab_services_evaluation_service|proximal_lab.services.evaluation_service]] — Greedy / stochastic evaluation rollouts for a trained ``ActorCriticNet``.
+- [[proximal_lab_services_gae|proximal_lab.services.gae]] — Generalized Advantage Estimation — Schulman et al. 2016.
+- [[proximal_lab_services_ppo_clip|proximal_lab.services.ppo_clip]] — PPO clipped surrogate — the headline math (Schulman et al. 2017 Eq. 7).
+- [[proximal_lab_services_ppo_service|proximal_lab.services.ppo_service]] — End-to-end PPO + GAE training loop (slide-18 pipeline).
+- [[proximal_lab_services_ppo_update|proximal_lab.services.ppo_update]] — PPO update step + diagnostics aggregation — factored out of ``ppo_service.py``.
+- [[proximal_lab_services_rollout_buffer|proximal_lab.services.rollout_buffer]] — Rollout buffer — stores ``T × n_envs`` transitions per PPO iteration.
+- [[proximal_lab_shared_config|proximal_lab.shared.config]] — Configuration loader. Single source of truth — no hardcoded values in code.
+- [[proximal_lab_shared_logger|proximal_lab.shared.logger]] — Stdlib logger factory — single configuration point for the whole project.
+- [[proximal_lab_shared_seed|proximal_lab.shared.seed]] — Global seed plumbing — one place to make a run deterministic.
+- [[proximal_lab_shared_types|proximal_lab.shared.types]] — Typed structures shared across layers (rollouts, episode metrics, train results).
+- [[proximal_lab_shared_version|proximal_lab.shared.version]] — Single source of truth for the package version. Mirrored in pyproject.toml + configs/setup.json.
+- [[proximal_lab_tools_graphify_emitter|proximal_lab.tools.graphify.emitter]] — Emit ``graph.json`` + one Markdown file per module — Obsidian-compatible.
+- [[proximal_lab_tools_graphify_runner|proximal_lab.tools.graphify.runner]] — Graphify CLI entry — walk src/proximal_lab and emit docs/wiki/.
+- [[proximal_lab_tools_graphify_walker|proximal_lab.tools.graphify.walker]] — AST walker — extract modules, classes, public functions, and import edges.
