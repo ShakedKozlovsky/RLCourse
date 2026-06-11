@@ -42,8 +42,13 @@ def test_smoke_training_returns_train_result() -> None:
     result = svc.fit(net, env, total_timesteps=1024, steps_per_rollout=256)
     assert result.total_timesteps >= 1024
     assert len(result.diagnostics) >= 2
+    import math
     for d in result.diagnostics:
-        assert d.mean_kl >= 0.0  # approx_kl can be negative tiny but mean usually positive
+        # Schulman's approx_kl = E[log π_old − log π_new] is unbiased so single-batch
+        # estimates can be slightly negative (~1e-3) on early iterations when the policy
+        # has barely moved. We only assert the magnitude is sane.
+        assert math.isfinite(d.mean_kl)
+        assert abs(d.mean_kl) < 0.5
         assert 0.0 <= d.clip_fraction <= 1.0
 
 
