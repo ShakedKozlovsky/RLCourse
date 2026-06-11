@@ -30,7 +30,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 from proximal_lab.sdk.sdk import ProximalLab  # noqa: E402
-from proximal_lab.services.experiment_service import _write_temp_cfg  # noqa: E402
+from proximal_lab.sdk.experiments import _write_temp_cfg  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / "results" / "layer16_gae_ablation"

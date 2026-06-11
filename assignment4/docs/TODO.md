@@ -161,7 +161,7 @@ Commit: `Layer 9: tools/graphify — AST walker + Markdown emitter for docs/wiki
 
 Commit: `Layer 10: ExperimentService — λ + γ + clip-ε sweeps with 3-seed CI`
 
-- [x] `services/experiment_service.py::ExperimentService` with `run_lambda_sweep`, `run_gamma_sweep`, `run_clip_eps_sweep`
+- [x] `sdk/experiments.py::ExperimentService` with `run_lambda_sweep`, `run_gamma_sweep`, `run_clip_eps_sweep`
 - [x] Each cell: 200k timesteps × 3 seeds; emit JSON with `final_reward_mean`, `final_reward_ci_95`, full reward curve
 - [x] CLI command `proximal-lab sweep <kind>` writes results to `results/sweeps/<kind>.json`
 - [x] Plots: `assets/plots/lambda_sweep.png`, `gamma_sweep.png`, `clip_eps_sweep.png` — each with error bars

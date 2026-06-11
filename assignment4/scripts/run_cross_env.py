@@ -12,7 +12,7 @@ from copy import deepcopy
 from pathlib import Path
 
 from proximal_lab.sdk.sdk import ProximalLab
-from proximal_lab.services.experiment_service import _write_temp_cfg
+from proximal_lab.sdk.experiments import _write_temp_cfg
 
 ROOT = Path(__file__).resolve().parents[1]
 

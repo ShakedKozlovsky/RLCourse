@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 
 from proximal_lab.sdk.sdk import ProximalLab
-from proximal_lab.services.experiment_service import ExperimentService
+from proximal_lab.sdk.experiments import ExperimentService
 
 ROOT = Path(__file__).resolve().parents[1]
 

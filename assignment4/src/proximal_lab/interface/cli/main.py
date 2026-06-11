@@ -78,7 +78,7 @@ def graphify(ctx: click.Context, src_dir: Path | None, out_dir: Path | None) -> 
 def sweep(ctx: click.Context, kind: str, env_id: str | None,
           timesteps_per_cell: int, n_seeds: int) -> None:
     """Run one of the empirical sweeps: lambda / gamma / clip_eps."""
-    from proximal_lab.services.experiment_service import ExperimentService
+    from proximal_lab.sdk.experiments import ExperimentService
 
     sdk = _sdk(ctx.obj["config"])
     svc = ExperimentService(sdk, timesteps_per_cell=timesteps_per_cell, n_seeds=n_seeds)

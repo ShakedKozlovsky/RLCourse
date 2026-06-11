@@ -170,7 +170,7 @@ This is *not* a serious replacement for Graphify itself; it's a focused implemen
 | λ-sweep monotonicity | Reproducible peaked or monotone curve | `assets/plots/lambda_sweep.png` + JSON in `results/` |
 | Reproducibility | Same seed → bit-identical training history | `tests/integration/test_reproducibility.py` |
 | Graphify output | `docs/wiki/graph.json` opens in Obsidian; nodes = modules, edges = imports | Visual inspection + JSON-schema test |
-| Multi-seed CI | 3 seeds per cell, 95 % normal-approx CIs | `services/experiment_service.py::aggregate_with_ci` |
+| Multi-seed CI | 3 seeds per cell, 95 % normal-approx CIs | `sdk/experiments.py::aggregate_with_ci` |
 | Architecture purity | No model/service logic in GUI/CLI; SDK is the only consumer entry | Code review + import graph |
 
 ## 10. Non-functional requirements

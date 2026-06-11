@@ -14,15 +14,16 @@ Strict layering — inner layers must never import from outer layers. The SDK is
                          │  (only allowed entry point)
                          ▼
 ┌──────────────────────────────────────────────────────────┐
-│  SDK  (src/proximal_lab/sdk/sdk.py)                      │
-│    ProximalLab — facade over all services                │
+│  SDK  (src/proximal_lab/sdk/)                            │
+│    ProximalLab facade + env_builder + trainers           │
+│    + experiments.ExperimentService (sweeps — ADR-009)    │
 └────────────────────────┬─────────────────────────────────┘
                          │
                          ▼
 ┌──────────────────────────────────────────────────────────┐
 │  Services  (src/proximal_lab/services/)                  │
 │    PPOService · GAE · RolloutBuffer · EvaluationService  │
-│    ExperimentService · DiagnosticsService                │
+│    ComparisonService · DiagnosticsService                │
 └──────┬────────────┬───────────┬────────────┬─────────────┘
        │            │           │            │
        ▼            ▼           ▼            ▼
@@ -68,12 +69,14 @@ src/proximal_lab/
 │   ├── ppo_service.py                # fit(net, env, total_timesteps) — main training loop
 │   ├── evaluation_service.py         # greedy + stochastic rollout for evaluation
 │   ├── comparison_service.py         # cross-config / cross-seed comparison
-│   ├── experiment_service.py         # λ / γ / clip-ε sweeps with CI aggregation
+│   # NB: experiment_service moved to sdk/experiments.py — see ADR-009
 │   └── diagnostics.py                # KL monitor + clip-fraction + explained-variance
 ├── sdk/
 │   ├── sdk.py                        # ProximalLab facade
 │   ├── env_builder.py                # build_env(cfg, env_id) helper
-│   └── trainers.py                   # build_*_service constructors
+│   ├── trainers.py                   # build_*_service constructors
+│   └── experiments.py                # ExperimentService — λ/γ/clip-ε sweeps
+│                                     # (lives here, not services/, per ADR-009)
 ├── interface/
 │   ├── cli/
 │   │   ├── main.py                   # Click group + short commands
@@ -273,7 +276,9 @@ This is the canonical PPO-style GAE implementation. Crucially, `next_non_termina
 
 - **ADR-007: Graphify lives under `tools/`, not `services/`.** Rationale: it operates on the filesystem, not runtime state. Mixing it into services would muddle the dependency graph. Trade-off: requires its own tiny CLI entry; worth it for clean separation.
 
-- **ADR-008: Three-sweep empirical analysis (λ, γ, clip-ε).** Rationale: these are the three knobs PPO + GAE explicitly expose to the user (slides 10, 14, 16). Other ablations (entropy coefficient, max-grad-norm, target-KL) are minor. Trade-off: three sweeps × 3 seeds × ~150k timesteps each ≈ 30 min CPU; affordable.
+- **ADR-008: Three-sweep empirical analysis (λ, γ, clip-ε).** Rationale: these are the three knobs PPO + GAE explicitly expose to the user (slides 10, 14, 16). Other ablations (entropy coefficient, max-grad-norm, target-KL) are minor. Trade-off: three sweeps × 3 seeps × ~150k timesteps each ≈ 30 min CPU; affordable.
+
+- **ADR-009 (Layer 17): `ExperimentService` lives in `sdk/experiments.py`, not `services/`.** Rationale: the experiment runner orchestrates *multiple SDK instances* (one per sweep cell with overridden config). Originally placed in `services/experiment_service.py`, which created a backwards dependency arrow `services → sdk` that contradicted § 1's strict-layering claim. Moving it to `sdk/experiments.py` makes the import direction honest (`sdk/experiments → sdk/sdk` is within-layer and explicitly allowed). Trade-off: the file is more of an "experiment orchestrator" than a low-level service, so the new location is arguably the more truthful classification anyway. Triggered by Layer-17 V3-rules audit ("services must never import from sdk").
 
 ## 10. Testing strategy
 

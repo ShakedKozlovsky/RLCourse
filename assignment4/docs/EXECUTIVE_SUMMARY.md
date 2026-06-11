@@ -18,7 +18,7 @@ Architecture: `interface → sdk → services → {environment, model, tools} �
 | MuJoCo env + obs normaliser | [`environment/mujoco_env.py`](../src/proximal_lab/environment/mujoco_env.py) | Welford running stats match NumPy reference |
 | Actor-critic networks | [`model/actor_critic_network.py`](../src/proximal_lab/model/actor_critic_network.py) | Save/load round-trip; param partition (ADR-002) |
 | Vectorised env (4 parallel) | [`environment/vector_env.py`](../src/proximal_lab/environment/vector_env.py) | Batched obs `(4, 17)`, shared RMS updates across envs |
-| Empirical sweeps | [`services/experiment_service.py`](../src/proximal_lab/services/experiment_service.py) | λ-sweep multi-seed has real CIs |
+| Empirical sweeps | [`sdk/experiments.py`](../src/proximal_lab/sdk/experiments.py) | λ-sweep multi-seed has real CIs |
 | Mini-Graphify (the methodology hook) | [`tools/graphify/`](../src/proximal_lab/tools/graphify/) | Produces `docs/wiki/` Obsidian Vault with 70 nodes + 128 edges |
 
 ## Headline empirical finding — the λ-sweep

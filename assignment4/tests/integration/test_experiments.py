@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from proximal_lab.sdk.sdk import ProximalLab
-from proximal_lab.services.experiment_service import (
+from proximal_lab.sdk.experiments import (
     ExperimentService,
     aggregate_seeds,
 )
+from proximal_lab.sdk.sdk import ProximalLab
 
 
 @pytest.fixture
