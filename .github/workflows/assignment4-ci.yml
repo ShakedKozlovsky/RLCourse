@@ -29,10 +29,17 @@ jobs:
       - name: Set up Python
         run: uv python install 3.12
 
-      - name: Install MuJoCo system deps
+      - name: Install MuJoCo + Qt system deps
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y libgl1 libglib2.0-0
+          sudo apt-get install -y \
+            libgl1 libglib2.0-0 \
+            libegl1 libegl-mesa0 \
+            libxkbcommon0 libxkbcommon-x11-0 \
+            libdbus-1-3 libxcb-cursor0 libxcb-icccm4 libxcb-image0 \
+            libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 \
+            libxcb-shape0 libxcb-sync1 libxcb-xfixes0 libxcb-xkb1 \
+            libfontconfig1 libxkbfile1 libnss3
 
       - name: Install project + dev deps
         run: uv sync --extra dev
