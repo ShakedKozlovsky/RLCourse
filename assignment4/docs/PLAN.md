@@ -338,3 +338,28 @@ The methodology document positions four artefacts (Raw Folder → Pipeline → W
 | **Obsidian Vault** | `docs/wiki/` opens directly in Obsidian (same folder; the .obsidian/ subdir is the indicator) |
 
 The lecturer's "תכנון אנדריי קרפטי" (Karpathy-inspired) workflow becomes runnable: anyone with this repo + Obsidian installed gets the same wiki the maintainer sees.
+
+## 14. Extension points (V3 § 12.1)
+
+V3 § 12.1 asks for a Plugins-style architecture with documented lifecycle hooks. This project is small enough that a full plugin system would be over-engineering, but the following **extension surfaces** are documented and stable; each is a place where future work can hook in without modifying core code.
+
+| Extension point | What it lets you change | How |
+|---|---|---|
+| `configs/setup.json` | Every hyperparameter (env, gae, actor_critic, ppo, experiments grids, paths, graphify) | Edit JSON; `ConfigManager` reloads at SDK construction. Zero code change. |
+| `environment.TransitionFn` (implicit) | The dynamics function `WorldEnv` runs over | Pass any `Callable[[obs, action], next_obs]` — e.g. a learned model, an identity stub, or a different MuJoCo env. Used in Assignment 3's tests; documented here for reuse. |
+| `sdk.env_builder.build_vector_env(cfg, env_id, seed)` | Which gym env the SDK targets | Pass any `env_id` registered in Gymnasium. CLI exposes `--env-id`. |
+| `services.gae.compute_gae` | The advantage estimator | Pure function with `(rewards, values, last_value, dones, γ, λ)` signature — swap for n-step bootstrap, Retrace, V-trace, etc. without touching `PPOService`. |
+| `services.ppo_clip.ppo_clip_loss` | The clipping policy | Swap for an adaptive-KL variant, value-clipped objective, or PPG-style separate heads. |
+| `model.actor.GaussianActor` / `model.critic.Critic` | Network architecture | Subclass and pass into `ActorCriticNet`. Hidden sizes already config-driven. |
+| `tools.graphify.walker.walk_source_tree` | The AST walker semantics | Subclass `ast.NodeVisitor` to add type-hint extraction, decorator awareness, etc. Emitter is independent. |
+| `services.experiment_service.run_*_sweep` | Sweep design | Add `run_<X>_sweep` method following the existing pattern. Picked up automatically by the CLI's `sweep <kind>` command via `getattr`. |
+| `interface.gui.MainWindow.tabs` | Add a new GUI tab | Implement a `QWidget` subclass with a `(sdk: ProximalLab)` constructor; call `tabs.addTab(MyTab(sdk), "Label")` in `MainWindow.__init__`. |
+| `interface.cli.commands` | Add a Click subcommand | Define a `@click.command` function; call `cli.add_command(your_cmd)` in `cli/main.py`. |
+
+### Stability promise
+
+The public extension surfaces above are stable across the project's `1.x` series; breaking changes would be a major version bump (`2.00`). Internal symbols (anything underscore-prefixed) may change at any time.
+
+### Lifecycle hooks (not implemented, by design)
+
+V3 § 12.1 mentions `beforeCreate` / `afterUpdate` style lifecycle hooks. This project does not implement them because there's no event loop to hook into — the PPO training loop is a single `fit()` call. If a future use-case requires per-iteration callbacks (e.g. for early-stopping experiments, logging to W&B, etc.), the natural surface is to add a `callbacks: list[Callable[[IterationDiagnostics], None]]` parameter to `PPOService.__init__` and call each callback at the bottom of the iteration loop. Documented as future work in [`docs/TODO.md`](TODO.md) "Future extensions".

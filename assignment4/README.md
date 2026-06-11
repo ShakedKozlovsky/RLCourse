@@ -235,6 +235,9 @@ After Layer 15 I asked: *"What would push this from very good to memorable?"* Si
 | Trained-policy GIFs | Visceral evidence that PPO actually solves the task — Walker2d walks (537 reward / 300 frames) | [`assets/gifs/walker2d_trained.gif`](assets/gifs/walker2d_trained.gif), [`halfcheetah_trained.gif`](assets/gifs/halfcheetah_trained.gif) |
 | GitHub Actions CI | Engineering signal — every push triggers tests + ruff. Green badge at the top of this README | [`.github/workflows/assignment4-ci.yml`](../.github/workflows/assignment4-ci.yml) |
 | Reproducibility statement | Every plot + number traceable to a specific script with hardware/software baseline | [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) |
+| **Promptbook** (V3 § 8.3) | AI-assisted development methodology log — prompt patterns that worked, anti-patterns avoided, lessons learned | [`docs/PROMPTBOOK.md`](docs/PROMPTBOOK.md) |
+| **Token-cost analysis** (V3 § 11) | Per-layer token estimate + total cost breakdown (~$24 to build the project) | [`docs/COSTS.md`](docs/COSTS.md) |
+| **Extension points** (V3 § 12.1) | Stable surfaces where future work can hook in without modifying core code | [`docs/PLAN.md`](docs/PLAN.md) § 14 |
 
 The audit-driven multi-seed sweep is what turns "single-seed λ=0.95 looked good" into "λ=0.95 is statistically better than both endpoints across seeds". The Layer-16 additions are what turn "correct implementation" into "complete pedagogical artefact you could hand a junior engineer".
 
