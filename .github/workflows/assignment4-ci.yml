@@ -33,8 +33,9 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y \
-            libgl1 libglib2.0-0 \
-            libegl1 libegl-mesa0 \
+            libgl1 libglu1-mesa libglib2.0-0 \
+            libegl1 libegl-mesa0 libgles2 \
+            libosmesa6 \
             libxkbcommon0 libxkbcommon-x11-0 \
             libdbus-1-3 libxcb-cursor0 libxcb-icccm4 libxcb-image0 \
             libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 \
@@ -50,5 +51,6 @@ jobs:
       - name: Run tests + coverage
         env:
           QT_QPA_PLATFORM: offscreen
-          MUJOCO_GL: osmesa
+          MUJOCO_GL: egl
+          PYOPENGL_PLATFORM: egl
         run: uv run pytest tests/ -q --cov=src/proximal_lab --cov-report=term
