@@ -1,0 +1,77 @@
+{
+  "version": "1.00",
+  "seed": 208904839,
+  "device": "cpu",
+  "env": {
+    "primary_map_id": "8d04b41e6a8a8c2dab3ca0a8e0b32064",
+    "secondary_map_id": "8c2eb47b89f4ba1c6e6c1c4ca5b7d1d3",
+    "map_pixels_per_metre": 50.0,
+    "max_episode_steps": 500,
+    "gamma": 0.99
+  },
+  "robot": {
+    "radius_m": 0.2,
+    "max_linear_speed_mps": 0.5,
+    "max_angular_speed_radps": 1.5,
+    "dt": 0.1,
+    "cleaning_radius_m": 0.25
+  },
+  "sensor": {
+    "n_lidar_beams": 24,
+    "lidar_max_range_m": 5.0,
+    "fov_degrees": 360.0
+  },
+  "reward": {
+    "new_cell_bonus": 1.0,
+    "collision_penalty": -10.0,
+    "step_penalty": -0.01,
+    "completion_bonus": 100.0,
+    "coverage_target": 0.85
+  },
+  "ddpg": {
+    "actor_hidden_sizes": [256, 256],
+    "critic_hidden_sizes": [256, 256],
+    "actor_lr": 0.0001,
+    "critic_lr": 0.001,
+    "gamma": 0.99,
+    "tau": 0.005,
+    "batch_size": 128,
+    "replay_capacity": 200000,
+    "warmup_steps": 1000,
+    "policy_delay": 1,
+    "max_grad_norm": 1.0
+  },
+  "noise": {
+    "kind": "gaussian",
+    "sigma_initial": 0.2,
+    "sigma_final": 0.05,
+    "decay_steps": 50000,
+    "ou_theta": 0.15,
+    "ou_mu": 0.0,
+    "ou_sigma": 0.2
+  },
+  "training": {
+    "total_timesteps": 50000,
+    "eval_interval": 1000,
+    "n_eval_episodes": 5,
+    "log_interval": 200
+  },
+  "experiments": {
+    "noise_sigma_sweep": [0.0, 0.1, 0.2, 0.4],
+    "tau_sweep": [0.001, 0.005, 0.01, 0.05],
+    "ablation_seeds": [0, 1, 2]
+  },
+  "paths": {
+    "results_dir": "results",
+    "assets_dir": "assets",
+    "checkpoints_dir": "saved_models",
+    "data_dir": "data",
+    "wiki_dir": "docs/wiki"
+  },
+  "graphify": {
+    "src_dir": "src/roomba_lab",
+    "output_dir": "docs/wiki",
+    "include_docstrings": true,
+    "include_call_graph": true
+  }
+}

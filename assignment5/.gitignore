@@ -1,0 +1,30 @@
+# venv / build artifacts
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+__pycache__/
+*.pyc
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# results / saved_models — opt-in via git add -f
+results/
+saved_models/*.pt
+saved_models/*.pth
+
+# HouseExpo bulk download (we commit only the 10-map sample)
+data/raw/json.tar.gz
+data/raw/json/
+
+# environment
+.env
