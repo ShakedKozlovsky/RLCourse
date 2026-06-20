@@ -1,0 +1,76 @@
+{
+  "checkpoint": "saved_models/headline_policy_tuned.pt",
+  "rows": [
+    {
+      "map_id": "01e53c5618fd8d4d78c916b9dcc4ff92",
+      "is_train": true,
+      "mean_reward": 16180.891793611814,
+      "mean_coverage": 0.038855131852748956,
+      "std_reward": 12582.113687721305
+    },
+    {
+      "map_id": "2deaa98e9acd1293d5224e25715c1393",
+      "is_train": false,
+      "mean_reward": 14985.756969163063,
+      "mean_coverage": 0.02930107072441228,
+      "std_reward": 11277.03688013481
+    },
+    {
+      "map_id": "524f0a38058d39c81d8c3a067cf43904",
+      "is_train": false,
+      "mean_reward": 9665.183574854926,
+      "mean_coverage": 0.05256565023916437,
+      "std_reward": 8351.544145312484
+    },
+    {
+      "map_id": "658e5214673c7a4e25b458e56bdb6144",
+      "is_train": false,
+      "mean_reward": 14428.237644761852,
+      "mean_coverage": 0.039229204193502405,
+      "std_reward": 11409.927823474103
+    },
+    {
+      "map_id": "7e80c5f4c9905bc273560854d8abe916",
+      "is_train": false,
+      "mean_reward": 9520.211139690065,
+      "mean_coverage": 0.02530410284450482,
+      "std_reward": 3018.263293220077
+    },
+    {
+      "map_id": "a24e5d6b82e244357f688ca1a57b5806",
+      "is_train": false,
+      "mean_reward": 848.0380222422356,
+      "mean_coverage": 0.08064322212203186,
+      "std_reward": 935.5889191848225
+    },
+    {
+      "map_id": "ac5ac75376e2e43d9bb14460e41271d0",
+      "is_train": false,
+      "mean_reward": 4759.564501266951,
+      "mean_coverage": 0.019480534439069337,
+      "std_reward": 3049.0982242536625
+    },
+    {
+      "map_id": "d0aeed69cef4bb46a2cdbf7a7e13d6cc",
+      "is_train": false,
+      "mean_reward": 28922.729705508038,
+      "mean_coverage": 0.04188911353232087,
+      "std_reward": 1017.1222307730529
+    },
+    {
+      "map_id": "d686fe59991adf9cc096e72068c7fe45",
+      "is_train": false,
+      "mean_reward": 7150.471871885032,
+      "mean_coverage": 0.009988781426175783,
+      "std_reward": 5344.766515584653
+    },
+    {
+      "map_id": "eb8fa38ac9142311df7cdb84766bf930",
+      "is_train": false,
+      "mean_reward": 17284.26619471426,
+      "mean_coverage": 0.10112408103604086,
+      "std_reward": 7139.414567590822
+    }
+  ],
+  "n_episodes": 3
+}

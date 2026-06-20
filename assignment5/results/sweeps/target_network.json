@@ -1,0 +1,55 @@
+{
+  "kind": "target_network",
+  "n_seeds": 3,
+  "total_timesteps": 4000,
+  "cells": [
+    {
+      "cell": "0.005",
+      "seed": 0,
+      "final_reward": 16701.989999999954,
+      "final_coverage": 0.03962862894558633,
+      "critic_loss_last": 313.8760070800781,
+      "final_sigma": 0.18860000000000002
+    },
+    {
+      "cell": "0.005",
+      "seed": 1,
+      "final_reward": 2512.9899999999493,
+      "final_coverage": 0.006834355289402704,
+      "critic_loss_last": 121.95388793945312,
+      "final_sigma": 0.18860000000000002
+    },
+    {
+      "cell": "0.005",
+      "seed": 2,
+      "final_reward": 12376.989999999943,
+      "final_coverage": 0.029632488726896205,
+      "critic_loss_last": 313.4465026855469,
+      "final_sigma": 0.18860000000000002
+    },
+    {
+      "cell": "1.0",
+      "seed": 0,
+      "final_reward": 7977.989999999943,
+      "final_coverage": 0.019465316282499014,
+      "critic_loss_last": 893.2623901367188,
+      "final_sigma": 0.18860000000000002
+    },
+    {
+      "cell": "1.0",
+      "seed": 1,
+      "final_reward": 2508.9899999999425,
+      "final_coverage": 0.011817402297841065,
+      "critic_loss_last": 5259.8212890625,
+      "final_sigma": 0.18860000000000002
+    },
+    {
+      "cell": "1.0",
+      "seed": 2,
+      "final_reward": 8385.989999999943,
+      "final_coverage": 0.020408304770181226,
+      "critic_loss_last": 2356.396484375,
+      "final_sigma": 0.18860000000000002
+    }
+  ]
+}
