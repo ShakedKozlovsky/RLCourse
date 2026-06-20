@@ -1,0 +1,35 @@
+# Project Wiki Index
+
+- [[roomba_lab_data_houseexpo_loader|roomba_lab.data.houseexpo_loader]] — HouseExpo dataset loader. Parses the upstream JSON format into geometry the
+- [[roomba_lab_environment_reward|roomba_lab.environment.reward]] — Reward function — pure (state, prev_state, cfg) → (reward, info).
+- [[roomba_lab_environment_roomba_env|roomba_lab.environment.roomba_env]] — RoombaEnv — custom 2-D cleaning-robot environment.
+- [[roomba_lab_interface_cli_commands|roomba_lab.interface.cli.commands]] — CLI command bodies — bulky handlers kept out of `main.py` to keep that file
+- [[roomba_lab_interface_cli_main|roomba_lab.interface.cli.main]] — Top-level Click entry point. Bulky command bodies live in `commands.py`.
+- [[roomba_lab_memory_replay_buffer|roomba_lab.memory.replay_buffer]] — Fixed-capacity NumPy ring buffer for DDPG transitions.
+- [[roomba_lab_model_actor|roomba_lab.model.actor]] — Deterministic actor μ(s | θ_μ) — slide 5 of L09.
+- [[roomba_lab_model_actor_critic_network|roomba_lab.model.actor_critic_network]] — Combined Actor + Critic + their Polyak target copies — the object the DDPG
+- [[roomba_lab_model_critic|roomba_lab.model.critic]] — Critic Q(s, a | θ_Q) — slide 5 of L09.
+- [[roomba_lab_model_init|roomba_lab.model.init]] — PyTorch parameter init helpers — orthogonal init for hidden layers, small-gain
+- [[roomba_lab_model_soft_update|roomba_lab.model.soft_update]] — Polyak (soft) target update — slide 6 of L09, EX05 § Item 2.
+- [[roomba_lab_noise_gaussian|roomba_lab.noise.gaussian]] — Independent Gaussian exploration noise (the default per ADR-005).
+- [[roomba_lab_noise_ou|roomba_lab.noise.ou]] — Ornstein-Uhlenbeck noise — Lillicrap 2016 original choice for DDPG.
+- [[roomba_lab_noise_schedule|roomba_lab.noise.schedule]] — Linear σ schedule — anneals the exploration noise standard deviation from
+- [[roomba_lab_sdk_env_builder|roomba_lab.sdk.env_builder]] — Single place that constructs a RoombaEnv from the config.
+- [[roomba_lab_sdk_sdk|roomba_lab.sdk.sdk]] — RoombaLab — the single facade consumed by CLI, GUI, notebook, and tests.
+- [[roomba_lab_sdk_trainers|roomba_lab.sdk.trainers]] — Constructor layer: turns a ConfigManager + env into a ready-to-fit DDPGService.
+- [[roomba_lab_sensor_lidar|roomba_lab.sensor.lidar]] — Virtual 2-D LIDAR — casts N evenly-spaced rays from the robot pose against
+- [[roomba_lab_services_ddpg_service|roomba_lab.services.ddpg_service]] — End-to-end DDPG training loop — slide 8 of L09.
+- [[roomba_lab_services_ddpg_update|roomba_lab.services.ddpg_update]] — Single DDPG update step — slide 8 algorithmic flow.
+- [[roomba_lab_services_evaluation_service|roomba_lab.services.evaluation_service]] — Deterministic-policy rollout evaluation.
+- [[roomba_lab_shared_config|roomba_lab.shared.config]] — Configuration loader for roomba-lab. Single source of truth — no hardcoded values
+- [[roomba_lab_shared_logger|roomba_lab.shared.logger]] — Stdlib logger factory — single configuration point for the whole project.
+- [[roomba_lab_shared_seed|roomba_lab.shared.seed]] — Single entry point for deterministic seeding across Python + NumPy + PyTorch.
+- [[roomba_lab_shared_types|roomba_lab.shared.types]] — Small dataclasses passed between layers. Frozen so they cannot mutate across
+- [[roomba_lab_shared_version|roomba_lab.shared.version]] — Single source of truth for the project version. Read by ConfigManager (Layer 1)
+- [[roomba_lab_simulator_collision|roomba_lab.simulator.collision]] — Collision detection — checks whether a robot disk fits inside the apartment
+- [[roomba_lab_simulator_kinematics|roomba_lab.simulator.kinematics]] — Differential-drive unicycle kinematics — the *only* place forward simulation
+- [[roomba_lab_simulator_robot|roomba_lab.simulator.robot]] — Dynamic robot state. Keeps a tiny history of poses for trajectory plots.
+- [[roomba_lab_simulator_world|roomba_lab.simulator.world]] — Static apartment world — polygon boundary + occupancy grid for coverage tracking.
+- [[roomba_lab_tools_graphify_emitter|roomba_lab.tools.graphify.emitter]] — Emit ``graph.json`` + one Markdown file per module — Obsidian-compatible.
+- [[roomba_lab_tools_graphify_runner|roomba_lab.tools.graphify.runner]] — Graphify CLI entry — walk src/roomba_lab and emit docs/wiki/.
+- [[roomba_lab_tools_graphify_walker|roomba_lab.tools.graphify.walker]] — AST walker — extract modules, classes, public functions, and import edges.

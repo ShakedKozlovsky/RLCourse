@@ -1,0 +1,1736 @@
+{
+  "version": "1.00",
+  "nodes": [
+    {
+      "id": "module:roomba_lab.data.houseexpo_loader",
+      "type": "module",
+      "module": "roomba_lab.data.houseexpo_loader",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/data/houseexpo_loader.py",
+      "lineno": 0,
+      "docstring_first_line": "HouseExpo dataset loader. Parses the upstream JSON format into geometry the"
+    },
+    {
+      "id": "class:roomba_lab.data.houseexpo_loader.HouseMap",
+      "type": "class",
+      "module": "roomba_lab.data.houseexpo_loader",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/data/houseexpo_loader.py",
+      "lineno": 21,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "class:roomba_lab.data.houseexpo_loader.HouseExpoLoader",
+      "type": "class",
+      "module": "roomba_lab.data.houseexpo_loader",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/data/houseexpo_loader.py",
+      "lineno": 37,
+      "docstring_first_line": "Reads HouseExpo JSON apartments from a local directory."
+    },
+    {
+      "id": "module:roomba_lab.environment.reward",
+      "type": "module",
+      "module": "roomba_lab.environment.reward",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/environment/reward.py",
+      "lineno": 0,
+      "docstring_first_line": "Reward function \u2014 pure (state, prev_state, cfg) \u2192 (reward, info)."
+    },
+    {
+      "id": "class:roomba_lab.environment.reward.RewardConfig",
+      "type": "class",
+      "module": "roomba_lab.environment.reward",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/environment/reward.py",
+      "lineno": 13,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "class:roomba_lab.environment.reward.RewardInputs",
+      "type": "class",
+      "module": "roomba_lab.environment.reward",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/environment/reward.py",
+      "lineno": 22,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "function:roomba_lab.environment.reward.compute_reward",
+      "type": "function",
+      "module": "roomba_lab.environment.reward",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/environment/reward.py",
+      "lineno": 29,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.environment.roomba_env",
+      "type": "module",
+      "module": "roomba_lab.environment.roomba_env",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/environment/roomba_env.py",
+      "lineno": 0,
+      "docstring_first_line": "RoombaEnv \u2014 custom 2-D cleaning-robot environment."
+    },
+    {
+      "id": "class:roomba_lab.environment.roomba_env.RobotKinematicsConfig",
+      "type": "class",
+      "module": "roomba_lab.environment.roomba_env",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/environment/roomba_env.py",
+      "lineno": 22,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "class:roomba_lab.environment.roomba_env.RoombaEnv",
+      "type": "class",
+      "module": "roomba_lab.environment.roomba_env",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/environment/roomba_env.py",
+      "lineno": 30,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.interface.cli.commands",
+      "type": "module",
+      "module": "roomba_lab.interface.cli.commands",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/commands.py",
+      "lineno": 0,
+      "docstring_first_line": "CLI command bodies \u2014 bulky handlers kept out of `main.py` to keep that file"
+    },
+    {
+      "id": "function:roomba_lab.interface.cli.commands.cmd_train",
+      "type": "function",
+      "module": "roomba_lab.interface.cli.commands",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/commands.py",
+      "lineno": 14,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "function:roomba_lab.interface.cli.commands.cmd_evaluate",
+      "type": "function",
+      "module": "roomba_lab.interface.cli.commands",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/commands.py",
+      "lineno": 35,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "function:roomba_lab.interface.cli.commands.cmd_download_data",
+      "type": "function",
+      "module": "roomba_lab.interface.cli.commands",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/commands.py",
+      "lineno": 52,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "function:roomba_lab.interface.cli.commands.cmd_record_gif",
+      "type": "function",
+      "module": "roomba_lab.interface.cli.commands",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/commands.py",
+      "lineno": 56,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "function:roomba_lab.interface.cli.commands.cmd_sweep",
+      "type": "function",
+      "module": "roomba_lab.interface.cli.commands",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/commands.py",
+      "lineno": 63,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "function:roomba_lab.interface.cli.commands.cmd_graphify",
+      "type": "function",
+      "module": "roomba_lab.interface.cli.commands",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/commands.py",
+      "lineno": 72,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.interface.cli.main",
+      "type": "module",
+      "module": "roomba_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/main.py",
+      "lineno": 0,
+      "docstring_first_line": "Top-level Click entry point. Bulky command bodies live in `commands.py`."
+    },
+    {
+      "id": "function:roomba_lab.interface.cli.main.cli",
+      "type": "function",
+      "module": "roomba_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/main.py",
+      "lineno": 14,
+      "docstring_first_line": "roomba-lab \u2014 custom DDPG cleaning-robot laboratory."
+    },
+    {
+      "id": "function:roomba_lab.interface.cli.main.train",
+      "type": "function",
+      "module": "roomba_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/main.py",
+      "lineno": 24,
+      "docstring_first_line": "Train a DDPG agent."
+    },
+    {
+      "id": "function:roomba_lab.interface.cli.main.evaluate",
+      "type": "function",
+      "module": "roomba_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/main.py",
+      "lineno": 36,
+      "docstring_first_line": "Evaluate a saved checkpoint deterministically."
+    },
+    {
+      "id": "function:roomba_lab.interface.cli.main.download_data",
+      "type": "function",
+      "module": "roomba_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/main.py",
+      "lineno": 45,
+      "docstring_first_line": "Confirm the 10-map sample shipped in the repo."
+    },
+    {
+      "id": "function:roomba_lab.interface.cli.main.record_gif",
+      "type": "function",
+      "module": "roomba_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/main.py",
+      "lineno": 57,
+      "docstring_first_line": "Record a GIF of one cleaning episode."
+    },
+    {
+      "id": "function:roomba_lab.interface.cli.main.sweep",
+      "type": "function",
+      "module": "roomba_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/main.py",
+      "lineno": 68,
+      "docstring_first_line": "Run an empirical sweep over noise \u03c3, \u03c4, or target-network strategy."
+    },
+    {
+      "id": "function:roomba_lab.interface.cli.main.graphify",
+      "type": "function",
+      "module": "roomba_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/main.py",
+      "lineno": 75,
+      "docstring_first_line": "Emit the docs/wiki/ Obsidian Vault from src/roomba_lab via AST walk."
+    },
+    {
+      "id": "function:roomba_lab.interface.cli.main.gui",
+      "type": "function",
+      "module": "roomba_lab.interface.cli.main",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/interface/cli/main.py",
+      "lineno": 81,
+      "docstring_first_line": "Launch the PyQt6 GUI (training + visualisation tabs)."
+    },
+    {
+      "id": "module:roomba_lab.memory.replay_buffer",
+      "type": "module",
+      "module": "roomba_lab.memory.replay_buffer",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/memory/replay_buffer.py",
+      "lineno": 0,
+      "docstring_first_line": "Fixed-capacity NumPy ring buffer for DDPG transitions."
+    },
+    {
+      "id": "class:roomba_lab.memory.replay_buffer.ReplayBuffer",
+      "type": "class",
+      "module": "roomba_lab.memory.replay_buffer",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/memory/replay_buffer.py",
+      "lineno": 13,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.model.actor",
+      "type": "module",
+      "module": "roomba_lab.model.actor",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/model/actor.py",
+      "lineno": 0,
+      "docstring_first_line": "Deterministic actor \u03bc(s | \u03b8_\u03bc) \u2014 slide 5 of L09."
+    },
+    {
+      "id": "class:roomba_lab.model.actor.Actor",
+      "type": "class",
+      "module": "roomba_lab.model.actor",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/model/actor.py",
+      "lineno": 17,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.model.actor_critic_network",
+      "type": "module",
+      "module": "roomba_lab.model.actor_critic_network",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/model/actor_critic_network.py",
+      "lineno": 0,
+      "docstring_first_line": "Combined Actor + Critic + their Polyak target copies \u2014 the object the DDPG"
+    },
+    {
+      "id": "class:roomba_lab.model.actor_critic_network.ActorCriticNet",
+      "type": "class",
+      "module": "roomba_lab.model.actor_critic_network",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/model/actor_critic_network.py",
+      "lineno": 16,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.model.critic",
+      "type": "module",
+      "module": "roomba_lab.model.critic",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/model/critic.py",
+      "lineno": 0,
+      "docstring_first_line": "Critic Q(s, a | \u03b8_Q) \u2014 slide 5 of L09."
+    },
+    {
+      "id": "class:roomba_lab.model.critic.Critic",
+      "type": "class",
+      "module": "roomba_lab.model.critic",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/model/critic.py",
+      "lineno": 17,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.model.init",
+      "type": "module",
+      "module": "roomba_lab.model.init",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/model/init.py",
+      "lineno": 0,
+      "docstring_first_line": "PyTorch parameter init helpers \u2014 orthogonal init for hidden layers, small-gain"
+    },
+    {
+      "id": "function:roomba_lab.model.init.init_hidden",
+      "type": "function",
+      "module": "roomba_lab.model.init",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/model/init.py",
+      "lineno": 11,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "function:roomba_lab.model.init.init_actor_head",
+      "type": "function",
+      "module": "roomba_lab.model.init",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/model/init.py",
+      "lineno": 17,
+      "docstring_first_line": "Small gain on the actor head keeps initial actions near zero, avoiding"
+    },
+    {
+      "id": "function:roomba_lab.model.init.init_critic_head",
+      "type": "function",
+      "module": "roomba_lab.model.init",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/model/init.py",
+      "lineno": 25,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.model.soft_update",
+      "type": "module",
+      "module": "roomba_lab.model.soft_update",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/model/soft_update.py",
+      "lineno": 0,
+      "docstring_first_line": "Polyak (soft) target update \u2014 slide 6 of L09, EX05 \u00a7 Item 2."
+    },
+    {
+      "id": "function:roomba_lab.model.soft_update.polyak_update",
+      "type": "function",
+      "module": "roomba_lab.model.soft_update",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/model/soft_update.py",
+      "lineno": 16,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "function:roomba_lab.model.soft_update.hard_copy",
+      "type": "function",
+      "module": "roomba_lab.model.soft_update",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/model/soft_update.py",
+      "lineno": 28,
+      "docstring_first_line": "Equivalent of `polyak_update(tau=1.0)`; used at init + the hard-copy ablation."
+    },
+    {
+      "id": "module:roomba_lab.noise.gaussian",
+      "type": "module",
+      "module": "roomba_lab.noise.gaussian",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/noise/gaussian.py",
+      "lineno": 0,
+      "docstring_first_line": "Independent Gaussian exploration noise (the default per ADR-005)."
+    },
+    {
+      "id": "class:roomba_lab.noise.gaussian.GaussianNoise",
+      "type": "class",
+      "module": "roomba_lab.noise.gaussian",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/noise/gaussian.py",
+      "lineno": 10,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.noise.ou",
+      "type": "module",
+      "module": "roomba_lab.noise.ou",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/noise/ou.py",
+      "lineno": 0,
+      "docstring_first_line": "Ornstein-Uhlenbeck noise \u2014 Lillicrap 2016 original choice for DDPG."
+    },
+    {
+      "id": "class:roomba_lab.noise.ou.OUNoise",
+      "type": "class",
+      "module": "roomba_lab.noise.ou",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/noise/ou.py",
+      "lineno": 11,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.noise.schedule",
+      "type": "module",
+      "module": "roomba_lab.noise.schedule",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/noise/schedule.py",
+      "lineno": 0,
+      "docstring_first_line": "Linear \u03c3 schedule \u2014 anneals the exploration noise standard deviation from"
+    },
+    {
+      "id": "class:roomba_lab.noise.schedule.LinearSigmaSchedule",
+      "type": "class",
+      "module": "roomba_lab.noise.schedule",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/noise/schedule.py",
+      "lineno": 10,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.sdk.env_builder",
+      "type": "module",
+      "module": "roomba_lab.sdk.env_builder",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/sdk/env_builder.py",
+      "lineno": 0,
+      "docstring_first_line": "Single place that constructs a RoombaEnv from the config."
+    },
+    {
+      "id": "function:roomba_lab.sdk.env_builder.build_env",
+      "type": "function",
+      "module": "roomba_lab.sdk.env_builder",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/sdk/env_builder.py",
+      "lineno": 18,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.sdk.sdk",
+      "type": "module",
+      "module": "roomba_lab.sdk.sdk",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/sdk/sdk.py",
+      "lineno": 0,
+      "docstring_first_line": "RoombaLab \u2014 the single facade consumed by CLI, GUI, notebook, and tests."
+    },
+    {
+      "id": "class:roomba_lab.sdk.sdk.RoombaLab",
+      "type": "class",
+      "module": "roomba_lab.sdk.sdk",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/sdk/sdk.py",
+      "lineno": 19,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.sdk.trainers",
+      "type": "module",
+      "module": "roomba_lab.sdk.trainers",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/sdk/trainers.py",
+      "lineno": 0,
+      "docstring_first_line": "Constructor layer: turns a ConfigManager + env into a ready-to-fit DDPGService."
+    },
+    {
+      "id": "function:roomba_lab.sdk.trainers.build_noise",
+      "type": "function",
+      "module": "roomba_lab.sdk.trainers",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/sdk/trainers.py",
+      "lineno": 18,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "function:roomba_lab.sdk.trainers.build_ddpg_service",
+      "type": "function",
+      "module": "roomba_lab.sdk.trainers",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/sdk/trainers.py",
+      "lineno": 30,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.sensor.lidar",
+      "type": "module",
+      "module": "roomba_lab.sensor.lidar",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/sensor/lidar.py",
+      "lineno": 0,
+      "docstring_first_line": "Virtual 2-D LIDAR \u2014 casts N evenly-spaced rays from the robot pose against"
+    },
+    {
+      "id": "class:roomba_lab.sensor.lidar.LidarSensor",
+      "type": "class",
+      "module": "roomba_lab.sensor.lidar",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/sensor/lidar.py",
+      "lineno": 18,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.services.ddpg_service",
+      "type": "module",
+      "module": "roomba_lab.services.ddpg_service",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/services/ddpg_service.py",
+      "lineno": 0,
+      "docstring_first_line": "End-to-end DDPG training loop \u2014 slide 8 of L09."
+    },
+    {
+      "id": "class:roomba_lab.services.ddpg_service.DDPGHyperparams",
+      "type": "class",
+      "module": "roomba_lab.services.ddpg_service",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/services/ddpg_service.py",
+      "lineno": 29,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "class:roomba_lab.services.ddpg_service.DDPGService",
+      "type": "class",
+      "module": "roomba_lab.services.ddpg_service",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/services/ddpg_service.py",
+      "lineno": 40,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.services.ddpg_update",
+      "type": "module",
+      "module": "roomba_lab.services.ddpg_update",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/services/ddpg_update.py",
+      "lineno": 0,
+      "docstring_first_line": "Single DDPG update step \u2014 slide 8 algorithmic flow."
+    },
+    {
+      "id": "class:roomba_lab.services.ddpg_update.UpdateDiagnostic",
+      "type": "class",
+      "module": "roomba_lab.services.ddpg_update",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/services/ddpg_update.py",
+      "lineno": 25,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "function:roomba_lab.services.ddpg_update.critic_loss",
+      "type": "function",
+      "module": "roomba_lab.services.ddpg_update",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/services/ddpg_update.py",
+      "lineno": 36,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "function:roomba_lab.services.ddpg_update.actor_loss",
+      "type": "function",
+      "module": "roomba_lab.services.ddpg_update",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/services/ddpg_update.py",
+      "lineno": 48,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "function:roomba_lab.services.ddpg_update.apply_update",
+      "type": "function",
+      "module": "roomba_lab.services.ddpg_update",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/services/ddpg_update.py",
+      "lineno": 55,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.services.evaluation_service",
+      "type": "module",
+      "module": "roomba_lab.services.evaluation_service",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/services/evaluation_service.py",
+      "lineno": 0,
+      "docstring_first_line": "Deterministic-policy rollout evaluation."
+    },
+    {
+      "id": "class:roomba_lab.services.evaluation_service.EvaluationService",
+      "type": "class",
+      "module": "roomba_lab.services.evaluation_service",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/services/evaluation_service.py",
+      "lineno": 13,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.shared.config",
+      "type": "module",
+      "module": "roomba_lab.shared.config",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/shared/config.py",
+      "lineno": 0,
+      "docstring_first_line": "Configuration loader for roomba-lab. Single source of truth \u2014 no hardcoded values"
+    },
+    {
+      "id": "class:roomba_lab.shared.config.ConfigError",
+      "type": "class",
+      "module": "roomba_lab.shared.config",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/shared/config.py",
+      "lineno": 24,
+      "docstring_first_line": "Raised on missing / malformed / version-mismatched config."
+    },
+    {
+      "id": "class:roomba_lab.shared.config.ConfigManager",
+      "type": "class",
+      "module": "roomba_lab.shared.config",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/shared/config.py",
+      "lineno": 28,
+      "docstring_first_line": "Loads JSON config and exposes it via dotted access."
+    },
+    {
+      "id": "module:roomba_lab.shared.logger",
+      "type": "module",
+      "module": "roomba_lab.shared.logger",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/shared/logger.py",
+      "lineno": 0,
+      "docstring_first_line": "Stdlib logger factory \u2014 single configuration point for the whole project."
+    },
+    {
+      "id": "function:roomba_lab.shared.logger.get_logger",
+      "type": "function",
+      "module": "roomba_lab.shared.logger",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/shared/logger.py",
+      "lineno": 26,
+      "docstring_first_line": "Return a module-level logger; the first call configures root output."
+    },
+    {
+      "id": "module:roomba_lab.shared.seed",
+      "type": "module",
+      "module": "roomba_lab.shared.seed",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/shared/seed.py",
+      "lineno": 0,
+      "docstring_first_line": "Single entry point for deterministic seeding across Python + NumPy + PyTorch."
+    },
+    {
+      "id": "function:roomba_lab.shared.seed.set_global_seed",
+      "type": "function",
+      "module": "roomba_lab.shared.seed",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/shared/seed.py",
+      "lineno": 16,
+      "docstring_first_line": "Seed Python, NumPy, and PyTorch \u2014 CPU and CUDA \u2014 uniformly."
+    },
+    {
+      "id": "module:roomba_lab.shared.types",
+      "type": "module",
+      "module": "roomba_lab.shared.types",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/shared/types.py",
+      "lineno": 0,
+      "docstring_first_line": "Small dataclasses passed between layers. Frozen so they cannot mutate across"
+    },
+    {
+      "id": "class:roomba_lab.shared.types.Transition",
+      "type": "class",
+      "module": "roomba_lab.shared.types",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/shared/types.py",
+      "lineno": 16,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "class:roomba_lab.shared.types.EpisodeMetrics",
+      "type": "class",
+      "module": "roomba_lab.shared.types",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/shared/types.py",
+      "lineno": 25,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "class:roomba_lab.shared.types.StepDiagnostic",
+      "type": "class",
+      "module": "roomba_lab.shared.types",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/shared/types.py",
+      "lineno": 33,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "class:roomba_lab.shared.types.TrainResult",
+      "type": "class",
+      "module": "roomba_lab.shared.types",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/shared/types.py",
+      "lineno": 44,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.shared.version",
+      "type": "module",
+      "module": "roomba_lab.shared.version",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/shared/version.py",
+      "lineno": 0,
+      "docstring_first_line": "Single source of truth for the project version. Read by ConfigManager (Layer 1)"
+    },
+    {
+      "id": "module:roomba_lab.simulator.collision",
+      "type": "module",
+      "module": "roomba_lab.simulator.collision",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/simulator/collision.py",
+      "lineno": 0,
+      "docstring_first_line": "Collision detection \u2014 checks whether a robot disk fits inside the apartment"
+    },
+    {
+      "id": "function:roomba_lab.simulator.collision.is_collision",
+      "type": "function",
+      "module": "roomba_lab.simulator.collision",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/simulator/collision.py",
+      "lineno": 11,
+      "docstring_first_line": "Return True if a disk of radius `robot_radius` at `pose` is NOT fully inside"
+    },
+    {
+      "id": "function:roomba_lab.simulator.collision.point_in_polygon",
+      "type": "function",
+      "module": "roomba_lab.simulator.collision",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/simulator/collision.py",
+      "lineno": 18,
+      "docstring_first_line": "Strict containment check \u2014 used by the random-spawn rejection sampler."
+    },
+    {
+      "id": "module:roomba_lab.simulator.kinematics",
+      "type": "module",
+      "module": "roomba_lab.simulator.kinematics",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/simulator/kinematics.py",
+      "lineno": 0,
+      "docstring_first_line": "Differential-drive unicycle kinematics \u2014 the *only* place forward simulation"
+    },
+    {
+      "id": "class:roomba_lab.simulator.kinematics.Pose",
+      "type": "class",
+      "module": "roomba_lab.simulator.kinematics",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/simulator/kinematics.py",
+      "lineno": 14,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "function:roomba_lab.simulator.kinematics.step_unicycle",
+      "type": "function",
+      "module": "roomba_lab.simulator.kinematics",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/simulator/kinematics.py",
+      "lineno": 34,
+      "docstring_first_line": "Advance a unicycle by `dt` seconds under a normalised action in ``[-1, 1]^2``."
+    },
+    {
+      "id": "module:roomba_lab.simulator.robot",
+      "type": "module",
+      "module": "roomba_lab.simulator.robot",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/simulator/robot.py",
+      "lineno": 0,
+      "docstring_first_line": "Dynamic robot state. Keeps a tiny history of poses for trajectory plots."
+    },
+    {
+      "id": "class:roomba_lab.simulator.robot.Robot",
+      "type": "class",
+      "module": "roomba_lab.simulator.robot",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/simulator/robot.py",
+      "lineno": 11,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.simulator.world",
+      "type": "module",
+      "module": "roomba_lab.simulator.world",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/simulator/world.py",
+      "lineno": 0,
+      "docstring_first_line": "Static apartment world \u2014 polygon boundary + occupancy grid for coverage tracking."
+    },
+    {
+      "id": "class:roomba_lab.simulator.world.World",
+      "type": "class",
+      "module": "roomba_lab.simulator.world",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/simulator/world.py",
+      "lineno": 21,
+      "docstring_first_line": ""
+    },
+    {
+      "id": "module:roomba_lab.tools.graphify.emitter",
+      "type": "module",
+      "module": "roomba_lab.tools.graphify.emitter",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/tools/graphify/emitter.py",
+      "lineno": 0,
+      "docstring_first_line": "Emit ``graph.json`` + one Markdown file per module \u2014 Obsidian-compatible."
+    },
+    {
+      "id": "function:roomba_lab.tools.graphify.emitter.emit",
+      "type": "function",
+      "module": "roomba_lab.tools.graphify.emitter",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/tools/graphify/emitter.py",
+      "lineno": 19,
+      "docstring_first_line": "Write ``graph.json`` + one ``.md`` per module to ``out_dir``."
+    },
+    {
+      "id": "module:roomba_lab.tools.graphify.runner",
+      "type": "module",
+      "module": "roomba_lab.tools.graphify.runner",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/tools/graphify/runner.py",
+      "lineno": 0,
+      "docstring_first_line": "Graphify CLI entry \u2014 walk src/roomba_lab and emit docs/wiki/."
+    },
+    {
+      "id": "function:roomba_lab.tools.graphify.runner.run",
+      "type": "function",
+      "module": "roomba_lab.tools.graphify.runner",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/tools/graphify/runner.py",
+      "lineno": 15,
+      "docstring_first_line": "Walk ``src_dir`` and write Obsidian wiki to ``out_dir``; return ``out_dir``."
+    },
+    {
+      "id": "module:roomba_lab.tools.graphify.walker",
+      "type": "module",
+      "module": "roomba_lab.tools.graphify.walker",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/tools/graphify/walker.py",
+      "lineno": 0,
+      "docstring_first_line": "AST walker \u2014 extract modules, classes, public functions, and import edges."
+    },
+    {
+      "id": "class:roomba_lab.tools.graphify.walker.Node",
+      "type": "class",
+      "module": "roomba_lab.tools.graphify.walker",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/tools/graphify/walker.py",
+      "lineno": 14,
+      "docstring_first_line": "One symbol in the knowledge graph."
+    },
+    {
+      "id": "class:roomba_lab.tools.graphify.walker.Edge",
+      "type": "class",
+      "module": "roomba_lab.tools.graphify.walker",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/tools/graphify/walker.py",
+      "lineno": 26,
+      "docstring_first_line": "One relation between two nodes."
+    },
+    {
+      "id": "class:roomba_lab.tools.graphify.walker.GraphifyResult",
+      "type": "class",
+      "module": "roomba_lab.tools.graphify.walker",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/tools/graphify/walker.py",
+      "lineno": 35,
+      "docstring_first_line": "Container for walker output."
+    },
+    {
+      "id": "function:roomba_lab.tools.graphify.walker.walk_source_tree",
+      "type": "function",
+      "module": "roomba_lab.tools.graphify.walker",
+      "path": "/home/corsight/src/RL_Course/assignment5/src/roomba_lab/tools/graphify/walker.py",
+      "lineno": 42,
+      "docstring_first_line": "Walk every ``.py`` file under ``src_root`` (excluding __init__.py)."
+    }
+  ],
+  "edges": [
+    {
+      "src": "module:roomba_lab.data.houseexpo_loader",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.data.houseexpo_loader",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.data.houseexpo_loader",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.data.houseexpo_loader",
+      "dst": "class:roomba_lab.data.houseexpo_loader.HouseMap",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.data.houseexpo_loader",
+      "dst": "class:roomba_lab.data.houseexpo_loader.HouseExpoLoader",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.environment.reward",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.environment.reward",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.environment.reward",
+      "dst": "class:roomba_lab.environment.reward.RewardConfig",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.environment.reward",
+      "dst": "class:roomba_lab.environment.reward.RewardInputs",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.environment.reward",
+      "dst": "function:roomba_lab.environment.reward.compute_reward",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.environment.roomba_env",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.environment.roomba_env",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.environment.roomba_env",
+      "dst": "module:roomba_lab.environment.reward",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.environment.roomba_env",
+      "dst": "module:roomba_lab.sensor.lidar",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.environment.roomba_env",
+      "dst": "module:roomba_lab.simulator.collision",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.environment.roomba_env",
+      "dst": "module:roomba_lab.simulator.kinematics",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.environment.roomba_env",
+      "dst": "module:roomba_lab.simulator.robot",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.environment.roomba_env",
+      "dst": "module:roomba_lab.simulator.world",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.environment.roomba_env",
+      "dst": "class:roomba_lab.environment.roomba_env.RobotKinematicsConfig",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.environment.roomba_env",
+      "dst": "class:roomba_lab.environment.roomba_env.RoombaEnv",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.commands",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.commands",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.commands",
+      "dst": "module:roomba_lab.sdk.sdk",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.commands",
+      "dst": "function:roomba_lab.interface.cli.commands.cmd_train",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.commands",
+      "dst": "function:roomba_lab.interface.cli.commands.cmd_evaluate",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.commands",
+      "dst": "function:roomba_lab.interface.cli.commands.cmd_download_data",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.commands",
+      "dst": "function:roomba_lab.interface.cli.commands.cmd_record_gif",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.commands",
+      "dst": "function:roomba_lab.interface.cli.commands.cmd_sweep",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.commands",
+      "dst": "function:roomba_lab.interface.cli.commands.cmd_graphify",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.main",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.main",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.main",
+      "dst": "module:roomba_lab.interface.cli",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.main",
+      "dst": "module:roomba_lab.shared.config",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.main",
+      "dst": "function:roomba_lab.interface.cli.main.cli",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.main",
+      "dst": "function:roomba_lab.interface.cli.main.train",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.main",
+      "dst": "function:roomba_lab.interface.cli.main.evaluate",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.main",
+      "dst": "function:roomba_lab.interface.cli.main.download_data",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.main",
+      "dst": "function:roomba_lab.interface.cli.main.record_gif",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.main",
+      "dst": "function:roomba_lab.interface.cli.main.sweep",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.main",
+      "dst": "function:roomba_lab.interface.cli.main.graphify",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.interface.cli.main",
+      "dst": "function:roomba_lab.interface.cli.main.gui",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.memory.replay_buffer",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.memory.replay_buffer",
+      "dst": "module:roomba_lab.shared.types",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.memory.replay_buffer",
+      "dst": "class:roomba_lab.memory.replay_buffer.ReplayBuffer",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.model.actor",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.model.actor",
+      "dst": "module:collections.abc",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.model.actor",
+      "dst": "module:roomba_lab.model.init",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.model.actor",
+      "dst": "class:roomba_lab.model.actor.Actor",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.model.actor_critic_network",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.model.actor_critic_network",
+      "dst": "module:collections.abc",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.model.actor_critic_network",
+      "dst": "module:copy",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.model.actor_critic_network",
+      "dst": "module:roomba_lab.model.actor",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.model.actor_critic_network",
+      "dst": "module:roomba_lab.model.critic",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.model.actor_critic_network",
+      "dst": "class:roomba_lab.model.actor_critic_network.ActorCriticNet",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.model.critic",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.model.critic",
+      "dst": "module:collections.abc",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.model.critic",
+      "dst": "module:roomba_lab.model.init",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.model.critic",
+      "dst": "class:roomba_lab.model.critic.Critic",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.model.init",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.model.init",
+      "dst": "function:roomba_lab.model.init.init_hidden",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.model.init",
+      "dst": "function:roomba_lab.model.init.init_actor_head",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.model.init",
+      "dst": "function:roomba_lab.model.init.init_critic_head",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.model.soft_update",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.model.soft_update",
+      "dst": "module:collections.abc",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.model.soft_update",
+      "dst": "function:roomba_lab.model.soft_update.polyak_update",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.model.soft_update",
+      "dst": "function:roomba_lab.model.soft_update.hard_copy",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.noise.gaussian",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.noise.gaussian",
+      "dst": "class:roomba_lab.noise.gaussian.GaussianNoise",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.noise.ou",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.noise.ou",
+      "dst": "class:roomba_lab.noise.ou.OUNoise",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.noise.schedule",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.noise.schedule",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.noise.schedule",
+      "dst": "class:roomba_lab.noise.schedule.LinearSigmaSchedule",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.sdk.env_builder",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.env_builder",
+      "dst": "module:shapely.geometry",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.env_builder",
+      "dst": "module:roomba_lab.data.houseexpo_loader",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.env_builder",
+      "dst": "module:roomba_lab.environment.reward",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.env_builder",
+      "dst": "module:roomba_lab.environment.roomba_env",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.env_builder",
+      "dst": "module:roomba_lab.sensor.lidar",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.env_builder",
+      "dst": "module:roomba_lab.shared.config",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.env_builder",
+      "dst": "module:roomba_lab.simulator.world",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.env_builder",
+      "dst": "function:roomba_lab.sdk.env_builder.build_env",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.sdk.sdk",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.sdk",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.sdk",
+      "dst": "module:roomba_lab.environment.roomba_env",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.sdk",
+      "dst": "module:roomba_lab.sdk.env_builder",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.sdk",
+      "dst": "module:roomba_lab.sdk.trainers",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.sdk",
+      "dst": "module:roomba_lab.services.evaluation_service",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.sdk",
+      "dst": "module:roomba_lab.shared.config",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.sdk",
+      "dst": "module:roomba_lab.shared.seed",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.sdk",
+      "dst": "module:roomba_lab.shared.types",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.sdk",
+      "dst": "class:roomba_lab.sdk.sdk.RoombaLab",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.sdk.trainers",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.trainers",
+      "dst": "module:roomba_lab.environment.roomba_env",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.trainers",
+      "dst": "module:roomba_lab.memory.replay_buffer",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.trainers",
+      "dst": "module:roomba_lab.model.actor_critic_network",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.trainers",
+      "dst": "module:roomba_lab.noise.gaussian",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.trainers",
+      "dst": "module:roomba_lab.noise.ou",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.trainers",
+      "dst": "module:roomba_lab.noise.schedule",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.trainers",
+      "dst": "module:roomba_lab.services.ddpg_service",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.trainers",
+      "dst": "module:roomba_lab.shared.config",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sdk.trainers",
+      "dst": "function:roomba_lab.sdk.trainers.build_noise",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.sdk.trainers",
+      "dst": "function:roomba_lab.sdk.trainers.build_ddpg_service",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.sensor.lidar",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sensor.lidar",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sensor.lidar",
+      "dst": "module:shapely.geometry",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sensor.lidar",
+      "dst": "module:roomba_lab.simulator.kinematics",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.sensor.lidar",
+      "dst": "class:roomba_lab.sensor.lidar.LidarSensor",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_service",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_service",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_service",
+      "dst": "module:roomba_lab.environment.roomba_env",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_service",
+      "dst": "module:roomba_lab.memory.replay_buffer",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_service",
+      "dst": "module:roomba_lab.model.actor_critic_network",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_service",
+      "dst": "module:roomba_lab.noise.gaussian",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_service",
+      "dst": "module:roomba_lab.noise.ou",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_service",
+      "dst": "module:roomba_lab.noise.schedule",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_service",
+      "dst": "module:roomba_lab.services.ddpg_update",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_service",
+      "dst": "module:roomba_lab.shared.types",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_service",
+      "dst": "class:roomba_lab.services.ddpg_service.DDPGHyperparams",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_service",
+      "dst": "class:roomba_lab.services.ddpg_service.DDPGService",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_update",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_update",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_update",
+      "dst": "module:torch.nn",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_update",
+      "dst": "module:roomba_lab.model.actor_critic_network",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_update",
+      "dst": "module:roomba_lab.model.soft_update",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_update",
+      "dst": "class:roomba_lab.services.ddpg_update.UpdateDiagnostic",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_update",
+      "dst": "function:roomba_lab.services.ddpg_update.critic_loss",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_update",
+      "dst": "function:roomba_lab.services.ddpg_update.actor_loss",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.services.ddpg_update",
+      "dst": "function:roomba_lab.services.ddpg_update.apply_update",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.services.evaluation_service",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.evaluation_service",
+      "dst": "module:roomba_lab.environment.roomba_env",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.evaluation_service",
+      "dst": "module:roomba_lab.model.actor_critic_network",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.evaluation_service",
+      "dst": "module:roomba_lab.shared.types",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.services.evaluation_service",
+      "dst": "class:roomba_lab.services.evaluation_service.EvaluationService",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.shared.config",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.shared.config",
+      "dst": "module:collections.abc",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.shared.config",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.shared.config",
+      "dst": "module:typing",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.shared.config",
+      "dst": "module:roomba_lab.shared.version",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.shared.config",
+      "dst": "class:roomba_lab.shared.config.ConfigError",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.shared.config",
+      "dst": "class:roomba_lab.shared.config.ConfigManager",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.shared.logger",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.shared.logger",
+      "dst": "function:roomba_lab.shared.logger.get_logger",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.shared.seed",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.shared.seed",
+      "dst": "function:roomba_lab.shared.seed.set_global_seed",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.shared.types",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.shared.types",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.shared.types",
+      "dst": "class:roomba_lab.shared.types.Transition",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.shared.types",
+      "dst": "class:roomba_lab.shared.types.EpisodeMetrics",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.shared.types",
+      "dst": "class:roomba_lab.shared.types.StepDiagnostic",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.shared.types",
+      "dst": "class:roomba_lab.shared.types.TrainResult",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.shared.version",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.simulator.collision",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.simulator.collision",
+      "dst": "module:shapely.geometry",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.simulator.collision",
+      "dst": "module:roomba_lab.simulator.kinematics",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.simulator.collision",
+      "dst": "function:roomba_lab.simulator.collision.is_collision",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.simulator.collision",
+      "dst": "function:roomba_lab.simulator.collision.point_in_polygon",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.simulator.kinematics",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.simulator.kinematics",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.simulator.kinematics",
+      "dst": "class:roomba_lab.simulator.kinematics.Pose",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.simulator.kinematics",
+      "dst": "function:roomba_lab.simulator.kinematics.step_unicycle",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.simulator.robot",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.simulator.robot",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.simulator.robot",
+      "dst": "module:roomba_lab.simulator.kinematics",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.simulator.robot",
+      "dst": "class:roomba_lab.simulator.robot.Robot",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.simulator.world",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.simulator.world",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.simulator.world",
+      "dst": "module:shapely",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.simulator.world",
+      "dst": "module:shapely.geometry",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.simulator.world",
+      "dst": "class:roomba_lab.simulator.world.World",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.emitter",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.emitter",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.emitter",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.emitter",
+      "dst": "module:roomba_lab.tools.graphify.walker",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.emitter",
+      "dst": "function:roomba_lab.tools.graphify.emitter.emit",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.runner",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.runner",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.runner",
+      "dst": "module:roomba_lab.shared.config",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.runner",
+      "dst": "module:roomba_lab.shared.logger",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.runner",
+      "dst": "module:roomba_lab.tools.graphify.emitter",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.runner",
+      "dst": "module:roomba_lab.tools.graphify.walker",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.runner",
+      "dst": "function:roomba_lab.tools.graphify.runner.run",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.walker",
+      "dst": "module:__future__",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.walker",
+      "dst": "module:dataclasses",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.walker",
+      "dst": "module:pathlib",
+      "type": "imports"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.walker",
+      "dst": "class:roomba_lab.tools.graphify.walker.Node",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.walker",
+      "dst": "class:roomba_lab.tools.graphify.walker.Edge",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.walker",
+      "dst": "class:roomba_lab.tools.graphify.walker.GraphifyResult",
+      "type": "contains"
+    },
+    {
+      "src": "module:roomba_lab.tools.graphify.walker",
+      "dst": "function:roomba_lab.tools.graphify.walker.walk_source_tree",
+      "type": "contains"
+    }
+  ]
+}
