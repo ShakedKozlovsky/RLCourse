@@ -87,6 +87,39 @@ uv run proximal-lab gui                          # PyQt6 GUI
 
 ---
 
+### [Assignment 5: DDPG Cleaning Robot on HouseExpo Floorplans](assignment5/)
+**Custom 2-D simulator + DDPG agent on real apartment maps (NO Gym, NO Gazebo)**
+
+- **Algorithm:** DDPG (Lillicrap et al. 2016) + DPG theorem (Silver et al. 2014)
+- **Environment:** **Custom 2-D simulator from scratch** (spec hard requirement — no Gymnasium / no Gazebo)
+- **Maps:** HouseExpo (Li et al. 2019) — 10 real apartment JSON floorplans committed
+- **Action space:** Continuous `(v, ω) ∈ [−1, 1]²` (differential-drive kinematics)
+- **Networks:** Deterministic actor (`tanh` output) + Critic (state+action concat) + frozen Polyak target nets
+- **Features:**
+  - Slide-6 Polyak soft target updates with 4-test math battery (τ=0 / 1 / 0.5 / convergence)
+  - 24-beam virtual LIDAR (shapely ray-casting against the polygon boundary)
+  - Gaussian + Ornstein-Uhlenbeck exploration noise + linear σ-decay schedule
+  - Multi-seed noise-σ sweep with 95 % CIs (σ=0.2 wins, σ=0 strictly worst on coverage)
+  - **Mini-Graphify** (carried forward from A4) — 98 nodes + 189 edges → Obsidian Vault
+  - SDK + 7-subcommand Click CLI + PyQt6 GUI + executed Jupyter walkthrough
+  - Cleaning-episode GIF + trajectory overlay + coverage heatmap
+- **Tech Stack:** Python 3.12, PyTorch, NumPy, shapely, matplotlib, imageio, PyQt6, Click, ruff, pytest, uv
+- **Quality bar:** 107 tests · ruff clean · every src file ≤ 150 LOC · zero `gym` imports
+- **Status:** ✅ Complete (17 layers)
+
+**Quick Start:**
+```bash
+cd RLCourse/assignment5
+uv sync --extra dev
+uv run python scripts/train_and_visualise.py    # train + emit all spec figures (~45s)
+uv run roomba-lab evaluate saved_models/headline_policy.pt --n-episodes 5
+uv run roomba-lab sweep noise_sigma --n-seeds 3
+uv run roomba-lab graphify                       # build docs/wiki/
+uv run roomba-lab gui                            # PyQt6 GUI
+```
+
+---
+
 ## 🗂️ Repository Structure
 
 ```
@@ -129,6 +162,20 @@ RLCourse/
 │   ├── notebooks/        # executed Jupyter walkthrough
 │   └── README.md         # Assignment 4 details
 │
+├── assignment5/          # DDPG cleaning robot on real HouseExpo apartments
+│   ├── src/roomba_lab/   # SDK, services, models, environment, GUI, CLI, tools/{graphify, viz}
+│   ├── docs/             # PRD + 5 per-mechanism PRDs + PLAN + TODO + EXECUTIVE_SUMMARY + AUDIT + REPRODUCIBILITY + wiki/
+│   ├── tests/            # 107 tests
+│   ├── configs/          # setup.json (versioned)
+│   ├── data/raw/sample_maps/  # 10 HouseExpo JSON apartment floorplans
+│   ├── assets/plots/     # learning_curve, critic_loss, trajectory_overlay, coverage_heatmap, noise_sigma_sweep
+│   ├── assets/gifs/      # cleaning_episode.gif
+│   ├── results/          # sweep outputs (noise_sigma.json)
+│   ├── saved_models/     # pre-trained headline DDPG policy (.pt)
+│   ├── scripts/          # train_and_visualise + sweep + plot drivers
+│   ├── notebooks/        # executed 6-cell walkthrough
+│   └── README.md         # Assignment 5 details
+│
 └── README.md            # This file
 ```
 
@@ -152,6 +199,7 @@ Each assignment has its own comprehensive documentation:
 | 2 | DQN Stock Trading Agent | ✅ Complete | [assignment2/](assignment2/) |
 | 3 | REINFORCE + A2C over LSTM world model (fitness) | ✅ Complete | [assignment3/](assignment3/) |
 | 4 | PPO + GAE on MuJoCo continuous control | ✅ Complete | [assignment4/](assignment4/) |
+| 5 | DDPG cleaning robot on real HouseExpo apartments | ✅ Complete | [assignment5/](assignment5/) |
 
 ---
 
