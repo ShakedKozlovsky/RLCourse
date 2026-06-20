@@ -2210,6 +2210,12 @@ dev = [
     { name = "ruff" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "jupyter" },
+    { name = "nbconvert" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.1" },
@@ -2228,6 +2234,12 @@ requires-dist = [
     { name = "tqdm", specifier = ">=4.66" },
 ]
 provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "jupyter", specifier = ">=1.1.1" },
+    { name = "nbconvert", specifier = ">=7.17.1" },
+]
 
 [[package]]
 name = "rpds-py"
