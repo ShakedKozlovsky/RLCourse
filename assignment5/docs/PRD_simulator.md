@@ -78,7 +78,7 @@ The reward function uses `new_cells` as the headline driver.
 
 | Condition | Done |
 |---|---|
-| Coverage ≥ `coverage_target` (default 0.85) | True (success) |
+| Coverage ≥ `coverage_target` (default 0.10 — tuned in Layer 18) | True (success) |
 | Step count ≥ `max_episode_steps` (default 500) | True (timeout) |
 | Robot leaves the bounding box | True (out-of-bounds — collision penalty) |
 

@@ -46,6 +46,13 @@ class ReplayBuffer:
         return self._size
 
     def sample(self, batch_size: int) -> dict[str, np.ndarray]:
+        """Sample a minibatch of transitions UNIFORMLY WITH REPLACEMENT.
+
+        Standard practice in DDPG (Lillicrap 2016 § 7) — sampling without
+        replacement at batch_size << capacity gives indistinguishable
+        statistics with measurable overhead. The buffer is large enough
+        (capacity=200000 default, batch_size=128) that duplicates within
+        a minibatch are vanishingly rare anyway."""
         if batch_size > self._size:
             raise ValueError(f"batch_size {batch_size} > buffer size {self._size}")
         idx = self._rng.integers(low=0, high=self._size, size=batch_size)

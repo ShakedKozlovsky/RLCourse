@@ -147,10 +147,11 @@ Return θ_μ, θ_Q, diagnostics
 ## 5. Reward function
 
 ```
-r_t  =  + new_cell_bonus            if robot covered a previously unvisited grid cell
-        + completion_bonus          once on the first step where coverage ≥ 85 %
-        − collision_penalty         if the candidate move would clip a wall (move is then cancelled)
-        − step_penalty              every step (encourages efficient cleaning)
+r_t  =  + new_cell_bonus                              per freshly cleaned cell (sparse)
+        + coverage_progress_coef × Δcoverage          dense per-step shaping (Layer 18)
+        + completion_bonus                            on the first step where coverage ≥ coverage_target
+        − collision_penalty                           if the candidate move would clip a wall (move is then cancelled)
+        − step_penalty                                every step (encourages efficient cleaning)
 ```
 
 ## 6. Configuration schema
@@ -163,7 +164,7 @@ r_t  =  + new_cell_bonus            if robot covered a previously unvisited grid
   "env": { map_ids, pixels_per_metre, max_episode_steps, gamma },
   "robot": { radius_m, max_linear_speed_mps, max_angular_speed_radps, dt, cleaning_radius_m },
   "sensor": { n_lidar_beams, lidar_max_range_m, fov_degrees },
-  "reward": { new_cell_bonus, collision_penalty, step_penalty, completion_bonus, coverage_target },
+  "reward": { new_cell_bonus, collision_penalty, step_penalty, completion_bonus, coverage_target, coverage_progress_coef },
   "ddpg": { actor_hidden_sizes, critic_hidden_sizes, actor_lr, critic_lr, gamma, tau, batch_size, replay_capacity, warmup_steps, policy_delay, max_grad_norm },
   "noise": { kind, sigma_initial, sigma_final, decay_steps, ou_theta, ou_mu, ou_sigma },
   "training": { total_timesteps, eval_interval, n_eval_episodes, log_interval },

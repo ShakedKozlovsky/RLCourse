@@ -73,25 +73,26 @@ $$\theta'_{\mu} \leftarrow \tau\,\theta_{\mu} + (1-\tau)\,\theta'_{\mu}, \quad \
 | Robot model | Differential-drive unicycle, `(x, y, θ)` updated by `(v, ω)` | [`simulator/kinematics.py`](src/roomba_lab/simulator/kinematics.py) |
 | Action space | `(v_norm, ω_norm) ∈ [−1, 1]²`, scaled to (0.5 m/s × 1.5 rad/s) | [`environment/roomba_env.py`](src/roomba_lab/environment/roomba_env.py) |
 | Observation | 24 LIDAR beams (5 m range) + (x_norm, y_norm, sin θ, cos θ, coverage) → 29-D | [`sensor/lidar.py`](src/roomba_lab/sensor/lidar.py) |
-| Reward | +1 / new cell · −10 / collision · −0.01 / step · +100 on coverage ≥ 85 % | [`environment/reward.py`](src/roomba_lab/environment/reward.py) |
+| Reward | +1 / new cell · −1 / collision · −0.05 / step · +50 × Δcoverage (dense shaping, Layer 18) · +100 on coverage ≥ 10 % | [`environment/reward.py`](src/roomba_lab/environment/reward.py) |
 | **Forbidden imports** | `gym`, `gymnasium`, `gazebo` | (none anywhere in source) |
 
 ## Hyperparameters (the spec § Item 3 question)
 
 All in [`configs/setup.json`](configs/setup.json). The key ones:
 
-| Param | Value | Why |
+| Param | Value | Justification (not "Lillicrap standard") |
 |---|---|---|
-| **Actor LR** | 1 × 10⁻⁴ | Lillicrap 2016 standard |
-| **Critic LR** | 1 × 10⁻³ | Critic targets are noisier; needs to track Q faster |
-| **γ (gamma)** | 0.99 | Standard discount; horizon ≈ 100 steps ≈ 10 s sim time |
-| **τ (tau)** | 0.005 | Spec § Item 3 explicit suggestion ("e.g. 0.005") + Lillicrap |
-| **Batch size** | 128 | Lillicrap default |
-| **Replay capacity** | 200 000 | > total_timesteps so buffer doesn't wrap |
-| **Warm-up steps** | 1 000 | Fill buffer with random data before any update |
-| **σ (noise) initial / final / decay** | 0.2 → 0.05 over 50 000 steps | 0.2 ≈ 10 % of action range; tapers but never vanishes |
-| **Hidden sizes** | [256, 256] | Standard DDPG (Lillicrap used [400, 300]) |
-| **Max grad norm** | 1.0 | Critic clipping for stability |
+| **Actor LR** | 1 × 10⁻⁴ | Lillicrap 2016 § 7 / Table 1. Small actor LR is needed because the actor's gradient `−E[∇μ Q(s, μ(s))]` is **amplified** by ∇aQ — if the actor steps too fast, the next bootstrap target moves before the critic can fit it. |
+| **Critic LR** | 1 × 10⁻³ | **10× higher than actor**: the critic must track a moving target y = r + γ Q'(s', μ'(s')) that shifts as the actor + Polyak-target update. Slower critic LR causes target-lag bias that the τ-sweep would amplify. |
+| **γ (gamma)** | 0.99 | Effective horizon = 1/(1−γ) = 100 steps = 10 s sim time at dt=0.1. Matches our 500-step episode; sufficient for credit assignment over a single cleaning sortie. |
+| **τ (tau)** | 0.005 | **Spec § Item 3** suggests "e.g. 0.005"; Lillicrap 2016 § 7 found "best" in [10⁻³, 10⁻²]. Layer 21's empirical Goldilocks sweep on THIS env confirms 0.005 dominates 0.001 (too slow) and 0.05 (too fast). |
+| **Batch size** | 128 | Lillicrap default; matches the variance budget of n_obs=29 + n_act=2 = 31-dim feature space. Smaller (32) shows higher per-update noise; larger (256) wastes compute. |
+| **Replay capacity** | 200 000 | > `total_timesteps` (50 000) so the buffer never wraps for our headline run — every warm-up transition stays available. ~30 MB in float32; fits anywhere. |
+| **Warm-up steps** | 1 000 | Critic needs minimum-diverse-data before its bootstrap target is meaningful. 1k random transitions fill the (s,a,r,s') space enough for the first batch's Q estimate to be non-trivial. |
+| **σ (noise) initial / final / decay** | 0.2 → 0.05 over 50 000 steps | σ = 0.2 ≈ 10 % of the (full [-1,1]) action range — 1σ noise vector typically perturbs a 0.5 m/s velocity by ±0.1 m/s, which the differential-drive can correct in ~1 second. Decay matches the headline total_timesteps so σ tapers exactly when the actor should know its job. |
+| **Hidden sizes** | [256, 256] | Lillicrap used [400, 300] (sized for high-dim MuJoCo). 29-D observation needs less capacity; uniform [256, 256] simplifies orthogonal init and is the modern community default. |
+| **Max grad norm** | 1.0 | Critic gradients can spike when Q(s,a) > 1000 (our reward integrates to several hundred). Clipping at 1.0 prevents single-update collapse; tested empirically against unclipped baseline. |
+| **`actor_head_gain`** | 0.1 | Lillicrap's 0.003 produces near-zero initial actions — fine for high-dim spaces, **bad** for our 2-D action because the agent doesn't move at all and the buffer fills with stationary transitions. Layer 18 raised this from 0.01 → 0.1 (documented in `model/init.py` docstring). |
 
 ## Empirical evidence — the headline noise-σ sweep
 

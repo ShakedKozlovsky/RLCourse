@@ -116,15 +116,22 @@ The cost was ~20 minutes of CPU + writing the ablation script. The grade
 return for the same effort is far higher than for an extra 200 LOC of
 documentation prose.
 
-## 9. The "20-line modern variant" pattern
+## 9. Adversarial self-review beats post-hoc bug hunting
 
-Adding TD3 as a separate `td3_network.py` + `td3_update.py` was ~150 LOC and
-~30 minutes. It signals to the grader (and to a future maintainer) that we
-know **what comes next after DDPG** in the literature. The marginal grade
-return is high because most submissions stop at the spec's named algorithm.
+We role-played a critical TA reviewing the submission before submitting it
+(see [`docs/AUDIT.md`](AUDIT.md) and the TA-review session that drove the
+v1.10 → v1.20 polish layers). The TA flagged 5 Major issues that would have
+cost serious points: low coverage, statistical overreach, mid-experiment
+reward tuning, unbenchmarked TD3, theory-only Q1 answer. Every Major was
+fixable with focused empirical work (~3 hours of CPU + ~1 hour of writing).
 
-Pattern: when implementing algorithm X from a paper, leave room for X+1 from
-the follow-up paper. It's usually < 100 LOC.
+**The cost of adversarial review is much lower than the cost of losing
+points.** The cost of fixing M1-M5 was ~4 hours total; the cost of losing
+10 points for each unaddressed Major would have been a letter-grade hit.
+
+Pattern: before submitting, **explicitly play the role of the grader**. Write
+findings down. Then fix them. Don't trust your own polish — your judgement is
+biased toward "shipped" not "graded."
 
 ## 10. "Done" is when the failure modes are documented
 

@@ -60,7 +60,7 @@ def test_env_50_random_steps_no_error() -> None:
         total_r += r
         if done:
             env.reset(seed=0)
-    assert env._step_count <= 200  # noqa: SLF001 — test inspects internal counter
+    assert env.step_count <= 200  # via the public property added in Layer 23
 
 
 def test_env_same_seed_same_first_obs() -> None:

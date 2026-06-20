@@ -140,6 +140,28 @@ Important closed, 9 Nice-to-have moved to PLAN.md § 14 extension points.
 | Visualisations + audit | 12 + 13 | ~35 min | 60 % |
 | GUI + notebook | 14 + 15 | ~30 min | 30 % |
 | Final docs + reflection answers | 16 | ~45 min | 80 % |
-| V3 polish (this layer) | 17 | ~20 min | 90 % |
+| V3 polish | 17 | ~20 min | 90 % |
+| **v1.10 polish (TD3 + lessons + cross-apt)** | 18-20 | ~90 min | 70 % |
+| **v1.20 TA-audit cycle** | 21-26 | ~120 min | 80 % |
 
-**Total wall-clock: ~6–7 hours**. ~16× speedup over solo coding (V3 § 1.4 claim).
+**Total wall-clock: ~10 hours**. The v1.20 cycle was driven by an explicit
+adversarial-review pass (role-playing the grader) — see
+[`docs/LESSONS_LEARNED.md`](LESSONS_LEARNED.md) § 9 for why this is a
+high-leverage exercise.
+
+## 14. The adversarial-review prompt (v1.20 cycle)
+
+For the v1.20 polish I gave the agent a different role:
+
+> *"Roleplay as my professor's grading agent. Read the submission and find
+> things to REDUCE GRADE about. Don't be polite. Be specific — file:line,
+> what's wrong, what would lose points."*
+
+The agent produced a 14-finding report categorised Major / Moderate / Minor,
+with a 82/100 provisional grade and clear remediation steps. I then switched
+the agent back to implementer mode with the explicit goal of pushing toward
+100/100, layer-by-layer, keeping all docs aligned.
+
+Pattern: **before submitting, role-play the grader explicitly.** Save the
+findings document; use it as the v1.x → v1.(x+1) target list. Re-run on every
+major version bump.

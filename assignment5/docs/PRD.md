@@ -57,7 +57,7 @@ Implemented in [`services/ddpg_update.py::critic_loss`](../src/roomba_lab/servic
 | Robot model | Differential-drive kinematics: `(x, y, θ)` updated by `(v, ω)` | Slide 3 |
 | Action space | `(v_norm, ω_norm) ∈ [−1, 1]²` → scaled to `[v_min, v_max] × [ω_min, ω_max]` | Slide 10 |
 | Observation | LIDAR (24 beams × range) + (x, y, θ_sin, θ_cos) + (coverage fraction) → 29-dim float | Spec § 1 |
-| Reward | new-cell bonus (+1) + collision penalty (−10) + small step penalty (−0.01) + completion bonus (+100 at 85 % coverage) | Spec § 1 |
+| Reward | new-cell bonus (+1) + collision penalty (−1) + step penalty (−0.05) + coverage-progress shaping (+50 × Δcoverage) + completion bonus (+100 at 10 % coverage). Reward function was **tuned in Layer 18** based on engineering discovery — see [`docs/FAILURE_MODES.md`](FAILURE_MODES.md) § 1 for the lesson. | Spec § 1 + Layer 18 tuning |
 | Time step | dt = 0.1 s (10 Hz) | Realistic vacuum |
 | Episode horizon | 500 steps (= 50 s sim time) | Limits early-training compute |
 

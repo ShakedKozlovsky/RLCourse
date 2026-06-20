@@ -80,6 +80,11 @@ class ExperimentService:
 
     @staticmethod
     def aggregate(report_path: Path) -> dict[str, dict[str, float]]:
+        """Per-cell aggregation with t-distribution 95% CI (correct for small n).
+
+        For n=3 we use t(2)=4.303 — the normal-approximation z=1.96 is too
+        narrow at small sample sizes. We also report median + min + max so
+        outlier behaviour is visible (Mod2 fix)."""
         payload = json.loads(Path(report_path).read_text())
         by_cell: dict[str, list[CellResult]] = {}
         for r in payload["cells"]:
@@ -89,11 +94,38 @@ class ExperimentService:
             rewards = np.array([r["final_reward"] for r in rs])
             covs = np.array([r["final_coverage"] for r in rs])
             n = len(rewards)
+            t_crit = _t_crit_95(n)
+            sem_r = (rewards.std(ddof=1) / np.sqrt(n)) if n > 1 else 0.0
+            sem_c = (covs.std(ddof=1) / np.sqrt(n)) if n > 1 else 0.0
             out[cell] = {
-                "mean_reward": float(rewards.mean()),
-                "ci95_reward": float(1.96 * rewards.std(ddof=1) / max(1, np.sqrt(n)))
-                                if n > 1 else 0.0,
-                "mean_coverage": float(covs.mean()),
                 "n_seeds": float(n),
+                "mean_reward": float(rewards.mean()),
+                "median_reward": float(np.median(rewards)),
+                "min_reward": float(rewards.min()),
+                "max_reward": float(rewards.max()),
+                "ci95_reward": float(t_crit * sem_r),
+                "mean_coverage": float(covs.mean()),
+                "median_coverage": float(np.median(covs)),
+                "min_coverage": float(covs.min()),
+                "max_coverage": float(covs.max()),
+                "ci95_coverage": float(t_crit * sem_c),
             }
         return out
+
+
+def _t_crit_95(n: int) -> float:
+    """Two-sided 95% t critical value for n samples (df = n-1).
+
+    Hard-coded lookup avoids the scipy dependency for the common small-n cases
+    we actually use; falls back to the normal approximation for large n."""
+    table = {2: 12.706, 3: 4.303, 4: 3.182, 5: 2.776, 6: 2.571,
+             7: 2.447, 8: 2.365, 9: 2.306, 10: 2.262, 15: 2.131,
+             20: 2.093, 30: 2.045}
+    if n <= 1:
+        return 0.0
+    if n in table:
+        return table[n]
+    for k in sorted(table.keys()):
+        if n < k:
+            return table[k]
+    return 1.96

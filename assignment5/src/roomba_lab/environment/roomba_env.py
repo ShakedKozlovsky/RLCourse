@@ -53,11 +53,23 @@ class RoombaEnv:
 
     @property
     def obs_dim(self) -> int:
+        """Observation vector size: n_lidar_beams + 5 status entries."""
         return self.lidar.n_beams + 5
 
     @property
     def action_dim(self) -> int:
+        """Action vector size: 2 (forward velocity + steering)."""
         return 2
+
+    @property
+    def step_count(self) -> int:
+        """Public read-only view of the in-episode step counter."""
+        return self._step_count
+
+    @property
+    def collisions(self) -> int:
+        """Public read-only view of the cumulative collision count this episode."""
+        return self._collisions
 
     def reset(self, seed: int | None = None) -> np.ndarray:
         if seed is not None:

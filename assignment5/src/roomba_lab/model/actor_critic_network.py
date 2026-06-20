@@ -20,9 +20,11 @@ class ActorCriticNet(nn.Module):
         action_dim: int,
         actor_hidden_sizes: Sequence[int] = (256, 256),
         critic_hidden_sizes: Sequence[int] = (256, 256),
+        actor_head_gain: float = 0.1,
     ) -> None:
         super().__init__()
-        self.actor = Actor(obs_dim, action_dim, actor_hidden_sizes)
+        self.actor = Actor(obs_dim, action_dim, actor_hidden_sizes,
+                            head_gain=actor_head_gain)
         self.critic = Critic(obs_dim, action_dim, critic_hidden_sizes)
         self.target_actor = deepcopy(self.actor)
         self.target_critic = deepcopy(self.critic)

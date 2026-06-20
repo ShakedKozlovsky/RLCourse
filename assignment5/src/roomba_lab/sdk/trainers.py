@@ -34,6 +34,7 @@ def build_ddpg_service(cfg: ConfigManager, env: RoombaEnv,
         obs_dim=env.obs_dim, action_dim=env.action_dim,
         actor_hidden_sizes=tuple(cfg.get("ddpg.actor_hidden_sizes")),
         critic_hidden_sizes=tuple(cfg.get("ddpg.critic_hidden_sizes")),
+        actor_head_gain=float(cfg.get("ddpg.actor_head_gain", 0.1)),
     )
     buffer = ReplayBuffer(capacity=int(cfg.get("ddpg.replay_capacity")),
                            obs_dim=env.obs_dim, action_dim=env.action_dim, rng=rng)
