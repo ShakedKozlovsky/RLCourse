@@ -1,6 +1,8 @@
 # roomba-lab — Custom DDPG cleaning robot on real HouseExpo floorplans
 
-> **Assignment 5 of the RL Course (תרגיל 05).** Built layer-by-layer, 15+ commits on `main`, single-author, single-AI-agent (Claude Opus 4.7). **107 tests · ruff clean · every file ≤ 150 LOC · zero `gym` imports · CI-green.**
+[![CI](https://github.com/ShakedKozlovsky/RLCourse/actions/workflows/assignment5-ci.yml/badge.svg)](https://github.com/ShakedKozlovsky/RLCourse/actions/workflows/assignment5-ci.yml)
+
+> **Assignment 5 of the RL Course (תרגיל 05).** Built layer-by-layer over **17 layers**, single-author, single-AI-agent (Claude Opus 4.7). **107 tests · ruff clean · every file ≤ 150 LOC · zero `gym` imports.**
 
 ## What was built
 
@@ -177,6 +179,8 @@ Opens in Obsidian to render the module dependency graph natively. Output: 98 nod
 4. [`assets/plots/learning_curve.png`](assets/plots/learning_curve.png) + [`critic_loss.png`](assets/plots/critic_loss.png) + [`trajectory_overlay.png`](assets/plots/trajectory_overlay.png) + [`coverage_heatmap.png`](assets/plots/coverage_heatmap.png) + [`noise_sigma_sweep.png`](assets/plots/noise_sigma_sweep.png) — spec-mandated + above-spec figures
 5. [`assets/gifs/cleaning_episode.gif`](assets/gifs/cleaning_episode.gif) — animated cleaning behaviour
 6. [`results/sweeps/noise_sigma.json`](results/sweeps/noise_sigma.json) — raw sweep evidence
+7. [`docs/PROMPTBOOK.md`](docs/PROMPTBOOK.md) + [`docs/COSTS.md`](docs/COSTS.md) — V3 § 20.9 # 1 + # 7 (methodology + ~$19 token cost)
+8. [`docs/PLAN.md`](docs/PLAN.md) § 14 — Extension points (V3 § 12.1 / § 20.9 # 8)
 
 ## Honest acknowledgements
 

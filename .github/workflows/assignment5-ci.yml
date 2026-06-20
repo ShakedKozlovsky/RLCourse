@@ -1,0 +1,53 @@
+name: assignment5-ci
+
+on:
+  push:
+    paths:
+      - "assignment5/**"
+      - ".github/workflows/assignment5-ci.yml"
+  pull_request:
+    paths:
+      - "assignment5/**"
+
+defaults:
+  run:
+    working-directory: assignment5
+
+jobs:
+  test:
+    name: pytest + ruff + coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.11.2"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install Qt headless deps
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y \
+            libgl1 libglu1-mesa libglib2.0-0 \
+            libegl1 libegl-mesa0 libgles2 \
+            libxkbcommon0 libxkbcommon-x11-0 \
+            libdbus-1-3 libxcb-cursor0 libxcb-icccm4 libxcb-image0 \
+            libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 \
+            libxcb-sync1 libxcb-xfixes0 libxcb-xinerama0 libxcb-xkb1 \
+            libfontconfig1 libxkbfile1 libnss3
+
+      - name: Sync deps
+        run: uv sync --extra dev --frozen
+
+      - name: Ruff lint
+        run: uv run ruff check src/ tests/ scripts/
+
+      - name: Pytest + coverage
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: uv run pytest --cov=roomba_lab --cov-report=xml --cov-report=term -q

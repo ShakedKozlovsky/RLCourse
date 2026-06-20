@@ -280,3 +280,37 @@ See [TODO.md](TODO.md) for the full per-layer Definition of Done.
 - 3-D maps (HouseExpo is intentionally 2-D)
 - Anything requiring GPU at training time
 - TD3, SAC (mentioned for context; not implemented as main agent)
+
+## 14. Extension points (V3 § 12.1 / § 20.9 # 8 — published stable surfaces)
+
+The following surfaces are stable in the `1.x` series. Any breaking change to
+them implies a major-version bump.
+
+| # | Surface | Why it's stable | What you'd hook in |
+|---|---|---|---|
+| 1 | `configs/setup.json` schema | Hard contract — consumed by `ConfigManager` + every constructor | Add new hyperparameters here, not as function arguments |
+| 2 | `data.houseexpo_loader.HouseExpoLoader` | Read-only, content-addressed via SHA-256 (ADR-009) | Plug a different floorplan dataset by writing a class with the same `map_ids() + load(id) → HouseMap` interface |
+| 3 | `simulator.kinematics.step_unicycle` | Pure function | Swap to Ackermann / holonomic by writing a same-signature alternative |
+| 4 | `sensor.lidar.LidarSensor` | Stateless | Add per-beam noise / occlusion by subclassing and overriding `scan()` |
+| 5 | `environment.reward.compute_reward` | Pure | Shape new reward terms (frontier exploration, smoothness penalty) by writing a new pure function with the same signature |
+| 6 | `noise/` package | `(action_dim, sigma) → sample()` interface | TD3-style noise smoothing fits here as `noise/smoothed_gaussian.py` |
+| 7 | `model.actor.Actor` + `Critic` | Plain `nn.Module` | Swap MLP for LSTM / Conv-on-LIDAR by writing same-signature alternates |
+| 8 | `model.soft_update.polyak_update` | Pure | Hard-copy ablation uses `hard_copy()`; TD3 delayed-actor pattern lives here |
+| 9 | `services.ddpg_update.{actor_loss, critic_loss, apply_update}` | Pure | TD3 = add a second critic + min-of-two in `critic_loss`; rest unchanged |
+| 10 | `sdk.experiments.ExperimentService` | Single `run(kind)` entry point | Add new sweep kinds (γ, batch_size, hidden_sizes) by adding `elif kind == ...` |
+| 11 | CLI subcommand registration | `interface/cli/main.py` decorators | New CLI subcommands plug in via `@cli.command()` |
+| 12 | GUI tab registration | `interface/gui/main_window.py::MainWindow.__init__` | New `QWidget` subclass + `tabs.addTab(YourTab(), "...")` |
+
+### Stability promise
+
+Functions / classes listed in the table above will not break their input or
+output contracts within `1.x`. If a breaking change is necessary, the next
+release will be `2.00` and the migration guide will live in this section.
+
+### Why we did NOT add lifecycle hooks
+
+The V3 § 12.1 example suggests `beforeCreate` / `afterUpdate` hook patterns.
+roomba-lab does not have an event loop; the training loop is a simple
+sequential `for step in range(total_timesteps)`. Adding hook plumbing without a
+real consumer would be premature abstraction (V3 § 7.2). The 12 extension
+points above cover every concrete future request the author can anticipate.
