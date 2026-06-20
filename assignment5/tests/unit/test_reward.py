@@ -14,6 +14,15 @@ CFG = RewardConfig(
     coverage_target=0.85,
 )
 
+CFG_WITH_PROGRESS = RewardConfig(
+    new_cell_bonus=1.0,
+    collision_penalty=-1.0,
+    step_penalty=-0.05,
+    completion_bonus=100.0,
+    coverage_target=0.30,
+    coverage_progress_coef=50.0,
+)
+
 
 def test_no_motion_yields_step_penalty_only() -> None:
     r, info = compute_reward(RewardInputs(new_cells=0, collided=False,
@@ -53,3 +62,24 @@ def test_completion_only_fires_when_crossing() -> None:
                                             coverage_after=0.87), CFG)
     assert info["bonus_fired"] == 0
     assert r == pytest.approx(-0.01)
+
+
+def test_coverage_progress_shaping_adds_dense_signal() -> None:
+    """The tuned reward includes a dense `coverage_progress_coef × Δcoverage`
+    term — fixes the over-weighted collision-avoidance discovered at 20k steps."""
+    r, _ = compute_reward(RewardInputs(new_cells=0, collided=False,
+                                         coverage_before=0.10,
+                                         coverage_after=0.12),
+                           CFG_WITH_PROGRESS)
+    expected = -0.05 + 50.0 * 0.02
+    assert r == pytest.approx(expected)
+
+
+def test_coverage_progress_clamped_to_non_negative() -> None:
+    """Coverage can only grow (cells never become un-visited); the term is
+    one-sided to avoid punishing reset transitions."""
+    r, _ = compute_reward(RewardInputs(new_cells=0, collided=False,
+                                         coverage_before=0.20,
+                                         coverage_after=0.0),
+                           CFG_WITH_PROGRESS)
+    assert r == pytest.approx(-0.05)

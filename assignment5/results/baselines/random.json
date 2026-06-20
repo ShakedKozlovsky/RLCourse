@@ -1,0 +1,43 @@
+{
+  "kind": "random",
+  "n_seeds": 5,
+  "n_episodes_per_seed": 10,
+  "per_seed": [
+    {
+      "seed": 0,
+      "mean_reward": 1429.9697610402582,
+      "mean_coverage": 0.0044121691739836865,
+      "mean_length": 500.0
+    },
+    {
+      "seed": 1,
+      "mean_reward": 1941.3274381915035,
+      "mean_coverage": 0.0055680234452823996,
+      "mean_length": 500.0
+    },
+    {
+      "seed": 2,
+      "mean_reward": 1762.1067294247173,
+      "mean_coverage": 0.005153848109516095,
+      "mean_length": 500.0
+    },
+    {
+      "seed": 3,
+      "mean_reward": 1500.7763943171221,
+      "mean_coverage": 0.004546914832885336,
+      "mean_length": 500.0
+    },
+    {
+      "seed": 4,
+      "mean_reward": 1555.583316499769,
+      "mean_coverage": 0.004685589610485662,
+      "mean_length": 500.0
+    }
+  ],
+  "agg": {
+    "mean_reward": 1637.952727894674,
+    "ci95_reward": 184.0258455556416,
+    "mean_coverage": 0.0048733090344306364,
+    "ci95_coverage": 0.00041940153394978425
+  }
+}

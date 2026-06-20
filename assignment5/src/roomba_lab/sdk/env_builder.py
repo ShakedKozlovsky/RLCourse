@@ -41,6 +41,7 @@ def build_env(cfg: ConfigManager, map_id: str | None = None,
         step_penalty=float(cfg.get("reward.step_penalty")),
         completion_bonus=float(cfg.get("reward.completion_bonus")),
         coverage_target=float(cfg.get("reward.coverage_target")),
+        coverage_progress_coef=float(cfg.get("reward.coverage_progress_coef", 0.0)),
     )
     return RoombaEnv(world, lidar, robot_cfg, reward_cfg,
                      max_episode_steps=max_episode_steps
