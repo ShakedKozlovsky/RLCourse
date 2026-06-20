@@ -1,0 +1,103 @@
+{
+  "kind": "noise_sigma",
+  "n_seeds": 3,
+  "total_timesteps": 4000,
+  "cells": [
+    {
+      "cell": "0.0",
+      "seed": 0,
+      "final_reward": 8252.989999999943,
+      "final_coverage": 0.02303619180570739,
+      "critic_loss_last": 96.55926513671875,
+      "final_sigma": 0.0
+    },
+    {
+      "cell": "0.0",
+      "seed": 1,
+      "final_reward": 2132.9899999999425,
+      "final_coverage": 0.005956081697933977,
+      "critic_loss_last": 96.74846649169922,
+      "final_sigma": 0.0
+    },
+    {
+      "cell": "0.0",
+      "seed": 2,
+      "final_reward": 3035.9899999999425,
+      "final_coverage": 0.008043137100818875,
+      "critic_loss_last": 274.669189453125,
+      "final_sigma": 0.0
+    },
+    {
+      "cell": "0.1",
+      "seed": 0,
+      "final_reward": 8538.989999999943,
+      "final_coverage": 0.020761925453062054,
+      "critic_loss_last": 457.57208251953125,
+      "final_sigma": 0.1
+    },
+    {
+      "cell": "0.1",
+      "seed": 1,
+      "final_reward": 2304.9899999999493,
+      "final_coverage": 0.006353616060388243,
+      "critic_loss_last": 104.799072265625,
+      "final_sigma": 0.1
+    },
+    {
+      "cell": "0.1",
+      "seed": 2,
+      "final_reward": 3669.9899999999834,
+      "final_coverage": 0.012420637580402481,
+      "critic_loss_last": 68.65225219726562,
+      "final_sigma": 0.1
+    },
+    {
+      "cell": "0.2",
+      "seed": 0,
+      "final_reward": 13497.989999999943,
+      "final_coverage": 0.033332794042531554,
+      "critic_loss_last": 550.2493896484375,
+      "final_sigma": 0.2
+    },
+    {
+      "cell": "0.2",
+      "seed": 1,
+      "final_reward": 2528.9899999999498,
+      "final_coverage": 0.0068713352300961246,
+      "critic_loss_last": 103.09260559082031,
+      "final_sigma": 0.2
+    },
+    {
+      "cell": "0.2",
+      "seed": 2,
+      "final_reward": 4053.9899999999425,
+      "final_coverage": 0.014879803636514918,
+      "critic_loss_last": 76.13716125488281,
+      "final_sigma": 0.2
+    },
+    {
+      "cell": "0.4",
+      "seed": 0,
+      "final_reward": 10501.98999999995,
+      "final_coverage": 0.025298901926886035,
+      "critic_loss_last": 148.38157653808594,
+      "final_sigma": 0.4
+    },
+    {
+      "cell": "0.4",
+      "seed": 1,
+      "final_reward": 2978.9899999999507,
+      "final_coverage": 0.007911396062098565,
+      "critic_loss_last": 100.9248046875,
+      "final_sigma": 0.4
+    },
+    {
+      "cell": "0.4",
+      "seed": 2,
+      "final_reward": 3350.989999999943,
+      "final_coverage": 0.008771179683220583,
+      "critic_loss_last": 265.7226257324219,
+      "final_sigma": 0.4
+    }
+  ]
+}
