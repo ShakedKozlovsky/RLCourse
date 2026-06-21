@@ -60,7 +60,17 @@ def test_ou_reset_returns_to_mu() -> None:
     for _ in range(50):
         ou.sample()
     ou.reset()
-    np.testing.assert_allclose(ou._state, 0.5)  # noqa: SLF001
+    np.testing.assert_allclose(ou.state, 0.5)
+
+
+def test_ou_state_returns_copy_not_reference() -> None:
+    """OU.state must return a defensive copy — callers cannot mutate internals."""
+    ou = OUNoise(action_dim=2, theta=0.15, mu=0.0, sigma=0.1,
+                 rng=np.random.default_rng(0))
+    s1 = ou.state
+    s1[0] = 999.0
+    s2 = ou.state
+    assert s2[0] != 999.0
 
 
 def test_schedule_initial_and_final() -> None:

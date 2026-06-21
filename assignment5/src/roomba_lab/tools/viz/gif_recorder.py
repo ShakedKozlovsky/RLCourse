@@ -30,7 +30,7 @@ def _render_frame(env, polygon_verts) -> np.ndarray:
     ax.scatter([p.x], [p.y], color="#cc6677", s=80, zorder=5)
     ax.set_aspect("equal")
     ax.set(xticks=[], yticks=[])
-    ax.set_title(f"step={env._step_count}  cov={env.world.coverage_fraction():.2f}")  # noqa: SLF001
+    ax.set_title(f"step={env.step_count}  cov={env.world.coverage_fraction():.2f}")
     fig.tight_layout()
     fig.canvas.draw()
     w, h = fig.canvas.get_width_height()

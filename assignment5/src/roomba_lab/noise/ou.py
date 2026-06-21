@@ -41,3 +41,10 @@ class OUNoise:
 
     def reset(self) -> None:
         self._state = np.full((self.action_dim,), self.mu, dtype=np.float32)
+
+    @property
+    def state(self) -> np.ndarray:
+        """Public read-only view of the internal OU process state.
+
+        Returns a copy so callers cannot mutate the internal state."""
+        return self._state.copy()

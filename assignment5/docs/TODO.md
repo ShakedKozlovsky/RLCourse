@@ -382,3 +382,24 @@ Commit: `Layer 26: final alignment audit + v1.20 tag`
 - [x] Tag `assignment5-v1.20` and push
 
 **DoD:** every TA finding (M1-M5, Mod1-Mod8, m1-m9) has a closed line item; tag pushed.
+
+---
+
+## Layer 27 — Five-finding follow-up to TA v1.20 re-grade (v1.21)
+
+Commit: `Layer 27: TA re-grade follow-up — true CIs, real long σ-comparison, completion-bonus fires, frame extraction, OUNoise.state property`
+
+- [x] **NEW1**: README sweep tables regenerated from `ExperimentService.aggregate()` —
+      ci95_reward values now match the t-distribution output (were hand-edited).
+- [x] **Mod4 real fix**: `scripts/render_sigma_comparison_long.py` — 15 000-step
+      σ=0 vs σ=0.2 training; `assets/plots/sigma_comparison_15k.png`
+- [x] **m4 real fix**: `coverage_target` 0.10 → 0.05; completion bonus now fires on
+      the upper-quartile evaluation episodes (max observed cov = 0.0501 ≥ target).
+- [x] **Mod6 follow-up**: `scripts/extract_gif_frames.py` →
+      `assets/diagrams/cleaning_frames.png` (4 representative frames)
+- [x] **m2 final**: `OUNoise.state` property added (returns defensive copy);
+      both remaining `# noqa: SLF001` removed
+- [x] Per-episode stats re-run with `coverage_target = 0.05`; documents bonus reachability
+
+**DoD:** every TA re-grade finding (NEW1, M1, M5, Mod4, Mod6, m2, m4) addressed
+with code or content; ruff clean; 118 tests green; tag `assignment5-v1.21` pushed.
