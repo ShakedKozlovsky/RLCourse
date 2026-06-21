@@ -24,7 +24,7 @@ from roomba_lab.services.evaluation_service import EvaluationService  # noqa: E4
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def main(checkpoint: str = "saved_models/headline_policy_50k.pt",
+def main(checkpoint: str = "saved_models/headline_policy_tuned.pt",
          n_episodes: int = 20) -> None:
     t0 = time.time()
     lab = RoombaLab()
@@ -66,13 +66,13 @@ def main(checkpoint: str = "saved_models/headline_policy_50k.pt",
     out_json.write_text(json.dumps(stats, indent=2))
 
     fig, (ax_r, ax_c) = plt.subplots(1, 2, figsize=(11, 4.5))
-    ax_r.boxplot([rewards], labels=["headline 50k policy"], showmeans=True)
+    ax_r.boxplot([rewards], tick_labels=["headline policy"], showmeans=True)
     ax_r.scatter([1] * len(rewards), rewards, alpha=0.5, s=30, color="#4477aa")
     ax_r.set(title=f"Per-episode reward distribution ({n_episodes} eps)",
               ylabel="episode reward")
     ax_r.grid(alpha=0.3, axis="y")
 
-    ax_c.boxplot([covs], labels=["headline 50k policy"], showmeans=True)
+    ax_c.boxplot([covs], tick_labels=["headline policy"], showmeans=True)
     ax_c.scatter([1] * len(covs), covs, alpha=0.5, s=30, color="#cc6677")
     ax_c.set(title=f"Per-episode coverage distribution ({n_episodes} eps)",
               ylabel="coverage fraction")

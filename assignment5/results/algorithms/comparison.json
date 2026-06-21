@@ -1,0 +1,86 @@
+{
+  "variants": {
+    "ddpg_gaussian": [
+      {
+        "seed": 0,
+        "final_reward": 2718.265831805963,
+        "final_coverage": 0.007335895735057215,
+        "final_critic_loss": 65.72802734375
+      },
+      {
+        "seed": 1,
+        "final_reward": 6696.745762098769,
+        "final_coverage": 0.016934501591293075,
+        "final_critic_loss": 181.92898559570312
+      },
+      {
+        "seed": 2,
+        "final_reward": 6273.6978037381805,
+        "final_coverage": 0.01597533437955749,
+        "final_critic_loss": 229.1536865234375
+      }
+    ],
+    "ddpg_ou": [
+      {
+        "seed": 0,
+        "final_reward": 4624.486786951598,
+        "final_coverage": 0.01175499864792092,
+        "final_critic_loss": 133.48504638671875
+      },
+      {
+        "seed": 1,
+        "final_reward": 14309.605199032976,
+        "final_coverage": 0.03412324027485341,
+        "final_critic_loss": 162.16744995117188
+      },
+      {
+        "seed": 2,
+        "final_reward": 7623.849652619659,
+        "final_coverage": 0.019012312009004616,
+        "final_critic_loss": 147.2075653076172
+      }
+    ],
+    "td3": [
+      {
+        "seed": 0,
+        "final_reward": 1299.133281831074,
+        "final_coverage": 0.004684896236597661,
+        "final_critic_loss": 72.59521484375
+      },
+      {
+        "seed": 1,
+        "final_reward": 3435.375500442563,
+        "final_coverage": 0.009529268467435695,
+        "final_critic_loss": 254.64471435546875
+      },
+      {
+        "seed": 2,
+        "final_reward": 890.0868257805782,
+        "final_coverage": 0.0037557752266754803,
+        "final_critic_loss": 142.5623779296875
+      }
+    ],
+    "ddpg_no_replay": [
+      {
+        "seed": 0,
+        "final_reward": 230.97842832940594,
+        "final_coverage": 0.0015878262035237262,
+        "final_critic_loss": 0.0
+      },
+      {
+        "seed": 1,
+        "final_reward": 849.0498458398746,
+        "final_coverage": 0.0030161764128070778,
+        "final_critic_loss": 0.0
+      },
+      {
+        "seed": 2,
+        "final_reward": 226.97796608014733,
+        "final_coverage": 0.0015785812183503711,
+        "final_critic_loss": 0.0
+      }
+    ]
+  },
+  "n_seeds": 3,
+  "total_timesteps": 4000
+}

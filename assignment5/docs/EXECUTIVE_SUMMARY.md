@@ -51,12 +51,45 @@ Classic bias-variance dial — both extremes hurt.
 
 ### Finding 3 — target-network ablation (Q3 evidence, direct)
 
-| Strategy | Final reward | Coverage |
-|---|---|---|
-| **τ=0.005 (soft Polyak)** | **10 531** | **0.025** |
-| τ=1.0 (hard copy every step = NO target net) | 6 291 | 0.017 |
+Layer 21 re-ran under tuned-reward config for consistency:
 
-Soft updates beat the no-target-net baseline by **+67 % reward, +47 % coverage**.
+| Strategy | Mean reward | Mean coverage |
+|---|---|---|
+| **τ=0.005 (soft Polyak)** | **8 070** | **0.020** |
+| τ=1.0 (hard copy every step = NO target net) | 2 588 | 0.007 |
+
+Soft updates beat the no-target-net baseline by **3.1× reward, 2.9× coverage**
+(stronger than the earlier OLD-reward run — confirms the mechanism is robust
+across reward configurations).
+
+### Finding 5 — algorithm comparison (Q1 + M4 + m6 evidence)
+
+3 seeds × 4 algorithm variants × 4 000 steps:
+
+| Variant | Mean reward | Mean coverage |
+|---|---|---|
+| DDPG (Gaussian — default) | 5 230 | 0.013 |
+| DDPG (OU noise) | 8 853 | 0.022 |
+| TD3 (twin Q + delayed actor) | 1 875 | 0.006 |
+| **DDPG (no replay ≈ on-policy)** | **436** | **0.002** ← 12× collapse |
+
+Off-policy replay is **load-bearing** for DDPG's batched-update architecture.
+TD3 underperforms vanilla DDPG at this short budget (more parameters need more
+data). See [`assets/plots/algorithm_comparison.png`](../assets/plots/algorithm_comparison.png).
+
+### Finding 6 — per-episode distribution (Mod1 evidence)
+
+20 evaluation episodes of the headline policy:
+
+| Metric | Reward | Coverage |
+|---|---|---|
+| Mean | 17 528 | 0.042 |
+| Median | 19 095 | 0.045 |
+| IQR | [9 874, 26 919] | [0.025, 0.063] |
+| Range | [−472, 29 942] | [0.001, 0.070] |
+
+Policy is *inconsistent*: solid median but wide IQR — spawn-pose × LIDAR
+trajectory can produce collision-cascade failures on bad seeds.
 
 ### Finding 4 — cross-apartment generalisation (above-spec)
 
