@@ -17,6 +17,7 @@ class Pose:
     theta: float
 
     def replace(self, **kw: float) -> Pose:
+        """Replace."""
         x = kw.get("x", self.x)
         y = kw.get("y", self.y)
         theta = kw.get("theta", self.theta)

@@ -68,6 +68,7 @@ class DDPGService:
         return np.clip(action, -1.0, 1.0).astype(np.float32)
 
     def fit(self, total_timesteps: int, seed: int = 0) -> TrainResult:
+        """Fit."""
         from roomba_lab.shared.types import Transition  # local: avoid cycle
         result = TrainResult()
         obs = self.env.reset(seed=seed)

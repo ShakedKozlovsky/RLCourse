@@ -68,4 +68,5 @@ class ConfigManager:
 
     @property
     def setup_path(self) -> Path:
+        """Setup path."""
         return self._setup_path

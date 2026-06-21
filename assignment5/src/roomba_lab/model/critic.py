@@ -34,5 +34,6 @@ class Critic(nn.Module):
         init_critic_head(self.head)
 
     def forward(self, obs: torch.Tensor, action: torch.Tensor) -> torch.Tensor:
+        """Concat state + action at input layer, return scalar Q(s, a)."""
         x = torch.cat([obs, action], dim=-1)
         return self.head(self.body(x)).squeeze(-1)

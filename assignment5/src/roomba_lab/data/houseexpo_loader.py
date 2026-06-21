@@ -27,10 +27,12 @@ class HouseMap:
 
     @property
     def width_m(self) -> float:
+        """Apartment width in metres (bbox x-span)."""
         return self.bbox_max[0] - self.bbox_min[0]
 
     @property
     def height_m(self) -> float:
+        """Apartment height in metres (bbox y-span)."""
         return self.bbox_max[1] - self.bbox_min[1]
 
 
@@ -44,9 +46,11 @@ class HouseExpoLoader:
         self._cache: dict[str, HouseMap] = {}
 
     def map_ids(self) -> list[str]:
+        """Return the sorted list of available HouseExpo map IDs in the sample dir."""
         return sorted(p.stem for p in self._sample_dir.glob("*.json"))
 
     def load(self, map_id: str) -> HouseMap:
+        """Load and cache a HouseExpo apartment by its ID; raise if missing."""
         if map_id in self._cache:
             return self._cache[map_id]
         path = self._sample_dir / f"{map_id}.json"

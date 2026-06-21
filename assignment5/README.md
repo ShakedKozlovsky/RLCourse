@@ -430,12 +430,28 @@ tried `[64, 64]` (16× fewer params) + 50k steps + cosine LR schedule. **Also wo
 Evidence: [`saved_models/headline_policy_v3_small.pt`](saved_models/headline_policy_v3_small.pt),
 [`assets/plots/{learning_curve_v3_small,critic_loss_v3_small,coverage_heatmap_v3_small,trajectory_overlay_v3_small}.png`](assets/plots/).
 
+### Layer 30 third negative result — `docs/FAILURE_MODES.md § 9c`
+
+The TA's final suggestion: goal-conditioning. Add (dx, dy) to nearest-unvisited
+cell as 2 extra obs dims (29 → 31). Trained 20k steps. **Also worse**:
+
+| | v1.20 | v1.22 v2 (reward boost) | v1.23 v3 (small net) | v1.24 v4 (goal-cond) |
+|---|---|---|---|---|
+| Median cov | **0.0487** | 0.0253 | 0.0200 | 0.0156 |
+| Median reward | **20 613** | 10 187 | 7 836 | 5 916 |
+
+**Three substantive attempts, three negative results.** The v1.20 configuration
+is not just well-tuned — it's a robust local optimum that perturbations in any
+direction (reward, network, observation) move away from. Honest disclosure.
+Evidence: [`saved_models/headline_policy_v4_goal.pt`](saved_models/headline_policy_v4_goal.pt)
++ [`assets/plots/{learning_curve_v4_goal,critic_loss_v4_goal,coverage_heatmap_v4_goal,trajectory_overlay_v4_goal}.png`](assets/plots/).
+
 **Combined lesson**: the v1.20 hyperparameters are at the practical ceiling
 for this observation-architecture (LIDAR-only) and reward-architecture
-(cleaning + progress shaping). Substantial improvement requires architectural
-redesign — goal-conditioning, frontier reward, or LSTM actor — documented as
-extension points in [`docs/PLAN.md`](docs/PLAN.md) § 14. **v1.20 retained as
-headline.**
+(cleaning + progress shaping). Substantial improvement requires *fundamentally
+different* methods — model-based planning, hierarchical RL with sub-policies,
+or imitation learning from human demonstrations — documented as extension
+points in [`docs/PLAN.md`](docs/PLAN.md) § 14. **v1.20 retained as headline.**
 
 Nine more engineering discoveries (actor-init magnitude, shapely caching, etc.)
 in the same document. Ten *meta* lessons in

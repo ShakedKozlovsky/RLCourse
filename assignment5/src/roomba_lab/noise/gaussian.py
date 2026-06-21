@@ -23,11 +23,13 @@ class GaussianNoise:
         self._rng = rng or np.random.default_rng(0)
 
     def set_sigma(self, sigma: float) -> None:
+        """Set sigma."""
         if sigma < 0.0:
             raise ValueError("sigma must be >= 0")
         self.sigma = float(sigma)
 
     def sample(self) -> np.ndarray:
+        """Sample."""
         return self._rng.normal(loc=0.0, scale=self.sigma,
                                  size=(self.action_dim,)).astype(np.float32)
 

@@ -29,9 +29,11 @@ class OUNoise:
         self._state = np.full((action_dim,), mu, dtype=np.float32)
 
     def set_sigma(self, sigma: float) -> None:
+        """Set sigma."""
         self.sigma = float(sigma)
 
     def sample(self) -> np.ndarray:
+        """Sample."""
         drift = self.theta * (self.mu - self._state) * self.dt
         diffusion = self.sigma * np.sqrt(self.dt) * self._rng.standard_normal(
             size=(self.action_dim,)
@@ -40,6 +42,7 @@ class OUNoise:
         return self._state.copy()
 
     def reset(self) -> None:
+        """Reset."""
         self._state = np.full((self.action_dim,), self.mu, dtype=np.float32)
 
     @property

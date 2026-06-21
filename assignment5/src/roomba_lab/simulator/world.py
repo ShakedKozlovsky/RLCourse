@@ -46,20 +46,25 @@ class World:
                     self.grid[i, j] = UNVISITED
 
     def cell_index(self, x: float, y: float) -> tuple[int, int]:
+        """Cell index."""
         j = int((x - self.bbox_min[0]) * self.pixels_per_metre)
         i = int((y - self.bbox_min[1]) * self.pixels_per_metre)
         h, w = self.grid.shape
         return max(0, min(h - 1, i)), max(0, min(w - 1, j))
 
     def free_cell_count(self) -> int:
+        """Free cell count."""
         return int(np.sum((self.grid == UNVISITED) | (self.grid == VISITED)))
 
     def visited_cell_count(self) -> int:
+        """Visited cell count."""
         return int(np.sum(self.grid == VISITED))
 
     def coverage_fraction(self) -> float:
+        """Coverage fraction."""
         free = self.free_cell_count()
         return 0.0 if free == 0 else self.visited_cell_count() / free
 
     def reset_visits(self) -> None:
+        """Reset visits."""
         self.grid[self.grid == VISITED] = UNVISITED

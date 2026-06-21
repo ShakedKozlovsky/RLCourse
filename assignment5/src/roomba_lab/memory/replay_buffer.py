@@ -33,6 +33,7 @@ class ReplayBuffer:
         self._size = 0
 
     def push(self, transition: Transition) -> None:
+        """Append one transition to the ring; oldest is overwritten at capacity."""
         i = self._ptr
         self.states[i] = transition.state
         self.actions[i] = transition.action

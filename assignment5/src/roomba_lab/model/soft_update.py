@@ -18,6 +18,7 @@ def polyak_update(
     source_params: Iterable[torch.nn.Parameter],
     tau: float,
 ) -> None:
+    """Polyak update."""
     if not 0.0 <= tau <= 1.0:
         raise ValueError(f"tau must be in [0, 1], got {tau}")
     with torch.no_grad():

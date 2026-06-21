@@ -40,6 +40,7 @@ class ExperimentService:
         self.total_timesteps = total_timesteps
 
     def run(self, kind: str) -> Path:
+        """Run."""
         if kind == "noise_sigma":
             cells = self.lab.config.get("experiments.noise_sigma_sweep")
             patch = lambda cfg, v: cfg["noise"].__setitem__("sigma_initial", float(v)) or cfg["noise"].__setitem__("sigma_final", float(v))  # noqa: E501,E731

@@ -207,7 +207,51 @@ extension points in [`docs/PLAN.md`](PLAN.md) § 14.
 **v1.20 policy retained as headline.** Both v2 and v3 checkpoints are
 committed for full transparency as evidence of the failed attempts.
 
-## 9c. PyQt6 in headless CI
+## 9c. Goal-conditioning attempt also backfired (v1.24 Layer 30 — third negative result)
+
+After § 9a (boosted reward, failed) and § 9b (smaller network, failed), the TA's
+final substantive suggestion was an **observation-space redesign** —
+goal-conditioning. The hypothesis: LIDAR-only obs cannot represent "where to go,"
+so the agent needs the nearest-unvisited-cell direction as input.
+
+Implementation ([`environment/goal_obs.py`](../src/roomba_lab/environment/goal_obs.py)):
+
+- `nearest_unvisited_direction(env)` returns (dx, dy) ∈ [-1, 1] normalised
+  to bbox span, pointing at the nearest UNVISITED grid cell
+- `GoalConditionedEnv` wraps `RoombaEnv` and appends these 2 features
+- `obs_dim` = 29 → **31**
+
+Trained 20 000 steps with v1.20 hyperparameters. **THIRD strictly-worse result**:
+
+| | v1.20 (29-D obs) | v1.22 v2 (boosted reward) | v1.23 v3 (small net) | v1.24 v4 (goal-cond, 31-D) |
+|---|---|---|---|---|
+| Median cov | **0.0487** | 0.0253 | 0.0200 | 0.0156 |
+| Median reward | **20 613** | 10 187 | 7 836 | 5 916 |
+
+Hypotheses for why goal-conditioning didn't help:
+
+- 2 extra inputs is a small change but disrupts the learned (s, a) → Q mapping
+  the v1.20 policy converged on. Re-training from scratch with 20 k steps may
+  not be enough budget for the critic to relearn the larger feature space.
+- The nearest-unvisited direction is a **straight-line vector** — misleading
+  when the actual path is blocked by walls. The agent might learn to head
+  toward the vector but collide into a wall between robot and goal.
+- The default v1.20 actor already implicitly learns a "go forward unless wall
+  ahead" heuristic via LIDAR; adding a strong directional pull may **override**
+  that good wall-avoidance behaviour.
+
+**Combined three-attempt lesson** (§ 9a + § 9b + § 9c): every substantive
+improvement to v1.20 has produced a worse policy. The v1.20 configuration is
+**not just well-tuned — it's at a robust local optimum** that perturbations in
+any direction (reward, network, observation) move away from. Further
+improvement would likely require a fundamentally different agent
+(e.g., model-based with planning, hierarchical RL with sub-policies for
+explore vs clean, or learning from human demonstrations).
+
+**v1.20 policy retained as headline.** v2, v3, v4 checkpoints + plots all
+committed for full transparency of the negative-result-search trajectory.
+
+## 9d. PyQt6 in headless CI
 
 **Known requirement**: Qt platform plugins fail to load in headless CI without
 `QT_QPA_PLATFORM=offscreen`. The CI workflow sets this env var explicitly

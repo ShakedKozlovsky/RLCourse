@@ -19,5 +19,6 @@ class LinearSigmaSchedule:
             raise ValueError("initial / final must be >= 0")
 
     def at(self, step: int) -> float:
+        """At."""
         frac = min(1.0, max(0.0, step / self.decay_steps))
         return float(self.initial + (self.final - self.initial) * frac)

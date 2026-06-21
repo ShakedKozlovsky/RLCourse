@@ -42,6 +42,7 @@ def _render_frame(env, polygon_verts) -> np.ndarray:
 def record_cleaning_gif(config_path: Path | None, checkpoint: Path, out: Path,
                          seed: int = 0, map_id: str | None = None,
                          max_steps: int = 200, frame_every: int = 4) -> Path:
+    """Record cleaning gif."""
     lab = RoombaLab(config_path=config_path)
     env = lab.make_env(map_id=map_id, max_episode_steps=max_steps)
     net = ActorCriticNet(

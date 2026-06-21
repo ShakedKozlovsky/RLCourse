@@ -11,8 +11,9 @@ from dataclasses import dataclass
 import numpy as np
 
 from roomba_lab.environment.reward import RewardConfig, RewardInputs, compute_reward
+from roomba_lab.environment.spawn import sample_spawn_pose
 from roomba_lab.sensor.lidar import LidarSensor
-from roomba_lab.simulator.collision import is_collision, point_in_polygon
+from roomba_lab.simulator.collision import is_collision
 from roomba_lab.simulator.kinematics import Pose, step_unicycle
 from roomba_lab.simulator.robot import Robot
 from roomba_lab.simulator.world import UNVISITED, VISITED, World
@@ -72,6 +73,7 @@ class RoombaEnv:
         return self._collisions
 
     def reset(self, seed: int | None = None) -> np.ndarray:
+        """Reset env state + sample new spawn pose; return initial observation."""
         if seed is not None:
             self._rng = np.random.default_rng(seed)
         self.world.reset_visits()
@@ -79,11 +81,13 @@ class RoombaEnv:
         self._completion_fired = False
         self._collisions = 0
         self._episode_reward = 0.0
-        self.robot.reset(self._sample_spawn_pose())
+        self.robot.reset(sample_spawn_pose(self.world, self.robot_cfg.radius_m, self._rng))
         self._mark_cleaned(self.robot.pose)
         return self._observation()
 
     def step(self, action: np.ndarray) -> tuple[np.ndarray, float, bool, dict]:
+        """Advance one timestep: kinematics → collision check → mark cleaned cells →
+        compute reward. Returns (obs, reward, done, info)."""
         a = (float(action[0]), float(action[1]))
         coverage_before = self.world.coverage_fraction()
         candidate = step_unicycle(self.robot.pose, a, self.robot_cfg.dt,
@@ -112,20 +116,6 @@ class RoombaEnv:
         info.update({"coverage": coverage_after, "episode_reward": self._episode_reward,
                       "collisions": self._collisions, "step": self._step_count})
         return self._observation(), reward, done, info
-
-    def _sample_spawn_pose(self) -> Pose:
-        x_min, y_min = self.world.bbox_min
-        x_max, y_max = self.world.bbox_max
-        for _ in range(200):
-            x = self._rng.uniform(x_min, x_max)
-            y = self._rng.uniform(y_min, y_max)
-            theta = self._rng.uniform(-np.pi, np.pi)
-            pose = Pose(x, y, float(theta))
-            if point_in_polygon(pose, self.world.polygon) and not is_collision(
-                pose, self.world.polygon, self.robot_cfg.radius_m
-            ):
-                return pose
-        raise RuntimeError("Could not find a valid spawn pose after 200 attempts")
 
     def _mark_cleaned(self, pose: Pose) -> int:
         radius_cells = max(1, int(self.robot_cfg.cleaning_radius_m * self.world.pixels_per_metre))

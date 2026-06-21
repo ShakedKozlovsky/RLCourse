@@ -24,10 +24,12 @@ class RoombaLab:
 
     def make_env(self, map_id: str | None = None,
                  max_episode_steps: int | None = None) -> RoombaEnv:
+        """Make env."""
         return build_env(self.config, map_id=map_id, max_episode_steps=max_episode_steps)
 
     def train(self, total_timesteps: int | None = None, seed: int = 0,
               map_id: str | None = None) -> TrainResult:
+        """Train."""
         env = self.make_env(map_id=map_id)
         service = build_ddpg_service(self.config, env)
         steps = total_timesteps or int(self.config.get("training.total_timesteps"))
@@ -35,6 +37,7 @@ class RoombaLab:
 
     def evaluate(self, net, n_episodes: int | None = None, seed: int = 0,
                   map_id: str | None = None) -> dict[str, float]:
+        """Evaluate."""
         env = self.make_env(map_id=map_id)
         evaluator = EvaluationService(net, env)
         eps = evaluator.rollout(
@@ -44,6 +47,7 @@ class RoombaLab:
         return evaluator.aggregate(eps)
 
     def predict(self, net, obs: np.ndarray) -> np.ndarray:
+        """Predict."""
         with torch.no_grad():
             action = net.actor(torch.as_tensor(obs).unsqueeze(0)).cpu().numpy()[0]
         return np.clip(action, -1, 1).astype(np.float32)

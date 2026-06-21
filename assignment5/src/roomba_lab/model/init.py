@@ -9,6 +9,7 @@ import torch.nn as nn
 
 
 def init_hidden(layer: nn.Linear, gain: float = math.sqrt(2.0)) -> None:
+    """Init hidden."""
     nn.init.orthogonal_(layer.weight, gain=gain)
     if layer.bias is not None:
         nn.init.zeros_(layer.bias)
@@ -30,6 +31,7 @@ def init_actor_head(layer: nn.Linear, gain: float = 0.1) -> None:
 
 
 def init_critic_head(layer: nn.Linear, gain: float = 1.0) -> None:
+    """Init critic head."""
     nn.init.orthogonal_(layer.weight, gain=gain)
     if layer.bias is not None:
         nn.init.zeros_(layer.bias)

@@ -19,9 +19,11 @@ class Robot:
             self.trajectory.append(self.pose)
 
     def update(self, pose: Pose) -> None:
+        """Update."""
         self.pose = pose
         self.trajectory.append(pose)
 
     def reset(self, pose: Pose) -> None:
+        """Reset."""
         self.pose = pose
         self.trajectory = [pose]

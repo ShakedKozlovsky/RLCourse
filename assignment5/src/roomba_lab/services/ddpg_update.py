@@ -35,6 +35,7 @@ def _batch_to_tensors(batch: dict, device: torch.device) -> dict[str, torch.Tens
 
 def critic_loss(net: ActorCriticNet, batch: dict, gamma: float,
                 device: torch.device | None = None) -> torch.Tensor:
+    """Critic loss."""
     device = device or torch.device("cpu")
     b = _batch_to_tensors(batch, device)
     with torch.no_grad():
@@ -47,6 +48,7 @@ def critic_loss(net: ActorCriticNet, batch: dict, gamma: float,
 
 def actor_loss(net: ActorCriticNet, batch: dict,
                device: torch.device | None = None) -> torch.Tensor:
+    """Actor loss."""
     device = device or torch.device("cpu")
     b = _batch_to_tensors(batch, device)
     return -net.critic(b["state"], net.actor(b["state"])).mean()
@@ -62,6 +64,7 @@ def apply_update(
     max_grad_norm: float = 1.0,
     device: torch.device | None = None,
 ) -> UpdateDiagnostic:
+    """Apply update."""
     device = device or torch.device("cpu")
     target_before = torch.cat([p.data.flatten() for p in net.target_critic.parameters()]).clone()
     c_loss = critic_loss(net, batch, gamma, device)

@@ -18,6 +18,7 @@ SAMPLE_DIR = PROJECT_ROOT / "data" / "raw" / "sample_maps"
 def build_env(cfg: ConfigManager, map_id: str | None = None,
               max_episode_steps: int | None = None,
               rng: np.random.Generator | None = None) -> RoombaEnv:
+    """Build env."""
     loader = HouseExpoLoader(SAMPLE_DIR)
     mid = map_id or cfg.get("env.primary_map_id") or loader.map_ids()[0]
     if mid not in loader.map_ids():

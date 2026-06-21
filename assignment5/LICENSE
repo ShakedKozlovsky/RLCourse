@@ -1,0 +1,31 @@
+Educational use only — RL Course Assignment 5 (תרגיל 05).
+
+Copyright (c) 2026 Shaked Kozlovsky <shaked1221997@gmail.com>
+
+This project (`roomba-lab`) was developed as a graded coursework submission
+for Dr. Yoram Segal's Reinforcement Learning course (Lecture 09 — DDPG).
+
+PERMITTED:
+  - Reading and review by course staff and fellow students for grading,
+    educational discussion, and methodology study.
+  - Forking for personal learning experiments (no academic redistribution).
+  - Citation of the methodology (PRDs, layered build, mini-Graphify,
+    iterative-adversarial-review pattern) in academic writing.
+
+PROHIBITED:
+  - Submission of this code (in whole or substantial part) for credit in
+    any other academic course.
+  - Commercial use of the simulator, DDPG implementation, or any artefact.
+  - Redistribution outside the original course context.
+
+The HouseExpo apartment-floorplan dataset shipped under `data/raw/sample_maps/`
+is governed by the original HouseExpo licence (MIT) — see
+https://github.com/TeaganLi/HouseExpo for terms.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.

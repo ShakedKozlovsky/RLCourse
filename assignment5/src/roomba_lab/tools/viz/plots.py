@@ -15,6 +15,7 @@ from roomba_lab.shared.types import TrainResult  # noqa: E402
 
 def plot_learning_curve(result: TrainResult, out: Path,
                          title: str = "DDPG Learning Curve") -> None:
+    """Plot learning curve."""
     steps = [d.step for d in result.diagnostics]
     rewards = [d.episode_reward for d in result.diagnostics]
     coverage = [d.coverage for d in result.diagnostics]
@@ -39,6 +40,7 @@ def plot_learning_curve(result: TrainResult, out: Path,
 
 def plot_critic_loss(result: TrainResult, out: Path,
                       title: str = "Critic Loss vs Training Step") -> None:
+    """Plot critic loss."""
     steps = [d.step for d in result.diagnostics]
     losses = [d.critic_loss for d in result.diagnostics]
     fig, ax = plt.subplots(figsize=(8, 4.5))
@@ -55,6 +57,7 @@ def plot_critic_loss(result: TrainResult, out: Path,
 def plot_trajectory_overlay(robot_trajectory: list[tuple[float, float]],
                              polygon_vertices: list[tuple[float, float]],
                              out: Path, title: str = "Robot trajectory overlay") -> None:
+    """Plot trajectory overlay."""
     fig, ax = plt.subplots(figsize=(7, 7))
     poly = np.array(polygon_vertices)
     ax.fill(poly[:, 0], poly[:, 1], color="#eaeaea", alpha=0.6,

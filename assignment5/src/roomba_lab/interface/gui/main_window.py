@@ -22,6 +22,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 def launch() -> None:
+    """Launch."""
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     window.show()

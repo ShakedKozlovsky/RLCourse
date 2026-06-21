@@ -26,6 +26,7 @@ class TD3Diagnostic:
 
 def critic_loss_td3(net: TD3Network, batch: dict, gamma: float,
                     target_policy_noise: float, target_noise_clip: float) -> torch.Tensor:
+    """Critic loss td3."""
     b = {k: torch.as_tensor(v) for k, v in batch.items()}
     with torch.no_grad():
         next_action = net.target_actor(b["next_state"])
@@ -43,6 +44,7 @@ def critic_loss_td3(net: TD3Network, batch: dict, gamma: float,
 
 
 def actor_loss_td3(net: TD3Network, batch: dict) -> torch.Tensor:
+    """Actor loss td3."""
     b = {k: torch.as_tensor(v) for k, v in batch.items()}
     return -net.critic_a(b["state"], net.actor(b["state"])).mean()
 
@@ -60,6 +62,7 @@ def apply_td3_update(
     critic_opt: torch.optim.Optimizer,
     max_grad_norm: float = 1.0,
 ) -> TD3Diagnostic:
+    """Apply td3 update."""
     c_loss = critic_loss_td3(net, batch, gamma, target_policy_noise, target_noise_clip)
     critic_opt.zero_grad()
     c_loss.backward()

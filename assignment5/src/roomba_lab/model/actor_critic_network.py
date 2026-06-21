@@ -34,16 +34,19 @@ class ActorCriticNet(nn.Module):
             p.requires_grad = False
 
     def act(self, obs: torch.Tensor) -> torch.Tensor:
+        """Deterministic inference path — actor forward under no_grad."""
         with torch.no_grad():
             return self.actor(obs)
 
     def save(self, path) -> None:
+        """Persist actor + critic + targets to a single .pt file via state_dict."""
         torch.save(self.state_dict(), path)
 
     @classmethod
     def load(cls, path, obs_dim: int, action_dim: int,
              actor_hidden_sizes: Sequence[int] = (256, 256),
              critic_hidden_sizes: Sequence[int] = (256, 256)) -> ActorCriticNet:
+        """Build a fresh ActorCriticNet then load weights from `path`."""
         net = cls(obs_dim, action_dim, actor_hidden_sizes, critic_hidden_sizes)
         net.load_state_dict(torch.load(path, map_location="cpu"))
         return net

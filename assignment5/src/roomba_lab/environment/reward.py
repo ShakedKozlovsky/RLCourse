@@ -28,6 +28,8 @@ class RewardInputs:
 
 
 def compute_reward(inputs: RewardInputs, cfg: RewardConfig) -> tuple[float, dict[str, float]]:
+    """Pure reward function: per-step penalty + per-cell bonus + (dense) coverage-
+    progress shaping + collision penalty + (one-shot) completion bonus."""
     r = cfg.step_penalty
     r += inputs.new_cells * cfg.new_cell_bonus
     r += cfg.coverage_progress_coef * max(0.0, inputs.coverage_after - inputs.coverage_before)

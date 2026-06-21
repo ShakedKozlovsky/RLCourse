@@ -431,3 +431,17 @@ Commit: `Layer 29: TA v1.22 re-grade — layer count + tests-exact + v2/v3 plot 
 - [x] **Item 5 (M1 third try, NEGATIVE)** `scripts/train_v3_small_net.py` — `[64, 64]` net + 50k steps + cosine LR schedule. Result: median cov **0.0200**, strictly worse than v1.20 (0.0487). Documented in `docs/FAILURE_MODES.md § 9b`. Combined § 9a + § 9b lesson: v1.20 hyperparameters are at the practical ceiling for the current observation + reward architecture; substantial improvement requires redesign (goal-conditioning, frontier reward, LSTM actor — documented as extension points in PLAN § 14).
 
 **DoD:** 4 TA NEW-items closed; M1 third-attempt evidence published; tag `assignment5-v1.23` pushed.
+
+---
+
+## Layer 30 — V3-rules sweep + M1 third attempt (v1.24)
+
+Commit: `Layer 30: V3-rules sweep — env split + LICENSE + docstrings 95% + AUDIT 5-cycle + M1 third negative result`
+
+- [x] **NEW11**: `roomba_env.py` 153 LOC split → `roomba_env.py` (140) + `spawn.py` (35). Now ≤ 150 cap.
+- [x] **NEW12**: `assignment5/LICENSE` added (educational-use, HouseExpo attribution).
+- [x] **NEW13**: docstring coverage 37 % → **95 %** (95/100 public functions documented).
+- [x] **NEW14**: `docs/AUDIT.md` rewritten — now captures all 5 audit cycles (Layer 13 self + 4 TA-roleplays).
+- [x] **M1 third attempt (NEGATIVE)**: `scripts/train_v4_goal_conditioned.py` — added nearest-unvisited (dx,dy) to obs (29 → 31). Median cov 0.0156, strictly worse than v1.20. Documented in `FAILURE_MODES.md § 9c`. Combined 3-attempt lesson: v1.20 is a robust local optimum.
+
+**DoD:** 4 V3 NEW items closed; M1 third attempt evidence published; tag `assignment5-v1.24` pushed.

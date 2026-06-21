@@ -17,6 +17,7 @@ from roomba_lab.shared.config import ConfigManager
 
 def build_noise(cfg: ConfigManager, action_dim: int,
                 rng: np.random.Generator) -> GaussianNoise | OUNoise:
+    """Build noise."""
     kind = str(cfg.get("noise.kind", "gaussian"))
     sigma = float(cfg.get("noise.sigma_initial"))
     if kind == "ou":
@@ -29,6 +30,7 @@ def build_noise(cfg: ConfigManager, action_dim: int,
 
 def build_ddpg_service(cfg: ConfigManager, env: RoombaEnv,
                         rng: np.random.Generator | None = None) -> DDPGService:
+    """Build ddpg service."""
     rng = rng or np.random.default_rng(int(cfg.get("seed")))
     net = ActorCriticNet(
         obs_dim=env.obs_dim, action_dim=env.action_dim,
