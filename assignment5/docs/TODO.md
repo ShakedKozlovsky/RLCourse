@@ -465,3 +465,19 @@ Commit: `Layer 31: TA v1.24 re-grade closure — meaningful docstrings + select_
       of the engineering story, not a footnote.
 
 **DoD:** TA v1.24 re-grade NEW15/16/17 closed; M1 reframed; tag `v1.25` pushed.
+
+---
+
+## Layer 32 — Lock-in: meta-consistency test ends the layer-count drift chain (v1.26)
+
+Commit: `Layer 32: add tests/unit/test_doc_drift.py to block recurring NEW7/NEW17/NEW18 layer-count off-by-one drift`
+
+- [x] `tests/unit/test_doc_drift.py` — 3 tests that read `docs/TODO.md` as the
+      single source of truth and assert the `**N layered task entries**` integer
+      in README and EXEC_SUMMARY matches.
+- [x] Verified the test FAILS on the current 29-vs-30 drift, then bumped both
+      intros to **31** (this layer = entry # 31) — test now passes.
+- [x] Any future layer added without updating both intros will fail CI.
+
+**DoD:** drift-prevention test green; intros say 31; the recurring
+NEW7/NEW17/NEW18 pattern is now structurally impossible. Tag `v1.26` pushed.

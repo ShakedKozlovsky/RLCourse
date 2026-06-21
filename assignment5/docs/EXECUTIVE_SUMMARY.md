@@ -1,6 +1,6 @@
 # Executive Summary — roomba-lab (1-pager for the grader)
 
-> Built layer-by-layer over **29 layered task entries** in `docs/TODO.md` (17 core: Layer 0–16 + V3 polish Layer 17; 12 above-spec polish: Layers 18, 19/20, 21–30). 5 successive adversarial-review cycles (see `docs/AUDIT.md`). **118 tests · ruff clean · 87 substantive docstrings · every file ≤ 150 LOC · zero `gym` imports · zero `noqa: SLF001`.**
+> Built layer-by-layer over **31 layered task entries** in `docs/TODO.md` (17 core: Layer 0–16 + V3 polish Layer 17; 14 above-spec polish: Layers 18, 19/20, 21–32). 5 successive adversarial-review cycles (see `docs/AUDIT.md`). **118 tests · ruff clean · 87 substantive docstrings · every file ≤ 150 LOC · zero `gym` imports · zero `noqa: SLF001`.**
 
 ## What was built
 

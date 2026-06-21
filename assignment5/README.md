@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/ShakedKozlovsky/RLCourse/actions/workflows/assignment5-ci.yml/badge.svg)](https://github.com/ShakedKozlovsky/RLCourse/actions/workflows/assignment5-ci.yml)
 
-> **Assignment 5 of the RL Course (תרגיל 05).** Built layer-by-layer over **29 layered task entries** in `docs/TODO.md` (17 core: Layer 0–16 + V3 polish Layer 17; 12 above-spec polish: Layers 18, 19/20, 21–30, driven by 5 successive adversarial-review cycles documented in `docs/AUDIT.md`). Single-author, single-AI-agent (Claude Opus 4.7). **118 tests · ruff clean · 87/87 substantive docstrings on public surface · every file ≤ 150 LOC · zero `gym` imports · zero `noqa: SLF001` in `src/` `tests/` and `scripts/`.**
+> **Assignment 5 of the RL Course (תרגיל 05).** Built layer-by-layer over **31 layered task entries** in `docs/TODO.md` (17 core: Layer 0–16 + V3 polish Layer 17; 14 above-spec polish: Layers 18, 19/20, 21–32, driven by 6 successive adversarial-review cycles documented in `docs/AUDIT.md`. Layer 32 added `tests/unit/test_doc_drift.py` so the README's "N layered task entries" stays in sync with `docs/TODO.md` automatically). Single-author, single-AI-agent (Claude Opus 4.7). **118 tests · ruff clean · 87/87 substantive docstrings on public surface · every file ≤ 150 LOC · zero `gym` imports · zero `noqa: SLF001` in `src/` `tests/` and `scripts/`.**
 
 ### Above-spec deliverables (what pushes this beyond compliance)
 
