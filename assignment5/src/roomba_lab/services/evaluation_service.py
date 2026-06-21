@@ -18,7 +18,8 @@ class EvaluationService:
         self.device = device or torch.device("cpu")
 
     def rollout(self, n_episodes: int = 5, seed: int = 0) -> list[EpisodeMetrics]:
-        """Rollout."""
+        """Run `n_episodes` deterministic-policy rollouts (no exploration noise)
+        from successive seeds, return per-episode metrics."""
         episodes: list[EpisodeMetrics] = []
         for ep in range(n_episodes):
             obs = self.env.reset(seed=seed + ep)
@@ -38,7 +39,7 @@ class EvaluationService:
         return episodes
 
     def aggregate(self, episodes: list[EpisodeMetrics]) -> dict[str, float]:
-        """Aggregate."""
+        """Reduce a list of EpisodeMetrics → mean reward + std + mean coverage + n."""
         rewards = np.array([e.reward for e in episodes])
         covs = np.array([e.coverage for e in episodes])
         return {

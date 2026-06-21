@@ -53,37 +53,37 @@ class GoalConditionedEnv:
 
     @property
     def action_dim(self) -> int:
-        """Action dim."""
+        """Inherited from the wrapped env (action space is unchanged: 2D)."""
         return self._env.action_dim
 
     @property
     def world(self):
-        """World."""
+        """Forwarded access to the underlying World — needed by viz scripts."""
         return self._env.world
 
     @property
     def robot(self):
-        """Robot."""
+        """Forwarded access to the underlying Robot — needed for trajectory plots."""
         return self._env.robot
 
     @property
     def step_count(self) -> int:
-        """Step count."""
+        """Forwarded — the in-episode step counter of the wrapped env."""
         return self._env.step_count
 
     @property
     def collisions(self) -> int:
-        """Collisions."""
+        """Forwarded — cumulative collision count of the wrapped env this episode."""
         return self._env.collisions
 
     def reset(self, seed: int | None = None) -> np.ndarray:
-        """Reset."""
+        """Reset the wrapped env and return the goal-augmented initial observation."""
         obs = self._env.reset(seed=seed)
         dx, dy = nearest_unvisited_direction(self._env)
         return np.concatenate([obs, [dx, dy]]).astype(np.float32)
 
     def step(self, action: np.ndarray) -> tuple[np.ndarray, float, bool, dict]:
-        """Step."""
+        """Step the wrapped env; append fresh (dx, dy) to the returned observation."""
         obs, reward, done, info = self._env.step(action)
         dx, dy = nearest_unvisited_direction(self._env)
         obs_aug = np.concatenate([obs, [dx, dy]]).astype(np.float32)

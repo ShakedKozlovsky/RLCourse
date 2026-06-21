@@ -19,6 +19,8 @@ class LinearSigmaSchedule:
             raise ValueError("initial / final must be >= 0")
 
     def at(self, step: int) -> float:
-        """At."""
+        """Linearly interpolate σ between (initial, final) over decay_steps.
+
+        Clamped: at(0)=initial, at(decay_steps)=final, at(any step beyond)=final."""
         frac = min(1.0, max(0.0, step / self.decay_steps))
         return float(self.initial + (self.final - self.initial) * frac)

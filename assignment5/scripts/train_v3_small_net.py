@@ -69,7 +69,7 @@ def main() -> None:
         for g in svc.critic_opt.param_groups:
             g["lr"] = _cosine_lr(initial_critic_lr, step, TOTAL_TS)
         svc.noise.set_sigma(svc.schedule.at(step))
-        action = svc._select_action(obs, step)  # noqa: SLF001
+        action = svc.select_action(obs, step)
         next_obs, reward, done, info = env.step(action)
         episode_reward += reward
         svc.buffer.push(Transition(state=obs, action=action,

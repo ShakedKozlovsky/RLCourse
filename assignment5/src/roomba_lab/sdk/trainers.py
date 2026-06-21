@@ -17,7 +17,10 @@ from roomba_lab.shared.config import ConfigManager
 
 def build_noise(cfg: ConfigManager, action_dim: int,
                 rng: np.random.Generator) -> GaussianNoise | OUNoise:
-    """Build noise."""
+    """Switch Gaussian vs OU noise based on `noise.kind` config value.
+
+    ADR-005 says Gaussian is the default; OU is selectable for the
+    Lillicrap-2016-style replication (see PRD_exploration_noise § 2.2)."""
     kind = str(cfg.get("noise.kind", "gaussian"))
     sigma = float(cfg.get("noise.sigma_initial"))
     if kind == "ou":
@@ -30,7 +33,8 @@ def build_noise(cfg: ConfigManager, action_dim: int,
 
 def build_ddpg_service(cfg: ConfigManager, env: RoombaEnv,
                         rng: np.random.Generator | None = None) -> DDPGService:
-    """Build ddpg service."""
+    """Assemble ActorCriticNet + ReplayBuffer + noise + schedule + DDPGHyperparams
+    → DDPGService, all driven from `cfg`. Used by SDK.train() and by the GUI."""
     rng = rng or np.random.default_rng(int(cfg.get("seed")))
     net = ActorCriticNet(
         obs_dim=env.obs_dim, action_dim=env.action_dim,

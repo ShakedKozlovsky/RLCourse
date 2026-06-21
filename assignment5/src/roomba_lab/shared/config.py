@@ -68,5 +68,5 @@ class ConfigManager:
 
     @property
     def setup_path(self) -> Path:
-        """Setup path."""
+        """The JSON config file this manager was loaded from."""
         return self._setup_path

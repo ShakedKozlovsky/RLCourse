@@ -42,7 +42,11 @@ def _render_frame(env, polygon_verts) -> np.ndarray:
 def record_cleaning_gif(config_path: Path | None, checkpoint: Path, out: Path,
                          seed: int = 0, map_id: str | None = None,
                          max_steps: int = 200, frame_every: int = 4) -> Path:
-    """Record cleaning gif."""
+    """Replay one cleaning episode of the loaded policy and write an imageio GIF.
+
+    Captures one frame every `frame_every` steps (default ≈ 12 fps for a 200-
+    step episode). Frame shows the apartment polygon, the trajectory so far,
+    and the robot's current pose."""
     lab = RoombaLab(config_path=config_path)
     env = lab.make_env(map_id=map_id, max_episode_steps=max_steps)
     net = ActorCriticNet(

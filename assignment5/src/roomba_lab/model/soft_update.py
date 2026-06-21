@@ -18,7 +18,11 @@ def polyak_update(
     source_params: Iterable[torch.nn.Parameter],
     tau: float,
 ) -> None:
-    """Polyak update."""
+    """θ_target ← τ·θ_source + (1−τ)·θ_target — slide 6 Polyak soft-target average.
+
+    Performed in-place under ``torch.no_grad()`` so target params stay
+    disconnected from autograd. τ=0 freezes the target; τ=1 hard-copies;
+    τ=0.005 (DDPG default) gives ~200-step exponential smoothing."""
     if not 0.0 <= tau <= 1.0:
         raise ValueError(f"tau must be in [0, 1], got {tau}")
     with torch.no_grad():

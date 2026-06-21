@@ -26,7 +26,11 @@ class TD3Diagnostic:
 
 def critic_loss_td3(net: TD3Network, batch: dict, gamma: float,
                     target_policy_noise: float, target_noise_clip: float) -> torch.Tensor:
-    """Critic loss td3."""
+    """TD3 critic loss — uses min(Q'_a, Q'_b) bootstrap + target-policy smoothing.
+
+    The min-of-twin-targets corrects DDPG's overestimation bias (Fujimoto 2018
+    § 4.1). Target action smoothing — adding clipped Gaussian noise to μ'(s') —
+    smooths the Q surface and further reduces variance in the target."""
     b = {k: torch.as_tensor(v) for k, v in batch.items()}
     with torch.no_grad():
         next_action = net.target_actor(b["next_state"])
@@ -44,7 +48,10 @@ def critic_loss_td3(net: TD3Network, batch: dict, gamma: float,
 
 
 def actor_loss_td3(net: TD3Network, batch: dict) -> torch.Tensor:
-    """Actor loss td3."""
+    """TD3 actor loss — DPG against critic_a only (per Fujimoto 2018).
+
+    Uses only one of the twin critics for the actor gradient — averaging both
+    would smooth the gradient signal in a way that hurts learning."""
     b = {k: torch.as_tensor(v) for k, v in batch.items()}
     return -net.critic_a(b["state"], net.actor(b["state"])).mean()
 
@@ -62,7 +69,11 @@ def apply_td3_update(
     critic_opt: torch.optim.Optimizer,
     max_grad_norm: float = 1.0,
 ) -> TD3Diagnostic:
-    """Apply td3 update."""
+    """One full TD3 update step.
+
+    Order: critic step (always) → actor step (every `policy_delay` calls) →
+    Polyak target updates (when actor steps). Diagnostic records
+    actor_updated=True only on the actor-step calls."""
     c_loss = critic_loss_td3(net, batch, gamma, target_policy_noise, target_noise_clip)
     critic_opt.zero_grad()
     c_loss.backward()

@@ -17,7 +17,9 @@ class Pose:
     theta: float
 
     def replace(self, **kw: float) -> Pose:
-        """Replace."""
+        """Return a new Pose with selected fields overridden (frozen-dataclass copy).
+
+        Mirrors `dataclasses.replace`. Example: `pose.replace(theta=0.0)`."""
         x = kw.get("x", self.x)
         y = kw.get("y", self.y)
         theta = kw.get("theta", self.theta)

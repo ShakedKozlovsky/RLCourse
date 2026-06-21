@@ -23,13 +23,15 @@ class GaussianNoise:
         self._rng = rng or np.random.default_rng(0)
 
     def set_sigma(self, sigma: float) -> None:
-        """Set sigma."""
+        """Mutate the noise standard deviation in-place — called every step by
+        the LinearSigmaSchedule. Raises on negative σ."""
         if sigma < 0.0:
             raise ValueError("sigma must be >= 0")
         self.sigma = float(sigma)
 
     def sample(self) -> np.ndarray:
-        """Sample."""
+        """Draw one zero-mean Gaussian noise vector of shape (action_dim,)
+        with the current σ. Independent across calls."""
         return self._rng.normal(loc=0.0, scale=self.sigma,
                                  size=(self.action_dim,)).astype(np.float32)
 

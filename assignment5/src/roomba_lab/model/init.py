@@ -9,7 +9,8 @@ import torch.nn as nn
 
 
 def init_hidden(layer: nn.Linear, gain: float = math.sqrt(2.0)) -> None:
-    """Init hidden."""
+    """Orthogonal init for hidden layers — gain √2 matches the Engstrom 2020
+    PPO recipe, which is also a sensible default for DDPG MLPs."""
     nn.init.orthogonal_(layer.weight, gain=gain)
     if layer.bias is not None:
         nn.init.zeros_(layer.bias)
@@ -31,7 +32,8 @@ def init_actor_head(layer: nn.Linear, gain: float = 0.1) -> None:
 
 
 def init_critic_head(layer: nn.Linear, gain: float = 1.0) -> None:
-    """Init critic head."""
+    """Orthogonal init for the critic head — gain 1.0 keeps Q-value magnitudes
+    natural (not artificially shrunk like the actor head)."""
     nn.init.orthogonal_(layer.weight, gain=gain)
     if layer.bias is not None:
         nn.init.zeros_(layer.bias)

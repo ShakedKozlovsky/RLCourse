@@ -40,7 +40,11 @@ class ExperimentService:
         self.total_timesteps = total_timesteps
 
     def run(self, kind: str) -> Path:
-        """Run."""
+        """Execute one sweep `kind` ∈ {noise_sigma, tau, target_network}.
+
+        For each cell × seed: clone the base config, patch the swept value,
+        train for `total_timesteps`. Writes raw cell results to
+        `results/sweeps/<kind>.json` and returns the output path."""
         if kind == "noise_sigma":
             cells = self.lab.config.get("experiments.noise_sigma_sweep")
             patch = lambda cfg, v: cfg["noise"].__setitem__("sigma_initial", float(v)) or cfg["noise"].__setitem__("sigma_final", float(v))  # noqa: E501,E731

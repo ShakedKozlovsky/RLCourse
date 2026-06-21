@@ -19,11 +19,11 @@ class Robot:
             self.trajectory.append(self.pose)
 
     def update(self, pose: Pose) -> None:
-        """Update."""
+        """Mutate the robot pose and append it to the trajectory history."""
         self.pose = pose
         self.trajectory.append(pose)
 
     def reset(self, pose: Pose) -> None:
-        """Reset."""
+        """Replace pose and clear trajectory — called at the start of every episode."""
         self.pose = pose
         self.trajectory = [pose]

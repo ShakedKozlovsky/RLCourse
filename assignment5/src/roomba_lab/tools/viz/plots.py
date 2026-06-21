@@ -15,7 +15,8 @@ from roomba_lab.shared.types import TrainResult  # noqa: E402
 
 def plot_learning_curve(result: TrainResult, out: Path,
                          title: str = "DDPG Learning Curve") -> None:
-    """Plot learning curve."""
+    """Twinned-axes plot: episode reward (left, blue) + coverage fraction
+    (right, red) vs training step. Spec § graphs (a) — mandatory."""
     steps = [d.step for d in result.diagnostics]
     rewards = [d.episode_reward for d in result.diagnostics]
     coverage = [d.coverage for d in result.diagnostics]
@@ -40,7 +41,8 @@ def plot_learning_curve(result: TrainResult, out: Path,
 
 def plot_critic_loss(result: TrainResult, out: Path,
                       title: str = "Critic Loss vs Training Step") -> None:
-    """Plot critic loss."""
+    """Single-axis plot: critic MSE loss vs training step. Spec § graphs (b)
+    — mandatory. Sanity-check the critic is converging (loss decreasing)."""
     steps = [d.step for d in result.diagnostics]
     losses = [d.critic_loss for d in result.diagnostics]
     fig, ax = plt.subplots(figsize=(8, 4.5))
@@ -57,7 +59,10 @@ def plot_critic_loss(result: TrainResult, out: Path,
 def plot_trajectory_overlay(robot_trajectory: list[tuple[float, float]],
                              polygon_vertices: list[tuple[float, float]],
                              out: Path, title: str = "Robot trajectory overlay") -> None:
-    """Plot trajectory overlay."""
+    """Robot path drawn on top of the apartment polygon — start green / end red.
+
+    Spec § "Trajectory visualisation" — mandatory. Shows where the agent went,
+    NOT what it cleaned (use plot_coverage_heatmap for that)."""
     fig, ax = plt.subplots(figsize=(7, 7))
     poly = np.array(polygon_vertices)
     ax.fill(poly[:, 0], poly[:, 1], color="#eaeaea", alpha=0.6,

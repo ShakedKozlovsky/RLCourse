@@ -58,7 +58,12 @@ class DDPGService:
         self.actor_opt = torch.optim.Adam(net.actor.parameters(), lr=hp.actor_lr)
         self.critic_opt = torch.optim.Adam(net.critic.parameters(), lr=hp.critic_lr)
 
-    def _select_action(self, obs: np.ndarray, step: int) -> np.ndarray:
+    def select_action(self, obs: np.ndarray, step: int) -> np.ndarray:
+        """Action-selection rule used by `fit()` and by custom training loops.
+
+        Before `warmup_steps`: uniform-random action (fills the buffer with
+        diverse data). After warmup: deterministic actor output + exploration
+        noise, clipped to the [-1, 1] action box."""
         if step < self.hp.warmup_steps:
             return np.random.uniform(-1.0, 1.0, size=(self.env.action_dim,)).astype(np.float32)
         obs_t = torch.as_tensor(obs, device=self.device).unsqueeze(0)
@@ -68,7 +73,12 @@ class DDPGService:
         return np.clip(action, -1.0, 1.0).astype(np.float32)
 
     def fit(self, total_timesteps: int, seed: int = 0) -> TrainResult:
-        """Fit."""
+        """End-to-end DDPG training loop (slide 8 of L09).
+
+        Runs `total_timesteps` env steps. Every step: select_action → env.step →
+        push to replay buffer → apply_update once the buffer is warm. Logs
+        StepDiagnostic every `log_interval` steps. Returns a TrainResult with
+        the full diagnostic history + the final-episode EpisodeMetrics."""
         from roomba_lab.shared.types import Transition  # local: avoid cycle
         result = TrainResult()
         obs = self.env.reset(seed=seed)
@@ -76,7 +86,7 @@ class DDPGService:
         last_metrics = EpisodeMetrics(0.0, 0, 0.0, 0)
         for step in range(total_timesteps):
             self.noise.set_sigma(self.schedule.at(step))
-            action = self._select_action(obs, step)
+            action = self.select_action(obs, step)
             next_obs, reward, done, info = self.env.step(action)
             episode_reward += reward
             self.buffer.push(Transition(state=obs, action=action,

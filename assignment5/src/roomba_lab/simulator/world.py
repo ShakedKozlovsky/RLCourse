@@ -46,25 +46,25 @@ class World:
                     self.grid[i, j] = UNVISITED
 
     def cell_index(self, x: float, y: float) -> tuple[int, int]:
-        """Cell index."""
+        """Convert continuous (x, y) metres → (row, col) grid indices, clamped."""
         j = int((x - self.bbox_min[0]) * self.pixels_per_metre)
         i = int((y - self.bbox_min[1]) * self.pixels_per_metre)
         h, w = self.grid.shape
         return max(0, min(h - 1, i)), max(0, min(w - 1, j))
 
     def free_cell_count(self) -> int:
-        """Free cell count."""
+        """Total drivable cells (UNVISITED + VISITED, excludes obstacles)."""
         return int(np.sum((self.grid == UNVISITED) | (self.grid == VISITED)))
 
     def visited_cell_count(self) -> int:
-        """Visited cell count."""
+        """Cells the robot has cleaned this episode (== VISITED)."""
         return int(np.sum(self.grid == VISITED))
 
     def coverage_fraction(self) -> float:
-        """Coverage fraction."""
+        """visited / free in [0, 1]; 0.0 if no free cells (degenerate apartment)."""
         free = self.free_cell_count()
         return 0.0 if free == 0 else self.visited_cell_count() / free
 
     def reset_visits(self) -> None:
-        """Reset visits."""
+        """Reset cleaning state: mark all VISITED cells UNVISITED; preserve obstacles."""
         self.grid[self.grid == VISITED] = UNVISITED

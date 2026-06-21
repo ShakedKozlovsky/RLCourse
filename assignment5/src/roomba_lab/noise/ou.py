@@ -29,11 +29,14 @@ class OUNoise:
         self._state = np.full((action_dim,), mu, dtype=np.float32)
 
     def set_sigma(self, sigma: float) -> None:
-        """Set sigma."""
+        """Mutate the OU diffusion coefficient — called by the σ schedule."""
         self.sigma = float(sigma)
 
     def sample(self) -> np.ndarray:
-        """Sample."""
+        """Advance the OU process by one step and return the new state.
+
+        Update equation: N_{t+1} = N_t + θ(μ-N_t)·dt + σ·√dt·ξ. Successive
+        samples are temporally correlated (lag-1 corr > 0 at θ < 1)."""
         drift = self.theta * (self.mu - self._state) * self.dt
         diffusion = self.sigma * np.sqrt(self.dt) * self._rng.standard_normal(
             size=(self.action_dim,)
@@ -42,7 +45,8 @@ class OUNoise:
         return self._state.copy()
 
     def reset(self) -> None:
-        """Reset."""
+        """Return the internal state to μ. Called between episodes so each
+        episode starts with the same noise mean."""
         self._state = np.full((self.action_dim,), self.mu, dtype=np.float32)
 
     @property

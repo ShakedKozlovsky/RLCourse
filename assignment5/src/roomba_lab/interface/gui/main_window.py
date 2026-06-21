@@ -22,7 +22,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 def launch() -> None:
-    """Launch."""
+    """Spawn the PyQt6 window + start the Qt event loop.
+
+    Blocks until the window is closed. Entry point for `roomba-lab gui`."""
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     window.show()
