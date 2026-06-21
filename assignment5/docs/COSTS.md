@@ -38,8 +38,12 @@ Source: Anthropic pricing (2026).
 | v1.10 polish (Layer 18-20) | — | 12 turns | ~120 k | ~30 k | 1.80 | 2.25 |
 | v1.20 TA-audit cycle (Layer 21-26) | — | 18 turns | ~210 k | ~55 k | 3.15 | 4.13 |
 | v1.21 TA re-grade follow-up (Layer 27) | — | 6 turns | ~85 k | ~22 k | 1.28 | 1.65 |
-| **v1.22 substantive M1/M5 closure (Layer 28)** | — | 8 turns | ~110 k | ~28 k | 1.65 | 2.10 |
-| **TOTAL (v1.22)** | — | **101 turns** | **~1.05 M** | **~289 k** | **$15.74** | **$21.68** |
+| v1.22 substantive M1/M5 closure (Layer 28) | — | 8 turns | ~110 k | ~28 k | 1.65 | 2.10 |
+| v1.23 TA v1.22 re-grade (Layer 29 — NEW7-10 + M1 v3) | — | 5 turns | ~70 k | ~18 k | 1.05 | 1.35 |
+| v1.24 V3-PDF sweep (Layer 30 — LOC + LICENSE + docs + M1 v4) | — | 7 turns | ~95 k | ~25 k | 1.43 | 1.88 |
+| v1.25 manual docstring rewrite (Layer 31 — NEW15-17) | — | 6 turns | ~80 k | ~20 k | 1.20 | 1.50 |
+| **v1.26 drift-test (Layer 32 — closes recurring NEW7→18 chain)** | — | 4 turns | ~50 k | ~12 k | 0.75 | 0.90 |
+| **TOTAL (v1.26)** | — | **123 turns** | **~1.34 M** | **~364 k** | **$20.14** | **$27.43** |
 
 ## 3. Headline cost
 
@@ -51,11 +55,14 @@ Source: Anthropic pricing (2026).
 | Total input tokens (v1.20) | ~854 000 |
 | Total output tokens (v1.20) | ~239 000 |
 | v1.20 cost | ~$30.74 (USD) |
-| **Total input tokens (v1.22)** | **~1 049 000** |
-| **Total output tokens (v1.22)** | **~289 000** |
-| **TOTAL cost (v1.22)** | **~$37.42** (USD) |
-| Per-layer average | ~$1.34 |
-| Per delivered source LOC (~3 200 LOC across src/ + tests/) | **~$0.012 / line** |
+| Total input tokens (v1.22) | ~1 049 000 |
+| Total output tokens (v1.22) | ~289 000 |
+| v1.22 cost | ~$37.42 (USD) |
+| **Total input tokens (v1.26)** | **~1 344 000** |
+| **Total output tokens (v1.26)** | **~364 000** |
+| **TOTAL cost (v1.26)** | **~$47.57** (USD) |
+| Per-layer average | ~$1.49 |
+| Per delivered source LOC (~3 300 LOC across src/ + tests/) | **~$0.014 / line** |
 
 Slightly lower than Assignment 4 (~$24) — fewer layers (17 vs 18) and the
 ExperimentService layering decision was prevented up-front in ADR-007 rather
@@ -93,7 +100,22 @@ Architect review + decision-making (the V3 § 1.4 framing).
 Per-turn token counts are estimates — same caveats as A4. Order of magnitude
 ($15–25 USD total) is reliable; per-decimal-point breakdown is illustrative.
 
-## 8. The honest bottom line
+## 8. The honest bottom line (updated for v1.26)
+
+**v1.00 ship** — ~$19 / 57 turns / 2 600 LOC / 107 tests / 1 audit cycle.
+**v1.26 ship** — ~$48 / 123 turns / ~3 300 LOC / 121 tests / 6 audit cycles +
+1 structural drift-test that ends a recurring finding pattern.
+
+The marginal $29 (v1.00 → v1.26) bought: every V3 § 20.9 finding closed,
+three negative-result M1 attempts documented, M5 substantively closed via
+true on-policy ablation, 87 substantive docstrings, LICENSE, public API
+promotion, and a meta-consistency test that prevents future doc drift.
+
+Per-cycle marginal cost trended down ($9 → $4 → $3 → $2 → $2 → $2) as the
+findings shrank, confirming the iterative-adversarial-review convergence
+pattern documented in PROMPTBOOK § 15.
+
+Below: the original v1.00 bottom-line text for reference —
 
 ~$19 to ship a 2 600-LOC, 107-test, multi-figure, executed-notebook,
 green-CI project that satisfies a "no-Gym custom simulator + DDPG +
