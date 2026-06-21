@@ -130,7 +130,42 @@ in addition to `point_in_polygon(...)`. Test added:
 `tests/integration/test_roomba_env.py::test_env_resets_to_correct_obs_shape`
 implicitly verifies a valid spawn by checking obs shape.
 
-## 9. PyQt6 in headless CI
+## 9a. Boosted-reward attempt backfired (v1.22 Layer 28 — honest negative result)
+
+After the v1.21 TA re-grade, I tried to push coverage from ~0.045 → > 0.20 by:
+
+- new_cell_bonus 1.0 → **3.0** (3× the carrot per fresh cell)
+- step_penalty -0.05 → **-0.02** (less harsh on motion)
+- noise.decay_steps 50000 → **30000** (faster σ taper)
+- 30 000 timesteps (was 20 000)
+- LR halved at step 20 000
+
+**Result**: the v2 policy is **strictly worse** than the v1.20 baseline across
+10 evaluation episodes (seed 100):
+
+| | v1.20 (20 k, original tuned reward) | v1.22 v2 (30 k, boosted reward + LR decay) |
+|---|---|---|
+| Median coverage | **0.0487** | 0.0253 |
+| Mean coverage | **0.0341** | 0.0206 |
+| Max coverage | **0.0501** | 0.0359 |
+| Median reward | **20 613** | 10 187 |
+
+**Root cause hypothesis**: the original v1.20 reward was already well-balanced.
+The dense `coverage_progress_coef × Δcoverage` term provides the gradient the
+agent needs; bumping the sparse `new_cell_bonus` 3× shifted the loss surface
+in a way that disrupted the established Q-estimate. The LR decay at step
+20 k made it harder for the actor to escape the new local minimum.
+
+**Lesson**: don't tune reward functions hoping for "more is more." The dense
+shaping is what matters; the sparse term is mostly cosmetic at this scale.
+Reward design should be **stationary across training** — changing it mid-run
+or boosting it post-hoc is a footgun.
+
+**v1.20 policy retained as the headline**. The v2 checkpoint
+(`saved_models/headline_policy_v2.pt`) is committed as evidence of the failed
+attempt, NOT as the recommended policy.
+
+## 9b. PyQt6 in headless CI
 
 **Known requirement**: Qt platform plugins fail to load in headless CI without
 `QT_QPA_PLATFORM=offscreen`. The CI workflow sets this env var explicitly

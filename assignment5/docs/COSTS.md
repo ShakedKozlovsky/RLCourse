@@ -36,8 +36,10 @@ Source: Anthropic pricing (2026).
 | V3 polish (this layer) | 17 | 3 | 40 | 10 | 0.60 | 0.75 |
 | **TOTAL (v1.00)** | — | **57 turns** | **~524 k** | **~154 k** | **$7.86** | **$11.55** |
 | v1.10 polish (Layer 18-20) | — | 12 turns | ~120 k | ~30 k | 1.80 | 2.25 |
-| **v1.20 TA-audit cycle (Layer 21-26)** | — | 18 turns | ~210 k | ~55 k | 3.15 | 4.13 |
-| **TOTAL (v1.20)** | — | **87 turns** | **~854 k** | **~239 k** | **$12.81** | **$17.93** |
+| v1.20 TA-audit cycle (Layer 21-26) | — | 18 turns | ~210 k | ~55 k | 3.15 | 4.13 |
+| v1.21 TA re-grade follow-up (Layer 27) | — | 6 turns | ~85 k | ~22 k | 1.28 | 1.65 |
+| **v1.22 substantive M1/M5 closure (Layer 28)** | — | 8 turns | ~110 k | ~28 k | 1.65 | 2.10 |
+| **TOTAL (v1.22)** | — | **101 turns** | **~1.05 M** | **~289 k** | **$15.74** | **$21.68** |
 
 ## 3. Headline cost
 
@@ -46,11 +48,14 @@ Source: Anthropic pricing (2026).
 | Total input tokens (v1.00) | ~524 000 |
 | Total output tokens (v1.00) | ~154 000 |
 | v1.00 cost | ~$19.41 (USD) |
-| **Total input tokens (v1.20)** | **~854 000** |
-| **Total output tokens (v1.20)** | **~239 000** |
-| **TOTAL cost (v1.20)** | **~$30.74** (USD) |
-| Per-layer average | ~$1.18 |
-| Per delivered source LOC (~3 000 LOC across src/ + tests/) | **~$0.010 / line** |
+| Total input tokens (v1.20) | ~854 000 |
+| Total output tokens (v1.20) | ~239 000 |
+| v1.20 cost | ~$30.74 (USD) |
+| **Total input tokens (v1.22)** | **~1 049 000** |
+| **Total output tokens (v1.22)** | **~289 000** |
+| **TOTAL cost (v1.22)** | **~$37.42** (USD) |
+| Per-layer average | ~$1.34 |
+| Per delivered source LOC (~3 200 LOC across src/ + tests/) | **~$0.012 / line** |
 
 Slightly lower than Assignment 4 (~$24) — fewer layers (17 vs 18) and the
 ExperimentService layering decision was prevented up-front in ADR-007 rather

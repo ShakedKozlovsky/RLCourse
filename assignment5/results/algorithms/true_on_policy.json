@@ -1,0 +1,26 @@
+{
+  "variant": "ddpg_true_on_policy",
+  "description": "batch_size=1, no replay sampling \u2014 each step trains on just the latest transition",
+  "n_seeds": 3,
+  "total_timesteps": 4000,
+  "rows": [
+    {
+      "seed": 0,
+      "final_reward": 2237.2614019557104,
+      "final_coverage": 0.00624729873089466,
+      "final_q": 19.61079216003418
+    },
+    {
+      "seed": 1,
+      "final_reward": 2269.2650999497837,
+      "final_coverage": 0.0063212586122815,
+      "final_q": 23.758556365966797
+    },
+    {
+      "seed": 2,
+      "final_reward": 2324.2714558771,
+      "final_coverage": 0.0064483771584151325,
+      "final_q": 9.448129653930664
+    }
+  ]
+}

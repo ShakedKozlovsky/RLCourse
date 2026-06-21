@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/ShakedKozlovsky/RLCourse/actions/workflows/assignment5-ci.yml/badge.svg)](https://github.com/ShakedKozlovsky/RLCourse/actions/workflows/assignment5-ci.yml)
 
-> **Assignment 5 of the RL Course (תרגיל 05).** Built layer-by-layer over **20 layers** (17 core + 3 above-spec), single-author, single-AI-agent (Claude Opus 4.7). **116 tests · ruff clean · every file ≤ 150 LOC · zero `gym` imports.**
+> **Assignment 5 of the RL Course (תרגיל 05).** Built layer-by-layer over **22 layers** (17 core + 5 above-spec polish), single-author, single-AI-agent (Claude Opus 4.7). **118+ tests · ruff clean · every file ≤ 150 LOC · zero `gym` imports · zero `noqa: SLF001`.**
 
 ### Above-spec deliverables (what pushes this beyond compliance)
 
@@ -147,15 +147,18 @@ Three forces converge on DDPG for this domain:
 | **DDPG (Gaussian noise — default)** | **5 230** | **0.013** | Reference |
 | DDPG (OU noise — Lillicrap original) | 8 853 | 0.022 | Slightly better in some seeds; high variance |
 | TD3 (twin critic + delayed actor) | 1 875 | 0.006 | Worse at this budget — TD3's overestimation correction hurts before sufficient data |
-| DDPG (no replay — capacity=1, ≈ on-policy) | **436** | **0.002** | **12× worse than DDPG-with-replay** |
+| **DDPG (true on-policy — batch=1, no replay)** | **2 277** | **0.0063** | **~2.3× worse than batched DDPG; barely above random (1638 / 0.005)** |
+| (random walk floor) | 1 638 | 0.005 | Reference floor |
+| DDPG (no-update — capacity=1, batch=128 — *training disabled*) | 436 | 0.002 | Tautological — included for completeness; never trains |
 
-The no-replay variant has its buffer capacity dropped to 1, so the update step's
-`len(buf) ≥ batch_size=128` condition is never satisfied — **the network never
-trains, and the agent behaves as random-walk-with-actor-bias**. This is the
-empirical answer to point 3: without off-policy replay, DDPG's training loop
-**cannot function at all** given its batched-update design. PPO sidesteps this
-by using rollouts directly, but at the cost of throwing away each rollout after
-one update.
+**Layer 28 (v1.22)** added a REAL on-policy ablation closing the TA's M5
+critique that the original "no-replay" cell was tautological: the
+**true_on_policy** variant uses `batch_size=1` and trains every step on
+just the single most-recent transition — no replay sampling. It DOES train,
+but produces a policy only marginally better than random walk. This is the
+empirical answer to point 3 above: **off-policy batched replay isn't a
+nice-to-have — it's what makes DDPG's gradient estimates stable enough to
+learn anything at all**. See [`results/algorithms/true_on_policy.json`](results/algorithms/true_on_policy.json).
 
 See [`assets/plots/algorithm_comparison.png`](assets/plots/algorithm_comparison.png).
 

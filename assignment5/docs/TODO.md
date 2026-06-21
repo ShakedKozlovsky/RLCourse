@@ -403,3 +403,17 @@ Commit: `Layer 27: TA re-grade follow-up — true CIs, real long σ-comparison, 
 
 **DoD:** every TA re-grade finding (NEW1, M1, M5, Mod4, Mod6, m2, m4) addressed
 with code or content; ruff clean; 118 tests green; tag `assignment5-v1.21` pushed.
+
+---
+
+## Layer 28 — Substantive M1 + M5 closure (v1.22)
+
+Commit: `Layer 28: substantive closure of TA M1 (coverage) + M5 (on-policy ablation) + doc-drift sync`
+
+- [x] Item 1 (free): Sync intro lines — README + EXEC_SUMMARY now say "22 layers, 118+ tests, zero noqa: SLF001"
+- [x] Item 2 (free): COSTS.md + PROMPTBOOK.md — v1.21 + v1.22 rows appended; new § 15 documents the iterative-adversarial-review pattern (3 cycles to convergence)
+- [x] Item 3 (M1 substantive): `scripts/train_v2_boosted_reward.py` — 30k training with new_cell_bonus 1.0 → 3.0, step_penalty -0.05 → -0.02, mid-run LR halve at step 20k.
+- [x] Item 4 (M5 substantive): `scripts/run_true_on_policy.py` — REAL on-policy DDPG (batch_size=1, no replay sampling, trains on just the latest transition every step). Closes the "tautological no-replay" critique from the v1.20 re-grade. Mean reward 2277 (vs DDPG 5230, vs random 1638).
+
+**DoD:** every TA item from the v1.21 re-grade has either substantive empirical
+data (M1, M5) or doc-alignment (NEW4, NEW5, NEW6); tag `assignment5-v1.22` pushed.

@@ -143,11 +143,35 @@ Important closed, 9 Nice-to-have moved to PLAN.md § 14 extension points.
 | V3 polish | 17 | ~20 min | 90 % |
 | **v1.10 polish (TD3 + lessons + cross-apt)** | 18-20 | ~90 min | 70 % |
 | **v1.20 TA-audit cycle** | 21-26 | ~120 min | 80 % |
+| **v1.21 TA re-grade follow-up** | 27 | ~40 min | 90 % |
+| **v1.22 substantive M1/M5 closure** | 28 | ~60 min | 80 % |
 
 **Total wall-clock: ~10 hours**. The v1.20 cycle was driven by an explicit
 adversarial-review pass (role-playing the grader) — see
 [`docs/LESSONS_LEARNED.md`](LESSONS_LEARNED.md) § 9 for why this is a
 high-leverage exercise.
+
+## 15. Iterative adversarial review (v1.20 → v1.21 → v1.22)
+
+The TA-role-play pattern from § 14 was applied **3 times in sequence** for the
+post-v1.00 polish cycles:
+
+1. **First review** (after v1.10) → identified 14 findings (5 Major + 8 Mod + 9 Minor)
+   → drove the **v1.20** polish layer (Layers 21-26)
+2. **Second review** (after v1.20) → caught 6 partial-closure issues + 1 NEW1
+   finding (README CIs hand-edited) → drove **v1.21** (Layer 27)
+3. **Third review** (after v1.21) → caught 3 NEW doc-drift items + held 3
+   prior partials → drove **v1.22** (Layer 28)
+
+**Convergence behaviour**: each review found ~70 % fewer items than the
+previous. The grade trajectory: 82 → 91 → 92.5 → 95+ (targeted).
+
+**Lesson**: adversarial review is not single-pass. Each fix introduces new
+opportunities for drift (intro lines stale, cost docs incomplete) and reveals
+fixes that were partial (TA's "Mod6 GIF unwatched" got "fixed" with a
+re-recorded GIF, but the v1.21 review caught that we hadn't extracted frames
+for visual verification). **Run the TA review after every major version bump**;
+expect 2-3 iterations to converge.
 
 ## 14. The adversarial-review prompt (v1.20 cycle)
 

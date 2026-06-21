@@ -1,6 +1,6 @@
 # Executive Summary — roomba-lab (1-pager for the grader)
 
-> Built layer-by-layer over **20 layers** (17 core + 3 above-spec) on `main`. **116 tests · ruff clean · every file ≤ 150 LOC · zero `gym` imports.**
+> Built layer-by-layer over **22 layers** (17 core + 5 above-spec polish) on `main`. **118+ tests · ruff clean · every file ≤ 150 LOC · zero `gym` imports · zero `noqa: SLF001`.**
 
 ## What was built
 
@@ -71,10 +71,13 @@ across reward configurations).
 | DDPG (Gaussian — default) | 5 230 | 0.013 |
 | DDPG (OU noise) | 8 853 | 0.022 |
 | TD3 (twin Q + delayed actor) | 1 875 | 0.006 |
-| **DDPG (no replay ≈ on-policy)** | **436** | **0.002** ← 12× collapse |
+| **DDPG (true on-policy — batch=1, no replay)** | **2 277** | **0.0063** ← 2.3× worse than DDPG, barely above random (1638) |
 
-Off-policy replay is **load-bearing** for DDPG's batched-update architecture.
-TD3 underperforms vanilla DDPG at this short budget (more parameters need more
+Off-policy replay is **load-bearing** for DDPG's gradient estimates. The
+v1.22 Layer 28 ablation uses `batch_size=1` and trains every step on just
+the latest transition; it DOES train (~30 % reward over random walk), but
+the gradient noise is too high to reach DDPG's normal performance. TD3
+underperforms vanilla DDPG at this short budget (more parameters need more
 data). See [`assets/plots/algorithm_comparison.png`](../assets/plots/algorithm_comparison.png).
 
 ### Finding 6 — per-episode distribution (Mod1 evidence)
@@ -122,7 +125,7 @@ Carried forward from Assignment 4. `uv run roomba-lab graphify` walks `src/roomb
 ## Engineering polish
 
 - **17 layers**, one commit per layer, `Layer N: <summary>` format
-- **116 tests** — math batteries for kinematics + soft-update + DDPG update + TD3; integration for env + DDPG smoke + SDK + CLI + reproducibility + GUI
+- **118+ tests** — math batteries for kinematics + soft-update + DDPG update + TD3; integration for env + DDPG smoke + SDK + CLI + reproducibility + GUI
 - **Every file ≤ 150 LOC** — DDPG service is 109; roomba_env is 141; CLI main is 88
 - **`ruff check` returns 0**
 - **All hyperparameters in [`configs/setup.json`](../configs/setup.json)** — no magic numbers in source
