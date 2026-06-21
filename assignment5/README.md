@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/ShakedKozlovsky/RLCourse/actions/workflows/assignment5-ci.yml/badge.svg)](https://github.com/ShakedKozlovsky/RLCourse/actions/workflows/assignment5-ci.yml)
 
-> **Assignment 5 of the RL Course (תרגיל 05).** Built layer-by-layer over **22 layers** (17 core + 5 above-spec polish), single-author, single-AI-agent (Claude Opus 4.7). **118+ tests · ruff clean · every file ≤ 150 LOC · zero `gym` imports · zero `noqa: SLF001`.**
+> **Assignment 5 of the RL Course (תרגיל 05).** Built layer-by-layer over **26 layer commits** (17 core: Layer 0–16 + V3 polish Layer 17; 9 above-spec polish: Layers 18, 19/20, 21–28 driven by 3 successive adversarial-review cycles), single-author, single-AI-agent (Claude Opus 4.7). **118 tests · ruff clean · every file ≤ 150 LOC · zero `gym` imports · zero `noqa: SLF001`.**
 
 ### Above-spec deliverables (what pushes this beyond compliance)
 
@@ -386,9 +386,9 @@ collapse. This is the right level of nuance for the grader — eval median
 
 Raw JSON in [`results/transfer/cross_apartment.json`](results/transfer/cross_apartment.json).
 
-## Engineering discoveries (Layer 18)
+## Engineering discoveries (Layers 18 + 28)
 
-The headline lesson — see [`docs/FAILURE_MODES.md`](docs/FAILURE_MODES.md) § 1:
+### The headline lesson — `docs/FAILURE_MODES.md § 1`
 
 20 000-step training with the initial reward configuration produced **worse**
 coverage than 4 000 steps (0.006 vs 0.018) — the agent learned to stand still
@@ -399,6 +399,43 @@ collision -10 → -1, step -0.01 → -0.05, added `coverage_progress_coef = 50`
 0.040 — **7× improvement over the broken 20k run**. Documented in
 [`docs/FAILURE_MODES.md`](docs/FAILURE_MODES.md) as a transferable lesson:
 "in DDPG, reward shaping is the algorithm, not a side concern."
+
+### Layer 28 negative result — `docs/FAILURE_MODES.md § 9a`
+
+After v1.21, an attempt to push coverage > 0.20 via **boosted reward + LR decay**
+(new_cell_bonus 1.0 → 3.0, step_penalty -0.05 → -0.02, 30k training, mid-run LR
+halve) produced a strictly **worse** policy than the v1.20 baseline:
+
+| | v1.20 (20k, default reward) | v1.22 v2 (30k, boosted) |
+|---|---|---|
+| Median coverage | **0.0487** | 0.0253 |
+| Median reward | **20 613** | 10 187 |
+
+Evidence committed: [`saved_models/headline_policy_v2.pt`](saved_models/headline_policy_v2.pt),
+[`assets/plots/learning_curve_v2.png`](assets/plots/learning_curve_v2.png),
+[`assets/plots/coverage_heatmap_v2.png`](assets/plots/coverage_heatmap_v2.png),
+[`assets/plots/critic_loss_v2.png`](assets/plots/critic_loss_v2.png),
+[`assets/plots/trajectory_overlay_v2.png`](assets/plots/trajectory_overlay_v2.png).
+
+### Layer 29 second negative result — `docs/FAILURE_MODES.md § 9b`
+
+Following the TA's hypothesis that the network might be over-parameterised, Layer 29
+tried `[64, 64]` (16× fewer params) + 50k steps + cosine LR schedule. **Also worse**:
+
+| | v1.20 (256×256, 20k) | v1.22 v2 (256×256, 30k, boosted reward) | v1.23 v3 (64×64, 50k, cosine LR) |
+|---|---|---|---|
+| Median coverage | **0.0487** | 0.0253 | 0.0200 |
+| Median reward | **20 613** | 10 187 | 7 836 |
+
+Evidence: [`saved_models/headline_policy_v3_small.pt`](saved_models/headline_policy_v3_small.pt),
+[`assets/plots/{learning_curve_v3_small,critic_loss_v3_small,coverage_heatmap_v3_small,trajectory_overlay_v3_small}.png`](assets/plots/).
+
+**Combined lesson**: the v1.20 hyperparameters are at the practical ceiling
+for this observation-architecture (LIDAR-only) and reward-architecture
+(cleaning + progress shaping). Substantial improvement requires architectural
+redesign — goal-conditioning, frontier reward, or LSTM actor — documented as
+extension points in [`docs/PLAN.md`](docs/PLAN.md) § 14. **v1.20 retained as
+headline.**
 
 Nine more engineering discoveries (actor-init magnitude, shapely caching, etc.)
 in the same document. Ten *meta* lessons in

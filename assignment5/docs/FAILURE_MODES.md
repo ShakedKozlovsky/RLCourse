@@ -165,7 +165,49 @@ or boosting it post-hoc is a footgun.
 (`saved_models/headline_policy_v2.pt`) is committed as evidence of the failed
 attempt, NOT as the recommended policy.
 
-## 9b. PyQt6 in headless CI
+## 9b. Smaller-network attempt also backfired (v1.23 Layer 29 — second negative result)
+
+After § 9a's "boosted reward" attempt failed, the TA suggested a different hypothesis:
+the v1.20 network `[256, 256]` might be over-parameterised for the small data
+budget (50 k steps × batch 128 ≈ 6.4 M parameter updates on 50 k unique transitions).
+
+Tried:
+- hidden sizes `[256, 256]` → **`[64, 64]`** (16× fewer parameters)
+- v1.20 default reward (proven well-tuned after § 9a)
+- 50 000 timesteps (was 20 000)
+- Cosine LR schedule from `lr → lr × 0.1` over training
+
+Side-by-side evaluation (10 episodes, seed 100):
+
+| | v1.20 (256×256, 20k) | v1.22 v2 (256×256, 30k, boosted reward) | v1.23 v3 (64×64, 50k, cosine LR) |
+|---|---|---|---|
+| Median coverage | **0.0487** | 0.0253 | 0.0200 |
+| Mean coverage | **0.0341** | 0.0206 | 0.0231 |
+| Median reward | **20 613** | 10 187 | 7 836 |
+| Max coverage | 0.0501 | 0.0359 | **0.0501** |
+
+Smaller network is **also worse** on median. The max coverage matches v1.20
+(0.0501) which suggests it occasionally finds the same good policy, but is
+less reliable.
+
+**Combined lesson from § 9a + § 9b**: the v1.20 hyperparameters are at the
+practical ceiling for this *observation-architecture* (LIDAR-only) and
+*reward-architecture* (cleaning bonus + dense progress shaping). Substantial
+coverage improvement (> 0.10) probably requires either:
+
+- **Richer observation**: goal-conditioning the actor on the nearest-unvisited-cell
+  direction; or a visited-map auxiliary input
+- **Richer reward**: frontier-exploration bonus (large reward for crossing
+  > N metres of unvisited area in one episode)
+- **Richer architecture**: an LSTM actor that remembers where it's been
+
+These are *redesigns*, not hyperparameter tweaks. They are documented as
+extension points in [`docs/PLAN.md`](PLAN.md) § 14.
+
+**v1.20 policy retained as headline.** Both v2 and v3 checkpoints are
+committed for full transparency as evidence of the failed attempts.
+
+## 9c. PyQt6 in headless CI
 
 **Known requirement**: Qt platform plugins fail to load in headless CI without
 `QT_QPA_PLATFORM=offscreen`. The CI workflow sets this env var explicitly

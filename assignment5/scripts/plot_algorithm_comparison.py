@@ -26,16 +26,24 @@ def main() -> None:
         print(f"missing {src}; run scripts/run_algorithm_comparison.py first")
         sys.exit(1)
     data = json.loads(src.read_text())
-    variants = data["variants"]
+    variants = dict(data["variants"])  # mutable so we can splice in true_on_policy
 
-    fig, (ax_r, ax_c) = plt.subplots(1, 2, figsize=(13, 5))
+    # Splice in true_on_policy ablation (Layer 28) if present — closes TA NEW10
+    op_path = ROOT / "results" / "algorithms" / "true_on_policy.json"
+    if op_path.exists():
+        op = json.loads(op_path.read_text())
+        variants["ddpg_true_on_policy"] = op["rows"]
+
+    fig, (ax_r, ax_c) = plt.subplots(1, 2, figsize=(15, 5))
     pretty = {"ddpg_gaussian": "DDPG\n(Gaussian)",
               "ddpg_ou": "DDPG\n(OU noise)",
               "td3": "TD3\n(twin Q)",
-              "ddpg_no_replay": "DDPG\n(buffer=1\n≈ on-policy)"}
+              "ddpg_no_replay": "DDPG\n(no-update\nbuf=1, batch=128)",
+              "ddpg_true_on_policy": "DDPG\n(true on-policy\nbatch=1)"}
     colours = {"ddpg_gaussian": "#4477aa", "ddpg_ou": "#117733",
-                "td3": "#cc6677", "ddpg_no_replay": "#aa6699"}
-    labels = [pretty[v] for v in variants]
+                "td3": "#cc6677", "ddpg_no_replay": "#aa6699",
+                "ddpg_true_on_policy": "#ddaa33"}
+    labels = [pretty.get(v, v) for v in variants]
     x = np.arange(len(labels))
 
     for ax, key, ylabel, title in [
@@ -62,8 +70,9 @@ def main() -> None:
 
     fig.suptitle(f"Algorithm comparison · {data['n_seeds']} seeds × "
                   f"{data['total_timesteps']} steps · primary apartment\n"
-                  "DDPG (default) vs OU-noise vs TD3 (twin Q) vs no-replay "
-                  "(buffer=1, ≈ on-policy)", fontsize=11)
+                  "DDPG (default) · OU-noise · TD3 (twin Q) · no-update "
+                  "(buf=1+batch=128, tautological) · TRUE on-policy "
+                  "(batch=1, Layer 28)", fontsize=10)
     fig.tight_layout()
     out = ROOT / "assets" / "plots" / "algorithm_comparison.png"
     out.parent.mkdir(parents=True, exist_ok=True)

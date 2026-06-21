@@ -1,6 +1,6 @@
 # Executive Summary — roomba-lab (1-pager for the grader)
 
-> Built layer-by-layer over **22 layers** (17 core + 5 above-spec polish) on `main`. **118+ tests · ruff clean · every file ≤ 150 LOC · zero `gym` imports · zero `noqa: SLF001`.**
+> Built layer-by-layer over **26 layer commits** on `main` (17 core: Layer 0–16 + V3 polish Layer 17; 9 above-spec polish: Layers 18, 19/20, 21–28). **118 tests · ruff clean · every file ≤ 150 LOC · zero `gym` imports · zero `noqa: SLF001`.**
 
 ## What was built
 
@@ -125,7 +125,7 @@ Carried forward from Assignment 4. `uv run roomba-lab graphify` walks `src/roomb
 ## Engineering polish
 
 - **17 layers**, one commit per layer, `Layer N: <summary>` format
-- **118+ tests** — math batteries for kinematics + soft-update + DDPG update + TD3; integration for env + DDPG smoke + SDK + CLI + reproducibility + GUI
+- **118 tests** — math batteries for kinematics + soft-update + DDPG update + TD3; integration for env + DDPG smoke + SDK + CLI + reproducibility + GUI
 - **Every file ≤ 150 LOC** — DDPG service is 109; roomba_env is 141; CLI main is 88
 - **`ruff check` returns 0**
 - **All hyperparameters in [`configs/setup.json`](../configs/setup.json)** — no magic numbers in source

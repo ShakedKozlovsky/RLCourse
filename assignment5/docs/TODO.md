@@ -417,3 +417,17 @@ Commit: `Layer 28: substantive closure of TA M1 (coverage) + M5 (on-policy ablat
 
 **DoD:** every TA item from the v1.21 re-grade has either substantive empirical
 data (M1, M5) or doc-alignment (NEW4, NEW5, NEW6); tag `assignment5-v1.22` pushed.
+
+---
+
+## Layer 29 — Final TA-audit pass (v1.23)
+
+Commit: `Layer 29: TA v1.22 re-grade — layer count + tests-exact + v2/v3 plot links + algo plot regen + second negative-result on M1`
+
+- [x] **NEW7** Layer count synced: "22 layers" → "26 layer commits" with correct breakdown (17 core + 9 above-spec polish across Layers 18, 19/20, 21–28)
+- [x] **NEW8** Removed the vague "+" from "118+ tests"; now exactly **118**
+- [x] **NEW9** v2 plots linked from README "Engineering discoveries (Layers 18 + 28)" section (no longer orphaned)
+- [x] **NEW10** `assets/plots/algorithm_comparison.png` regenerated to include the Layer-28 true-on-policy variant; plot now has 5 bars matching the README's 5-row table
+- [x] **Item 5 (M1 third try, NEGATIVE)** `scripts/train_v3_small_net.py` — `[64, 64]` net + 50k steps + cosine LR schedule. Result: median cov **0.0200**, strictly worse than v1.20 (0.0487). Documented in `docs/FAILURE_MODES.md § 9b`. Combined § 9a + § 9b lesson: v1.20 hyperparameters are at the practical ceiling for the current observation + reward architecture; substantial improvement requires redesign (goal-conditioning, frontier reward, LSTM actor — documented as extension points in PLAN § 14).
+
+**DoD:** 4 TA NEW-items closed; M1 third-attempt evidence published; tag `assignment5-v1.23` pushed.
