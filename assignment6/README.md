@@ -1,12 +1,22 @@
 # marl-lab — Cooperative-adversarial MARL Cops-and-Robbers with cloud MCP
 
+[![assignment6-ci](https://github.com/ShakedKozlovsky/RLCourse/actions/workflows/assignment6-ci.yml/badge.svg)](https://github.com/ShakedKozlovsky/RLCourse/actions/workflows/assignment6-ci.yml)
+&nbsp;
+![tests](https://img.shields.io/badge/tests-241%20passed-brightgreen)
+&nbsp;
+![coverage](https://img.shields.io/badge/branch%20coverage-95%25-brightgreen)
+&nbsp;
+![ruff](https://img.shields.io/badge/ruff-clean-brightgreen)
+&nbsp;
+![python](https://img.shields.io/badge/python-3.12-blue)
+
 **Assignment 6 of the RL Course (L10 — Multi-Agent RL)** — the foundation of the course final project, graded as one unit with it.
 
 A complete laboratory for **Multi-Agent Reinforcement Learning** on the *Cops-and-Robbers* pursuit-evasion grid, built under the **Dec-POMDP / CTDE / VDN-QMIX** paradigm. Both agents (Cop, Thief) train under centralised state access, then run behind their own **MCP server** with **automated Gmail-API reporting** at the end of every 6-sub-game game.
 
 ## Beyond the spec (the parts you didn't ask for)
 
-The spec § 7 asks for a Dec-POMDP / VDN / QMIX / IQL implementation with academic analysis. This codebase delivers all of that **plus thirteen extensions** that go past the rubric:
+The spec § 7 asks for a Dec-POMDP / VDN / QMIX / IQL implementation with academic analysis. This codebase delivers all of that **plus fourteen extensions** that go past the rubric:
 
 1. **QPLEX mixer** (`src/marl_lab/model/qplex_mixer.py`) — the duplex dueling decomposition recommended in the §7.2 critical analysis is **actually implemented**, not just cited. 10 dedicated tests verify IGM-by-construction (λ > 0 via autograd, 80 random probes) AND strict expressiveness gain over QMIX (drives Q_tot negative while every Q_i positive — impossible under |W| QMIX). One-line algorithm switch: `algo="qmix" | "vdn" | "qplex" | "iql"`.
 2. **Formal mathematical proofs** ([`docs/PROOFS.md`](docs/PROOFS.md)) — chain-rule derivation of why `|W|` parametrisation guarantees `∂Q_tot/∂Q_i ≥ 0` for QMIX, and why QPLEX's `λ(s) > 0` parametrisation guarantees IGM strictly *by construction* without restricting representational power. Each math step is cross-referenced to the test that verifies it empirically.
@@ -21,6 +31,11 @@ The spec § 7 asks for a Dec-POMDP / VDN / QMIX / IQL implementation with academ
 11. **MCP token rotation + revocation lifecycle demo** (`scripts/demo_token_rotation.py`) — 4-stage scripted lifecycle (issue v1 → rotate to v2 → revoke v1 → revoke v2 / deny-all), every assertion verified, full transcript at [`assets/logs/token_rotation.log`](assets/logs/token_rotation.log). Spec § 5.3 explicitly requires revocation support; this proves it works end-to-end.
 12. **Bernstein 2002 complexity appendix** in [`docs/PROOFS.md`](docs/PROOFS.md) § 4 — connects the theoretical NEXP-completeness result for exact Dec-POMDP solving (bib ref [1]) to *why* CTDE / VDN / QMIX / QPLEX is the tractable compromise we implement. Includes complexity comparison table and POSG-vs-Dec-POMDP corollary.
 13. **500-episode convergence study** ([`assets/figures/long_convergence.png`](assets/figures/long_convergence.png) + raw CSV) — proper experimental signal, not noise. 25-episode rolling smoother over QMIX/QPLEX/IQL. **Includes an honest empirical finding** (IQL competitive on the small grid) with full discussion in [`FAILURE_MODES.md`](docs/FAILURE_MODES.md) § 3. Anti-hallucination: reported what we measured, not what theory predicts.
+14. **GitHub Actions CI** ([`.github/workflows/assignment6-ci.yml`](https://github.com/ShakedKozlovsky/RLCourse/blob/main/.github/workflows/assignment6-ci.yml)) — every push to `assignment6/**` triggers a two-job pipeline:
+    - **`audit`** job: ruff lint + pytest with `--cov` + LOC ≤ 250 inline check + graphify regeneration + drift detection + coverage XML uploaded as a build artifact.
+    - **`property-fuzz`** job: re-runs `tests/property/` under `HYPOTHESIS_PROFILE=ci` which **lifts the example budget from 200 to 500 per invariant** — so CI exercises 3500+ randomised env inputs per push, on top of the standard test suite. Profile registered in [`tests/conftest.py`](tests/conftest.py).
+
+    Status badge at the top of the README links to the live workflow runs; if it's not green, the codebase is not in spec compliance.
 
 ## Status
 

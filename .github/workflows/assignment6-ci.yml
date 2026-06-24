@@ -1,0 +1,98 @@
+name: assignment6-ci
+
+on:
+  push:
+    paths:
+      - "assignment6/**"
+      - ".github/workflows/assignment6-ci.yml"
+  pull_request:
+    paths:
+      - "assignment6/**"
+      - ".github/workflows/assignment6-ci.yml"
+
+defaults:
+  run:
+    working-directory: assignment6
+
+jobs:
+  audit:
+    name: ruff + pytest + LOC + graphify + coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.11.2"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Sync deps (incl. dev extras)
+        run: uv sync --extra dev --frozen
+
+      - name: Ruff lint (src + tests + scripts)
+        run: uv run ruff check src/ tests/ scripts/
+
+      - name: Pytest + coverage
+        run: uv run pytest --cov=marl_lab --cov-report=xml --cov-report=term -q --no-header
+
+      - name: LOC audit (≤250 LOC per src file — V3 § 7.2)
+        run: |
+          set -e
+          MAX=250
+          OVER=$(find src/marl_lab -name '*.py' -not -path '*/__pycache__/*' \
+            -exec sh -c 'echo "$(wc -l < "$1") $1"' _ {} \; \
+            | awk -v m=$MAX '$1>m {print $2 " ("$1" LOC)"}')
+          if [ -n "$OVER" ]; then
+            echo "::error::Files exceed $MAX LOC:"
+            echo "$OVER"
+            exit 1
+          fi
+
+      - name: Graphify (regenerate architecture.md)
+        run: uv run python -c "from marl_lab.graphify.graphify import run; run('src/marl_lab', 'docs/wiki/architecture.md')"
+
+      - name: Verify no drift in auto-generated docs
+        run: |
+          if git diff --exit-code docs/wiki/architecture.md > /dev/null; then
+            echo "architecture.md is up to date"
+          else
+            echo "::warning::docs/wiki/architecture.md is out of sync — regen with scripts/audit.py"
+            git diff docs/wiki/architecture.md | head -40
+          fi
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-xml
+          path: assignment6/coverage.xml
+          if-no-files-found: ignore
+
+  property-fuzz:
+    name: hypothesis fuzz (extended)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: audit
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.11.2"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Sync deps
+        run: uv sync --extra dev --frozen
+
+      - name: Run property tests with higher example budget
+        env:
+          # Extend hypothesis exploration in CI (local default is 200 per invariant)
+          HYPOTHESIS_PROFILE: ci
+        run: uv run pytest tests/property/ -v --no-header
