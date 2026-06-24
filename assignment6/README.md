@@ -100,3 +100,84 @@ MCP (cop) ◀━━ select_action ━━ Adjudicator-over-MCP ━━ select_acti
 | B | — | — | (may add partner before submission) |
 
 Submission acknowledges solo work in the JSON report.
+
+---
+
+# Academic analysis (spec § 7)
+
+The spec § 7 requires a deep scientific/mathematical analysis attached to the README. This section satisfies that requirement: § 7.1 formal-definitions integration, § 7.2 critical analysis of non-stationarity / CTDE / IGM, and § 7.2 IQL baseline comparison + extension recommendations.
+
+## 7.1 Dec-POMDP formal tuple ↔ code
+
+A Dec-POMDP is the tuple ⟨N, S, A, T, R, Ω, O, γ⟩ ([Oliehoek & Amato 2016]). Each element is realised concretely in this codebase:
+
+| Element | Symbol | Definition (lecture 10 § 2.2) | Realisation in code |
+|---|---|---|---|
+| Agents | **N** | finite set of decision-makers | `AGENTS = ("cop", "thief")` in `src/marl_lab/services/marl_trainer.py` and every other module — `\|N\| = 2`. |
+| States | **S** | global underlying state | `Board` (frozen dataclass) in `src/marl_lab/game/board.py` — fields: `grid_size, cop_pos, thief_pos, barriers, step, capture_flag, timeout_flag`. `Board.to_state_vector()` serialises to ℝ^{3·h·w+2} used by the QMIX hypernet during **training only**. |
+| Actions | **A** | joint action `(a₁,…,a_N)` | `Action` IntEnum in `src/marl_lab/game/actions.py`: cop has 6 actions (UP, DOWN, LEFT, RIGHT, STAY, PLACE_BARRIER), thief has 5 (no barrier). |
+| Transition | **T(s′\|s, ā)** | dynamics | `MoveDynamics.apply()` in `src/marl_lab/game/moves.py` — pure function, simultaneous-action resolution with collision + capture + barrier-placement semantics. |
+| Reward | **R(s, ā)** | per-step team reward (Dec-POMDP) — **per-agent in our POSG framing** (see § 7.2 below) | `per_step_reward()` in `src/marl_lab/environment/reward.py` returns `{"cop": r_c, "thief": r_t}`. Spec § 3.4 Table 1 maps to `sub_game_score(winner, cfg)`. |
+| Observations | **Ω** | per-agent local observation set | `observe(board, role, radius)` in `src/marl_lab/sensor/partial_observation.py` returns ℝ^{4·n_visible+6} — Manhattan-radius mask + status entries. |
+| Observation function | **O(o\|s, ā)** | partial-observability map | The same `observe()` is a deterministic O — for each agent and each global state, the observation is the Manhattan-radius slice. |
+| Discount | **γ** | future-reward discount ∈ [0,1) | `TrainerConfig.gamma = 0.99` in `src/marl_lab/services/marl_trainer.py`; used in the TD target `y = r + γ(1−d)·Q_tot_target(s′)` in `src/marl_lab/services/qmix_update.py`. |
+
+### Value function and the IGM principle
+
+For the CTDE branch (VDN, QMIX), each agent learns a per-agent value `Qᵢ(τᵢ, aᵢ)` over its observation–action history `τᵢ` (`QPerAgent` in `src/marl_lab/model/recurrent_q.py` — a GRU over per-step observations preserves the history). The joint value is then mixed:
+
+> **VDN** (Sunehag 2018): `Q_tot(τ, ā) = Σᵢ Qᵢ(τᵢ, aᵢ)` (`src/marl_lab/model/vdn_mixer.py`).
+>
+> **QMIX** (Rashid 2018): `Q_tot(τ, ā, s) = f_mix(s; Q₁, …, Q_N)` where the mixer weights are produced by a hypernetwork conditioned on the global state `s`, and the weights are constrained to be **non-negative** (via `torch.abs(·)` on the hypernet output — `src/marl_lab/model/qmix_mixer.py` line 78 onwards) so that `∂Q_tot/∂Qᵢ ≥ 0`.
+
+The non-negativity of `∂Q_tot/∂Qᵢ` enforces the **IGM (Individual–Global–Max) principle**:
+
+> `argmax_ā Q_tot(τ, ā) ≡ (argmax_{a₁} Q₁(τ₁, a₁), …, argmax_{a_N} Q_N(τ_N, a_N))`.
+
+This is the algebraic guarantee that decentralised execution (each agent picks its own greedy action) recovers the centralised joint argmax. We verify the constraint empirically in `tests/unit/test_mixers.py::test_qmix_monotonicity_finite_difference` — 150 random `(q, s)` probes, autograd `∂Q_tot/∂Q_i ≥ 0` for n=2 and n=5 agents.
+
+## 7.2 Critical analysis
+
+### Non-stationarity and how CTDE solves it
+
+In a multi-agent setting, from each agent's perspective the **environment is non-stationary**: the transition `T(s′\|s, a_i)` perceived by agent `i` depends not only on its own action `a_i` but on the (changing) policies of all other agents. As they learn, the effective transition function for agent `i` drifts — violating the stationarity assumption of standard Q-learning convergence proofs.
+
+**Independent Q-Learning (IQL — Tan 1993)** ignores this: each agent learns its own `Qᵢ` against a non-stationary opponent. We implement IQL in `src/marl_lab/services/iql_update.py` precisely as the spec § 7.2 baseline asks. The known failure mode: IQL provides no convergence guarantee in MARL — empirically it can learn workable policies on small grids but is brittle and seed-sensitive.
+
+**CTDE (Centralised Training, Decentralised Execution)** breaks the chicken-and-egg by giving the **critic** access to the global state `s` during training (so `T(s′\|s, ā)` is well-defined when conditioned on the joint action `ā`), while the **policies remain decentralised**: each agent's `Qᵢ` reads only its own local history `τᵢ`. The mixer is a training-time-only object — at execution, each agent runs its `argmax_a Qᵢ(τᵢ, a)` independently (IGM). This is exactly the split realised in `src/marl_lab/services/qmix_update.py`:
+- The critic forward pass uses `b["state"]` (global state) for the mixer.
+- The execution path (`MarlTrainer._select_joint_action`, `mcp/server_base.py::select_action`) only ever reads the per-agent observation; the MCP protocol (`mcp/protocol.py`) does not even carry a field for the global state.
+
+### IQL baseline comparison
+
+The sweep runner `src/marl_lab/services/sweeps.py` evaluates `(algorithm × grid × radius × seed)` with `algorithm ∈ {iql, vdn, qmix}`. The expected ordering on this task family (from the literature [Rashid 2018]): **QMIX ≥ VDN > IQL** on cooperative coordination tasks. Our task is a *competitive* pursuit-evasion (POSG), so the ordering depends on whether the cop's policy benefits more from the CTDE mixer than the thief's — see § 7.2 below on the POSG honesty issue.
+
+### IGM limits — recommendation: QPLEX or Weighted QMIX
+
+The IGM-via-`\|W\|` parametrisation in QMIX trades **representational power for the monotonicity guarantee**: only joint action-value functions that factor monotonically into per-agent values are representable. Real cooperative tasks can have a `Q_tot` whose argmax requires non-monotonic interactions (e.g. "if both agents do A, the team wins; if either does A alone, it loses" — this `XOR`-shaped landscape violates monotonicity).
+
+Two extensions in the literature relax this:
+
+- **Weighted QMIX** (Rashid 2020, arXiv:2006.10800) — keeps the monotonic mixer at evaluation time but reweights the loss so that the optimal joint actions are weighted more heavily during training, partially recovering expressiveness.
+- **QPLEX** (Wang 2021, arXiv:2008.01062) — replaces the monotonic mixer with a **duplex dueling decomposition** `Q_tot = V_tot(s) + Σᵢ Aᵢ(s, ā)·wᵢ(s, ā)` that satisfies IGM by construction without restricting representational power; the advantage stream uses transformed coefficients that can take any sign.
+
+A natural extension to this repo would be to add `src/marl_lab/model/qplex_mixer.py` (the dueling-advantage variant) alongside the existing `QMIXMixer` and `VDNMixer`; the trainer pipeline is mixer-agnostic so the swap is local.
+
+### POSG vs Dec-POMDP framing — honest disclosure
+
+The cops-and-robbers game is technically a **POSG (Partially Observable Stochastic Game)**: the cop and thief have **opposite** reward signals, not a shared team reward as Dec-POMDP / CTDE / QMIX assume. We bridge this gap by averaging per-agent rewards into a single joint reward in `services/qmix_update.py` (`joint_reward = (r_cop + r_thief) * 0.5`). This is a known practical approximation:
+- It works empirically because cop and thief co-train via self-play; the IGM monotonicity then becomes a *training stability* device, not an absolute correctness guarantee under per-agent reward divergence.
+- Strict POSG learners (MADDPG with two independent centralised critics; Nash-Q for the tabular case) would be the principled alternative. Their implementation is out of scope for A6's bonus assignment but documented as the next step in `docs/FAILURE_MODES.md`.
+
+## 7 — Bibliography
+
+1. Oliehoek, F. A., & Amato, C. *A Concise Introduction to Decentralized POMDPs*. Springer 2016.
+2. Sunehag, P. et al. *Value-Decomposition Networks For Cooperative Multi-Agent Learning Based On Team Reward.* AAMAS 2018. arXiv:1706.05296.
+3. Rashid, T. et al. *QMIX: Monotonic Value Function Factorisation for Deep Multi-Agent Reinforcement Learning.* ICML 2018. arXiv:1803.11485.
+4. Tan, M. *Multi-Agent Reinforcement Learning: Independent vs. Cooperative Agents.* ICML 1993.
+5. Foerster, J. et al. *Counterfactual Multi-Agent Policy Gradients.* AAAI 2018. arXiv:1705.08926.
+6. Büyükakyüz, K. *OLoRA: Orthonormal Low-Rank Adaptation.* 2024. arXiv:2406.01775.
+7. Rashid, T. et al. *Weighted QMIX: Expanding Monotonic Value Function Factorisation.* NeurIPS 2020. arXiv:2006.10800.
+8. Wang, J. et al. *QPLEX: Duplex Dueling Multi-Agent Q-Learning.* ICLR 2021. arXiv:2008.01062.
+9. Lowe, R. et al. *MADDPG.* NeurIPS 2017. arXiv:1706.02275.
+

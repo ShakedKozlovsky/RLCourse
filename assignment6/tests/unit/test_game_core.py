@@ -119,14 +119,15 @@ def test_move_simultaneous_target_collision() -> None:
 
 
 def test_barrier_placement_basic() -> None:
+    """Spec § 3.3 — barrier goes on the COP'S OWN cell, cop stays put."""
     md = MoveDynamics(max_barriers=5)
     b = _make_board(cop=(2, 2), thief=(4, 4))
     new_b, info = md.apply(b, Action.PLACE_BARRIER, Action.STAY)
     assert info.barrier_placed
-    assert info.barrier_placed_at == (1, 2)
-    assert (1, 2) in new_b.barriers
+    assert info.barrier_placed_at == (2, 2)
+    assert (2, 2) in new_b.barriers
     assert len(new_b.barriers) == 1
-    assert new_b.cop_pos == (2, 2)  # cop didn't move
+    assert new_b.cop_pos == (2, 2)
 
 
 def test_barrier_cap_enforced() -> None:
@@ -138,19 +139,23 @@ def test_barrier_cap_enforced() -> None:
     assert len(new_b.barriers) == 2
 
 
-def test_barrier_cannot_place_on_thief() -> None:
+def test_barrier_cannot_place_when_thief_on_same_cell() -> None:
+    """Edge case: cop and thief on the same cell mid-game (pre-capture). Spec
+    forbids placing the barrier under the thief."""
     md = MoveDynamics(max_barriers=5)
-    b = _make_board(cop=(2, 2), thief=(1, 2))  # thief is exactly where barrier would land
+    b = _make_board(cop=(2, 2), thief=(2, 2))  # same cell
     new_b, info = md.apply(b, Action.PLACE_BARRIER, Action.STAY)
     assert not info.barrier_placed
-    assert (1, 2) not in new_b.barriers
+    assert (2, 2) not in new_b.barriers
 
 
-def test_barrier_off_grid_rejected() -> None:
+def test_barrier_cannot_double_place_same_cell() -> None:
+    """If cop's cell already has a barrier, no-op (per spec § 3.3)."""
     md = MoveDynamics(max_barriers=5)
-    b = _make_board(cop=(0, 2), thief=(4, 4))  # barrier would go to (-1, 2)
+    b = _make_board(cop=(0, 2), thief=(4, 4), barriers=frozenset({(0, 2)}))
     new_b, info = md.apply(b, Action.PLACE_BARRIER, Action.STAY)
     assert not info.barrier_placed
+    assert len(new_b.barriers) == 1
 
 
 # ----- Win adjudication -----

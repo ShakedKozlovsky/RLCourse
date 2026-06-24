@@ -1,6 +1,8 @@
 """Move dynamics T(s' | s, ā) — pure function on Boards.
 
 Simultaneous resolution: cop and thief move in the same tick. Walls + barriers
+block movement. PLACE_BARRIER (action 5, cop-only) drops a barrier on the
+cop's CURRENT cell (spec § 3.3) and the cop stays put that turn.
 block; collisions resolve as the **moving agent stays put**. Cop's
 PLACE_BARRIER (action 5) drops a barrier on the cell ADJACENT in cop's last
 intended direction — see § 1 below."""
@@ -63,20 +65,20 @@ class MoveDynamics:
         thief_blocked = (thief_target == board.thief_pos and thief_action != Action.STAY)
 
         # Resolve cop
+        # Spec § 3.3: placing a barrier puts it on the cop's CURRENT cell
+        # (and costs the move — cop stays put). The barrier is recorded
+        # immediately; the cop is now "on" the barrier cell but will move
+        # off it next turn.
         barrier_placed = False
         barrier_at: tuple[int, int] | None = None
         new_barriers = board.barriers
         if cop_action == Action.PLACE_BARRIER:
             cop_target = board.cop_pos
-            # candidate barrier cell: one step UP (north) by default
-            br, bc = board.cop_pos[0] - 1, board.cop_pos[1]
-            cand = (br, bc)
+            cand = board.cop_pos
             if (
                 len(board.barriers) < self.max_barriers
-                and board.in_bounds(cand)
-                and cand != board.cop_pos
-                and cand != board.thief_pos
                 and cand not in board.barriers
+                and cand != board.thief_pos
             ):
                 new_barriers = frozenset(board.barriers | {cand})
                 barrier_placed = True

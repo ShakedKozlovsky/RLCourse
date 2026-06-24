@@ -54,7 +54,13 @@ class MarlSDK:
             enable_barriers=bool(self.config.get("game.enable_barriers", True)),
             observation_radius=int(self.config.get("game.observation_radius", 2)),
         )
-        reward_cfg = RewardConfig()
+        # Spec § 3.6 — yaml `scoring.*` keys must drive runtime scoring
+        reward_cfg = RewardConfig(
+            score_cop_win=int(self.config.get("scoring.cop_win", 20)),
+            score_thief_win=int(self.config.get("scoring.thief_win", 10)),
+            score_cop_loss=int(self.config.get("scoring.cop_loss", 5)),
+            score_thief_loss=int(self.config.get("scoring.thief_loss", 5)),
+        )
         self._rng = np.random.default_rng(seed)
         self.env = DecPomdpEnv(env_cfg=env_cfg, reward_cfg=reward_cfg, rng=self._rng)
         self.env.reset(seed=seed)
@@ -92,6 +98,7 @@ class MarlSDK:
                 max_barriers=env_cfg.max_barriers,
                 enable_barriers=env_cfg.enable_barriers,
                 observation_radius=env_cfg.observation_radius,
+                timezone_name=self.config.get("submission.timezone", "Asia/Jerusalem"),
             ),
             reward_cfg=reward_cfg,
             rng=np.random.default_rng(seed + 1),

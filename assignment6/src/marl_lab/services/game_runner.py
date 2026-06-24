@@ -15,7 +15,8 @@ two trained policies and plays them against each other. Used by:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import torch
@@ -37,6 +38,7 @@ class RunnerConfig:
     max_barriers: int = 5
     enable_barriers: bool = True
     observation_radius: int = 2
+    timezone_name: str = "Asia/Jerusalem"     # spec § 3.5 — JSON datetimes carry +03:00
 
 
 class GameRunner:
@@ -73,7 +75,8 @@ class GameRunner:
     def play_sub_game(self, q_a: QPerAgent, q_b: QPerAgent,
                        a_role: str, sub_game_id: int, seed: int) -> SubGameResult:
         """Play one sub-game with policy_a in role ``a_role``."""
-        start = datetime.now(tz=timezone.utc)
+        tz = ZoneInfo(self.runner_cfg.timezone_name)
+        start = datetime.now(tz=tz)
         joint_obs = self.env.reset(seed=seed)
         h_a = q_a.init_hidden(batch_size=1)
         h_b = q_b.init_hidden(batch_size=1)
@@ -92,7 +95,7 @@ class GameRunner:
             moves += 1
             if done:
                 break
-        end = datetime.now(tz=timezone.utc)
+        end = datetime.now(tz=tz)
         winner = info["winner"] or "thief"
         scores = sub_game_score(winner, self.reward_cfg)
         return SubGameResult(
@@ -112,8 +115,9 @@ class GameRunner:
         group_name: str,
         group_code: str,
         github_repo: str,
-        timezone_name: str = "UTC",
+        timezone_name: str = "Asia/Jerusalem",
         seed: int = 0,
+        max_retries_per_sub_game: int = 3,
     ) -> GameReport:
         """Run all sub-games and assemble the spec § 3.5 GameReport.
 
@@ -124,7 +128,24 @@ class GameRunner:
         totals: dict[str, int] = {"cop": 0, "thief": 0}
         for k in range(self.runner_cfg.n_sub_games):
             a_role = "cop" if k % 2 == 0 else "thief"
-            res = self.play_sub_game(q_a, q_b, a_role, sub_game_id=k, seed=seed + k)
+            # Spec § 3.5 example uses 1-based sub-game IDs (1..6)
+            # Spec § 3.7: technical failures don't count — retry up to
+            # ``max_retries_per_sub_game`` to reach 6 valid sub-games.
+            res: SubGameResult | None = None
+            last_err: Exception | None = None
+            for attempt in range(max_retries_per_sub_game):
+                try:
+                    res = self.play_sub_game(q_a, q_b, a_role,
+                                              sub_game_id=k + 1,
+                                              seed=seed + k + 1000 * attempt)
+                    break
+                except (RuntimeError, ValueError) as e:
+                    last_err = e
+            if res is None:
+                raise RuntimeError(
+                    f"sub-game {k + 1} failed after "
+                    f"{max_retries_per_sub_game} attempts: {last_err!r}"
+                )
             sub_games.append(res)
             totals["cop"] += res.scores["cop"]
             totals["thief"] += res.scores["thief"]

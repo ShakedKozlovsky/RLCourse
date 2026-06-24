@@ -93,7 +93,7 @@ def test_play_full_game_alternates_roles(runner, q_pair) -> None:
     report = runner.play_full_game(q_a, q_b, students=students,
                                      group_name="g", group_code="c",
                                      github_repo="r", timezone_name="UTC")
-    assert [s.id for s in report.sub_games] == [0, 1, 2, 3]
+    assert [s.id for s in report.sub_games] == [1, 2, 3, 4]   # spec § 3.5 uses 1-based IDs
 
 
 def test_play_full_game_carries_metadata(runner, q_pair) -> None:

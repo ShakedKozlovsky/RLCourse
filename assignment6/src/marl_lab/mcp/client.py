@@ -66,11 +66,13 @@ class MCPClient:
     def play_sub_game(self, env_cfg: EnvConfig, reward_cfg: RewardConfig,
                        sub_game_id: int, seed: int) -> SubGameResult:
         """Play ONE sub-game using the two remote policies. Returns SubGameResult."""
-        from datetime import datetime, timezone
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        tz = ZoneInfo("Asia/Jerusalem")
         env = DecPomdpEnv(env_cfg=env_cfg, reward_cfg=reward_cfg,
                             rng=np.random.default_rng(seed))
         joint_obs = env.reset(seed=seed)
-        start = datetime.now(tz=timezone.utc)
+        start = datetime.now(tz=tz)
         moves = 0
         while True:
             cop_resp = self._call("cop", joint_obs["cop"], moves)
@@ -80,7 +82,7 @@ class MCPClient:
             moves += 1
             if done:
                 break
-        end = datetime.now(tz=timezone.utc)
+        end = datetime.now(tz=tz)
         winner = info["winner"] or "thief"
         scores = sub_game_score(winner, reward_cfg)
         return SubGameResult(
