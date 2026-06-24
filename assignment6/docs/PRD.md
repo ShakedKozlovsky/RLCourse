@@ -24,13 +24,13 @@ Pedagogical claim under test:
 | § 2 — Dec-POMDP ⟨N, S, A, T, R, Ω, O, γ⟩ | [`PRD_dec_pomdp.md`](PRD_dec_pomdp.md) + [`environment/dec_pomdp.py`](../src/marl_lab/environment/dec_pomdp.py) |
 | § 2.1 — Cooperative vs adversarial / POSG | [`environment/reward.py`](../src/marl_lab/environment/reward.py) (zero-sum rewards: cop_win = +20, thief_win = +10) |
 | § 2.2 — Pursuit-evasion swarm cooperative framing | [`PRD_game.md`](PRD_game.md) § 1 |
-| § 3 — Non-stationarity + IQL failure | [`PRD_iql_baseline.md`](PRD_iql_baseline.md) + [`services/iql_baseline.py`](../src/marl_lab/services/iql_baseline.py) |
+| § 3 — Non-stationarity + IQL failure | [`PRD_iql_baseline.md`](PRD_iql_baseline.md) + [`services/iql_update.py`](../src/marl_lab/services/iql_update.py) |
 | § 4 — CTDE + VDN + QMIX + IGM | [`PRD_ctde.md`](PRD_ctde.md) + [`model/vdn_mixer.py`](../src/marl_lab/model/vdn_mixer.py) + [`model/qmix_mixer.py`](../src/marl_lab/model/qmix_mixer.py) |
 | § 5 — LSTM/GRU recurrent obs | [`model/recurrent_q.py`](../src/marl_lab/model/recurrent_q.py) |
 | § 6 — OLoRA QR-decomp PEFT | [`PRD_olora.md`](PRD_olora.md) + [`model/olora.py`](../src/marl_lab/model/olora.py) |
 | § 7 — Staged validation 2x2 → 5x5 | [`configs/setup.yaml::experiments.grid_size_sweep`](../configs/setup.yaml) |
 | § 8 — Cloud MCP architecture | [`PRD_mcp.md`](PRD_mcp.md) + [`mcp/`](../src/marl_lab/mcp/) |
-| § 9 — GUI + visualisation + auto-reporting | [`interface/gui/`](../src/marl_lab/interface/gui/) + [`PRD_gmail.md`](PRD_gmail.md) |
+| § 9 — GUI + visualisation + auto-reporting | [`interface/game_gui.py`](../src/marl_lab/interface/game_gui.py) + [`interface/board_renderer.py`](../src/marl_lab/interface/board_renderer.py) + [`PRD_gmail.md`](PRD_gmail.md) |
 
 ## 3. The Dec-POMDP tuple (verbatim — L10 equation 1)
 

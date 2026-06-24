@@ -47,6 +47,8 @@ def loc_check(src_dir: Path, max_loc: int = 250) -> int:
 
 def main() -> int:
     rc = 0
+    # Pre-step: ensure dev extras (ruff + pytest + pytest-cov) are installed.
+    rc |= step("sync(dev)", ["uv", "sync", "--extra", "dev", "--quiet"])
     rc |= step("ruff", ["uv", "run", "ruff", "check", "src/", "tests/", "scripts/"])
     rc |= step("pytest", ["uv", "run", "pytest", "-q", "--no-header"])
     rc |= loc_check(Path("src/marl_lab"))

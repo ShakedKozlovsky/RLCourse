@@ -41,10 +41,10 @@ A complete laboratory for **Multi-Agent Reinforcement Learning** on the *Cops-an
 ## Quickstart
 
 ```bash
-# Install (uv-managed)
-uv sync
+# Install (uv-managed). Use --extra dev to also get pytest, pytest-cov, ruff.
+uv sync --extra dev
 
-# Run the full audit (lint + tests + LOC + graphify)
+# Run the full audit (lint + tests + LOC + graphify) — pre-submission gate.
 uv run python scripts/audit.py
 
 # Train + play + send (one-shot, idempotent)

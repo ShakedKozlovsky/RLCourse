@@ -1,5 +1,9 @@
 # TODO — Layered Implementation Plan (Assignment 6 — MARL)
 
+> **STATUS — v1.01 — ALL 27 LAYERS COMPLETE** ✅
+>
+> This file is the historical implementation plan that drove the layered build. For the **current** per-layer status see the table in [`../README.md`](../README.md#status). For the audit gate that proves it (lint + tests + LOC + graphify), run `uv run python scripts/audit.py`. The `[ ]` checkboxes below are kept as the original DoD — every box is done in commits up to tag `marl-lab-v1.01`.
+
 > Each layer = one commit. **Definition of Done** is explicit per layer: code + tests + docs updated. Status uses `[ ]` pending, `[~]` in progress, `[x]` done.
 
 Reference: [`PRD.md`](PRD.md), [`PLAN.md`](PLAN.md).

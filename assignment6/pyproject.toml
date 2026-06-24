@@ -41,7 +41,9 @@ dev = [
 ]
 
 [project.scripts]
-marl-lab = "marl_lab.interface.cli.main:cli"
+marl = "marl_lab.cli.main:main"
+marl-mcp-cop = "marl_lab.mcp.cop_server:main"
+marl-mcp-thief = "marl_lab.mcp.thief_server:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -69,8 +71,9 @@ asyncio_mode = "auto"
 source = ["src/marl_lab"]
 branch = true
 omit = [
-    "src/marl_lab/interface/gui/*",
-    "src/marl_lab/cloud/*",
+    "src/marl_lab/mcp/cop_server.py",       # FastMCP `main()` not headless-testable
+    "src/marl_lab/mcp/thief_server.py",     # same
+    "src/marl_lab/cloud/*",                  # require real Prefect creds
     "src/marl_lab/**/__init__.py",
 ]
 
