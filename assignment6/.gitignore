@@ -1,0 +1,38 @@
+# venv / build artifacts
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+__pycache__/
+*.pyc
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# results / saved_models — opt-in via git add -f
+results/
+saved_models/*.pt
+saved_models/*.pth
+
+# Secrets — Gmail OAuth, App Passwords, Prefect tokens, MCP auth tokens
+.env
+secrets/
+credentials.json
+token.json
+*.token
+*.pem
+
+# Prefect local state
+.prefect/
+
+# Logs
+*.log
+assets/logs/*.log

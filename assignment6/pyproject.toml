@@ -1,0 +1,80 @@
+[project]
+name = "marl-lab"
+version = "1.00"
+description = "Assignment 6 — Cooperative-adversarial **Multi-Agent Reinforcement Learning** laboratory (Cops-and-Robbers on a configurable grid) under the **Dec-POMDP / CTDE / VDN-QMIX** paradigm, with two cloud-deployed **MCP** servers (one per agent), automated **Gmail-API** reporting, **GUI**, and **OLoRA** fine-tuning. Foundation for the course final project. Built layer-by-layer under V3 coding rules + Vibe-Coding methodology."
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+license = { text = "Educational use only" }
+authors = [
+    { name = "Shaked Kozlovsky", email = "shaked1221997@gmail.com" },
+]
+dependencies = [
+    "numpy>=1.26,<3",
+    "torch>=2.2",
+    "matplotlib>=3.8",
+    "click>=8.1",
+    "PyQt6>=6.6",
+    "tqdm>=4.66",
+    "tabulate>=0.9",
+    "imageio>=2.34",
+    "pyyaml>=6.0",
+    "fastmcp>=0.4",
+    "fastapi>=0.110",
+    "uvicorn>=0.27",
+    "httpx>=0.27",
+    "google-api-python-client>=2.140",
+    "google-auth-oauthlib>=1.2",
+    "google-auth-httplib2>=0.2",
+    "prefect>=2.18",
+    "pydantic>=2.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-cov>=5",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.6",
+    "ipykernel>=6.29",
+    "jupyter>=1",
+    "nbconvert>=7.16",
+]
+
+[project.scripts]
+marl-lab = "marl_lab.interface.cli.main:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/marl_lab"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra --strict-markers --strict-config"
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["src/marl_lab"]
+branch = true
+omit = [
+    "src/marl_lab/interface/gui/*",
+    "src/marl_lab/cloud/*",
+    "src/marl_lab/**/__init__.py",
+]
+
+[tool.coverage.report]
+fail_under = 85
+show_missing = true
+skip_covered = false

@@ -1,0 +1,105 @@
+# marl-lab — single configuration file (V3 § 7.2 — no magic numbers in source).
+# Spec § 3.6 demands a YAML/JSON config; this is the YAML option.
+# Every numeric parameter the game / agent / training uses MUST appear here.
+
+version: "1.00"
+seed: 208904839
+device: cpu
+
+# === Game rules (§ 3 of the spec) ===
+game:
+  grid_size: [5, 5]              # configurable 2x2 → 5x5 (staged validation, spec § 5.1 Table 2)
+  max_moves: 25                  # cap per sub-game
+  num_games: 6                   # sub-games per game (one Gmail report = one game)
+  max_barriers: 5                # cop may place at most this many barriers (advanced option)
+  enable_barriers: true          # toggle the barrier mechanic
+  observation_radius: 2          # Manhattan radius each agent sees around itself
+
+scoring:                          # spec § 3.4 Table 1 defaults
+  cop_win: 20
+  thief_win: 10
+  cop_loss: 5
+  thief_loss: 5
+
+# === Dec-POMDP / CTDE parameters ===
+marl:
+  algorithm: "qmix"              # one of: qmix | vdn | iql (IQL = the comparison baseline)
+  gamma: 0.99
+  tau: 0.005                     # Polyak soft-target update rate
+  actor_lr: 0.0001
+  critic_lr: 0.001
+  mixer_lr: 0.001                # QMIX/VDN mixer LR
+  batch_size: 64
+  replay_capacity: 100000
+  warmup_steps: 500
+  max_grad_norm: 1.0
+  hidden_sizes: [128, 128]
+  use_rnn: true                  # GRU on per-agent obs history (slide 5 — recurrent for partial-obs)
+  rnn_hidden_size: 64
+  use_olora: false               # toggle OLoRA fine-tuning of a pre-trained network
+  olora_rank: 8                  # if use_olora=true
+
+# === Exploration ===
+exploration:
+  kind: "epsilon_greedy"         # discrete-action equivalent of Gaussian noise
+  epsilon_initial: 1.0
+  epsilon_final: 0.05
+  decay_steps: 50000
+
+# === Training ===
+training:
+  total_episodes: 5000
+  log_interval: 50
+  eval_interval: 500
+  n_eval_episodes: 20
+
+# === Empirical sweeps (§ 5.1 Table 2 + § 7 analysis) ===
+experiments:
+  grid_size_sweep: [[2, 2], [3, 3], [4, 4], [5, 5]]
+  algorithm_sweep: ["iql", "vdn", "qmix"]
+  observation_radius_sweep: [1, 2, 3]
+  ablation_seeds: [0, 1, 2]
+
+# === MCP cloud architecture (§ 5.3) ===
+mcp:
+  cop_host: "127.0.0.1"          # overridden by MARL_MCP_COP_HOST env var
+  cop_port: 7301
+  thief_host: "127.0.0.1"
+  thief_port: 7302
+  framework: "fastmcp"            # recommended; alternatives: fastapi-only, mcp-python-sdk
+  cloud_provider: "prefect"      # for phase 2 deploy
+  auth_required: true
+  request_timeout_s: 10.0
+
+# === Gmail reporting (§ 5.5) ===
+gmail:
+  report_to: "rmisegal+marl@gmail.com"
+  subject_prefix: "[MARL Game]"
+  send_mode: "app_password"       # one of: app_password | oauth | mcp_tool
+
+# === Submission metadata (filled in before submission) ===
+submission:
+  group_code: "TBD-8CHR"          # 8-char unique group code; replace before submitting
+  group_name: "TBD"
+  students:
+    - role: "A"
+      full_name: "Shaked Kozlovsky"
+      id: "TODO"
+  github_repo: "https://github.com/ShakedKozlovsky/RLCourse"
+  timezone: "Asia/Jerusalem"
+
+# === Paths ===
+paths:
+  results_dir: "results"
+  assets_dir: "assets"
+  checkpoints_dir: "saved_models"
+  data_dir: "data"
+  logs_dir: "assets/logs"
+  wiki_dir: "docs/wiki"
+
+# === Mini-Graphify (port from A5) ===
+graphify:
+  src_dir: "src/marl_lab"
+  output_dir: "docs/wiki"
+  include_docstrings: true
+  include_call_graph: true
