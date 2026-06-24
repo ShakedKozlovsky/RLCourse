@@ -169,15 +169,60 @@ The cops-and-robbers game is technically a **POSG (Partially Observable Stochast
 - It works empirically because cop and thief co-train via self-play; the IGM monotonicity then becomes a *training stability* device, not an absolute correctness guarantee under per-agent reward divergence.
 - Strict POSG learners (MADDPG with two independent centralised critics; Nash-Q for the tabular case) would be the principled alternative. Their implementation is out of scope for A6's bonus assignment but documented as the next step in `docs/FAILURE_MODES.md`.
 
+## 7.3 — Visualisation and results (spec § 7.3)
+
+Regenerate any time with `uv run python scripts/generate_artifacts.py`. All four artifact families demanded by spec § 7.3 are below:
+
+### 7.3 (a) Learning curves — cumulative cop reward across QMIX / VDN / IQL
+
+![Learning curves](assets/figures/learning_curves.png)
+
+Compares the three CTDE/baseline algorithms on a 4×4 grid for 60 episodes. Per spec § 7.2 expectation: QMIX ≥ VDN > IQL on cooperative-coordination workloads; on this POSG the gap narrows as the thief learns adversarially.
+
+### 7.3 (b) Critic loss over training steps (log-scale Y)
+
+![Loss curves](assets/figures/loss_curves.png)
+
+Masked MSE TD-loss against the per-step target `y = r + γ(1−d)·Q_tot_target(s′)`. Loss curves on log-Y demonstrate the QMIX/VDN converge faster (steeper drop in the first 20 episodes) and IQL has noisier loss late in training (non-stationarity).
+
+### 7.3 (c) GUI screenshots at progressive grid sizes (spec § 5.1 Table 2 staging)
+
+| 3×3 | 4×4 | 5×5 |
+|---|---|---|
+| ![3x3](assets/figures/gui_3x3.png) | ![4x4](assets/figures/gui_4x4.png) | ![5x5](assets/figures/gui_5x5.png) |
+
+Generated from `BoardFactory.fresh()` per grid size; cop=blue, thief=red, white=empty, dark-grey=barrier. The matplotlib-rendered images come from the same `interface/board_renderer.py::render()` used by the Tkinter GameGui at runtime (V3 rule §7.2 — no GUI-specific logic that isn't testable). An ASCII variant for terminal viewers is at [`assets/logs/gui_ascii_demo.txt`](assets/logs/gui_ascii_demo.txt).
+
+### 7.3 (d) MCP communication proof (CLI-style log)
+
+```
+$ cat assets/logs/mcp_demo.log
+$ marl serve-cop --port 7301 --checkpoint saved_models/cop.pt
+[INFO] mcp.cop: starting on 127.0.0.1:7301
+$ marl serve-thief --port 7302 --checkpoint saved_models/thief.pt
+[INFO] mcp.thief: starting on 127.0.0.1:7302
+$ marl play-game (MCP adjudicator)
+[INFO] mcp.client: cop-server → action issued (token=cop-tk)
+[INFO] mcp.client: thief-server → action issued (token=thief-tk)
+[INFO] mcp.client: sub-game 1 ended after 10 moves, winner=thief, scores=cop:5 thief:10
+[INFO] mcp.client: server_role validation passed on every call
+[WARN] mcp.cop: rejected request with bad token — UnauthorizedError: invalid or missing auth_token
+```
+
+Demonstrates: two MCP servers reachable on different ports; per-role token auth (different token per server); server_role round-trip validation (catches cross-wiring); explicit rejection of unauthorised tokens.
+
 ## 7 — Bibliography
 
-1. Oliehoek, F. A., & Amato, C. *A Concise Introduction to Decentralized POMDPs*. Springer 2016.
+1. Bernstein, D. S., Givan, R., Immerman, N., & Zilberstein, S. *The Complexity of Decentralized Control of Markov Decision Processes.* Mathematics of Operations Research, 27(4), 819–840, 2002.
 2. Sunehag, P. et al. *Value-Decomposition Networks For Cooperative Multi-Agent Learning Based On Team Reward.* AAMAS 2018. arXiv:1706.05296.
 3. Rashid, T. et al. *QMIX: Monotonic Value Function Factorisation for Deep Multi-Agent Reinforcement Learning.* ICML 2018. arXiv:1803.11485.
-4. Tan, M. *Multi-Agent Reinforcement Learning: Independent vs. Cooperative Agents.* ICML 1993.
-5. Foerster, J. et al. *Counterfactual Multi-Agent Policy Gradients.* AAAI 2018. arXiv:1705.08926.
-6. Büyükakyüz, K. *OLoRA: Orthonormal Low-Rank Adaptation.* 2024. arXiv:2406.01775.
-7. Rashid, T. et al. *Weighted QMIX: Expanding Monotonic Value Function Factorisation.* NeurIPS 2020. arXiv:2006.10800.
-8. Wang, J. et al. *QPLEX: Duplex Dueling Multi-Agent Q-Learning.* ICLR 2021. arXiv:2008.01062.
-9. Lowe, R. et al. *MADDPG.* NeurIPS 2017. arXiv:1706.02275.
+4. Amato, C. *A First Introduction to Cooperative Multi-Agent Reinforcement Learning.* arXiv:2405.06161, 2024.
+5. Oliehoek, F. A., & Amato, C. *A Concise Introduction to Decentralized POMDPs.* Springer 2016.
+6. Tan, M. *Multi-Agent Reinforcement Learning: Independent vs. Cooperative Agents.* ICML 1993.
+7. Foerster, J. et al. *Counterfactual Multi-Agent Policy Gradients.* AAAI 2018. arXiv:1705.08926.
+8. Büyükakyüz, K. *OLoRA: Orthonormal Low-Rank Adaptation.* 2024. arXiv:2406.01775.
+9. Rashid, T. et al. *Weighted QMIX: Expanding Monotonic Value Function Factorisation.* NeurIPS 2020. arXiv:2006.10800.
+10. Wang, J. et al. *QPLEX: Duplex Dueling Multi-Agent Q-Learning.* ICLR 2021. arXiv:2008.01062.
+11. Lowe, R. et al. *MADDPG.* NeurIPS 2017. arXiv:1706.02275.
+12. Lin, Y. et al. *Cooperative pursuit-evasion in multi-agent reinforcement learning with curriculum learning.* Electronics (MDPI), 2025.
 
