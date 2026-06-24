@@ -1,0 +1,10 @@
+$ marl serve-cop --port 7301 --checkpoint saved_models/cop.pt
+[INFO] mcp.cop: starting on 127.0.0.1:7301
+$ marl serve-thief --port 7302 --checkpoint saved_models/thief.pt
+[INFO] mcp.thief: starting on 127.0.0.1:7302
+$ marl play-game (MCP adjudicator)
+[INFO] mcp.client: cop-server → action issued (token=cop-tk)
+[INFO] mcp.client: thief-server → action issued (token=thief-tk)
+[INFO] mcp.client: sub-game 1 ended after 10 moves, winner=thief, scores=cop:5 thief:10
+[INFO] mcp.client: server_role validation passed on every call
+[WARN] mcp.cop: rejected request with bad token — UnauthorizedError: invalid or missing auth_token

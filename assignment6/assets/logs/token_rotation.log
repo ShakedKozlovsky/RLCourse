@@ -1,0 +1,23 @@
+# MCP token rotation life-cycle demo
+# initial registry size: 1 (token: v1-secret)
+
+--- STAGE 1: issue v1, request with v1 ---
+OK request(v1-secret) → action=0, server_role=cop
+
+--- STAGE 2: issue v2 alongside v1 (rotation begins) ---
+# registry: 2 tokens active
+OK request(v1-secret) → action=0
+OK request(v2-secret) → action=0
+
+--- STAGE 3: revoke v1 (rotation complete) ---
+# registry: 1 token (v2-secret)
+OK request(v1-secret) → REJECTED — UnauthorizedError: invalid or missing auth_token
+OK request(v2-secret) → action=0
+
+--- STAGE 4: revoke v2 (registry empty — deny-all) ---
+# registry: 0 tokens (empty allowlist)
+OK request(v1-secret) → REJECTED — UnauthorizedError: invalid or missing auth_token
+OK request(v2-secret) → REJECTED — UnauthorizedError: invalid or missing auth_token
+OK request(anything-else) → REJECTED — UnauthorizedError: invalid or missing auth_token
+
+--- END: all stages passed — rotation + revocation lifecycle verified ---

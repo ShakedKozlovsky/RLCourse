@@ -33,6 +33,7 @@ token.json
 # Prefect local state
 .prefect/
 
-# Logs
+# Logs — gitignored by default to keep training-time noise out of git,
+# but assets/logs/ is a SPEC § 7.3 evidence directory and ships in the repo.
 *.log
-assets/logs/*.log
+!assets/logs/*.log
