@@ -8,6 +8,7 @@ import torch
 
 from marl_lab.environment.dec_pomdp import DecPomdpEnv
 from marl_lab.model.qmix_mixer import QMIXMixer
+from marl_lab.model.qplex_mixer import QPLEXMixer
 from marl_lab.model.recurrent_q import QPerAgent
 from marl_lab.model.vdn_mixer import VDNMixer
 
@@ -44,6 +45,13 @@ def build_mixer_pair(cfg, state_dim: int, device: torch.device):
     if cfg.algo == "vdn":
         mixer = VDNMixer(n_agents=2).to(device)
         return mixer, copy.deepcopy(mixer)
+    if cfg.algo == "qplex":
+        mixer = QPLEXMixer(n_agents=2, state_dim=state_dim,
+                            hyper_hidden=cfg.hyper_hidden).to(device)
+        target_mixer = copy.deepcopy(mixer)
+        for p in target_mixer.parameters():
+            p.requires_grad = False
+        return mixer, target_mixer
     if cfg.algo == "iql":
         return None, None
     raise ValueError(f"unknown algo: {cfg.algo!r}")

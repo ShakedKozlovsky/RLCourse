@@ -23,6 +23,7 @@ from marl_lab.noise.epsilon_greedy import select_action
 from marl_lab.noise.schedule import LinearEpsilonSchedule
 from marl_lab.services.iql_update import apply_iql_update
 from marl_lab.services.qmix_update import apply_qmix_update
+from marl_lab.services.qplex_update import apply_qplex_update
 from marl_lab.services.trainer_build import (
     build_mixer_pair,
     build_optimisers,
@@ -37,7 +38,7 @@ AGENTS = ("cop", "thief")
 @dataclass
 class TrainerConfig:
     """Hyperparameters for the trainer (mirrors yaml `marl` block)."""
-    algo: str = "qmix"                 # 'qmix' | 'vdn' | 'iql'
+    algo: str = "qmix"                 # 'qmix' | 'vdn' | 'qplex' | 'iql'
     gamma: float = 0.99
     tau: float = 0.005
     lr: float = 1e-3
@@ -186,6 +187,18 @@ class MarlTrainer:
             )
             return {"skipped": False, "critic_loss": d.critic_loss,
                     "mean_q_cop": d.mean_q_cop, "mean_q_thief": d.mean_q_thief}
+        if self.cfg.algo == "qplex":
+            assert self.mixer is not None and self.target_mixer is not None
+            d_qpx = apply_qplex_update(
+                q_nets=self.q_nets, target_q_nets=self.target_q_nets,
+                mixer=self.mixer, target_mixer=self.target_mixer,  # type: ignore[arg-type]
+                batch=batch, gamma=self.cfg.gamma, tau=self.cfg.tau,
+                critic_opt=self.opts,  # type: ignore[arg-type]
+                device=self.device,
+            )
+            return {"skipped": False, "critic_loss": d_qpx.critic_loss,
+                    "mean_q_cop": d_qpx.mean_q_cop, "mean_q_thief": d_qpx.mean_q_thief,
+                    "target_drift": d_qpx.target_drift}
         # iql
         d_iql = apply_iql_update(
             q_nets=self.q_nets, target_q_nets=self.target_q_nets,

@@ -1,0 +1,13 @@
+algo,seed,cop_win_rate
+qmix,0,0.3500
+qmix,1,0.3250
+qmix,2,0.1250
+vdn,0,0.3000
+vdn,1,0.2500
+vdn,2,0.2250
+qplex,0,0.3250
+qplex,1,0.3500
+qplex,2,0.2500
+iql,0,0.3250
+iql,1,0.3250
+iql,2,0.2250
