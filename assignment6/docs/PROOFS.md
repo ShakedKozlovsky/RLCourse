@@ -108,7 +108,28 @@ $$Q_{\text{tot}} = V_{\text{tot}}(s) + \sum_i \lambda_i \cdot 0 = -3 < 0.$$ ∎
 
 ---
 
-## 4. Summary table — IGM family of this codebase
+## 4. Bernstein 2002 — why exact Dec-POMDP solving is intractable
+
+The factorisation methods above (VDN, QMIX, QPLEX) are not just *convenient* — they're a response to a deep complexity result.
+
+**Theorem (Bernstein, Givan, Immerman, Zilberstein, 2002).** *The problem of solving a finite-horizon Dec-POMDP optimally is **NEXP-complete***. The proof reduces the *TILING* problem to Dec-POMDP planning and shows the resulting instances require non-deterministic exponential time in the worst case, even for two agents on a small state space.
+
+**Consequence for this codebase.** Any tractable algorithm for our 5×5 cops-and-robbers task must be an *approximation*: there is no polynomial-time exact solver unless `P = NEXP` (which contradicts the time-hierarchy theorem). The CTDE family is one specific tractable approximation:
+
+| Approach | Complexity (per training step) | Cost we pay |
+|---|---|---|
+| Exact Dec-POMDP | NEXP-complete | Intractable beyond ~10 states |
+| Centralised joint-action Q | $O(\|A\|^N)$ per update | Action explosion as $N$ grows |
+| Independent Q-learning (IQL) | $O(\|A\| \cdot N)$ | Non-stationarity (no convergence guarantee) |
+| **VDN / QMIX / QPLEX (this codebase)** | $O(\|A\| \cdot N + \text{mixer})$ | Restricted factorisation (mitigated by QPLEX) |
+
+The VDN / QMIX / QPLEX trio buys polynomial-time decentralised execution at the price of **representational restrictions** on $Q_{\text{tot}}$. We characterise those restrictions explicitly in § 1-3 above and verify them empirically.
+
+**Where the spec's POSG framing changes the picture.** Bernstein's NEXP-completeness is for cooperative Dec-POMDPs with a *shared* reward. The cops-and-robbers task is technically a POSG — the cop and thief have opposite reward signals. The complexity for general POSG solving is **NEXP**$^{\text{NP}}$ (Hansen, Bernstein, Zilberstein 2004) — strictly harder. Our averaged-reward CTDE compromise (`(r_cop + r_thief) / 2` in `services/qmix_update.py` line 96) is a pragmatic choice that recovers the Dec-POMDP machinery; the trade-off is documented in [`FAILURE_MODES.md`](FAILURE_MODES.md) § 1.
+
+**Why the bibliography ranks Bernstein 2002 first.** The cited paper (spec § 10 ref [1]) is the *reason* the field developed CTDE in the first place. Implementing CTDE without engaging with this complexity result would be implementing a remedy without understanding the disease. The reduction from TILING (a classic NEXP-complete problem) to Dec-POMDP planning establishes that no asymptotic improvement is possible by clever algorithm design alone — the only paths forward are (a) restrict the representable family (VDN / QMIX / QPLEX), (b) sample-based planning (Monte Carlo Tree Search), or (c) accept approximate solutions. We pursue path (a).
+
+## 5. Summary table — IGM family of this codebase
 
 | Mixer | $\partial Q_{\text{tot}} / \partial Q_i$ | Representable family | Module | Test |
 |---|---|---|---|---|
