@@ -12,7 +12,6 @@ Per training step:
 
 from __future__ import annotations
 
-import copy
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -20,13 +19,15 @@ import torch
 
 from marl_lab.environment.dec_pomdp import DecPomdpEnv
 from marl_lab.memory.centralised_buffer import CentralisedReplayBuffer
-from marl_lab.model.qmix_mixer import QMIXMixer
-from marl_lab.model.recurrent_q import QPerAgent
-from marl_lab.model.vdn_mixer import VDNMixer
 from marl_lab.noise.epsilon_greedy import select_action
 from marl_lab.noise.schedule import LinearEpsilonSchedule
 from marl_lab.services.iql_update import apply_iql_update
 from marl_lab.services.qmix_update import apply_qmix_update
+from marl_lab.services.trainer_build import (
+    build_mixer_pair,
+    build_optimisers,
+    build_q_nets,
+)
 from marl_lab.services.vdn_update import apply_vdn_update
 from marl_lab.shared.types import EpisodeSequence, Transition
 
@@ -82,48 +83,10 @@ class MarlTrainer:
         self.eps_schedule = epsilon_schedule
         n_cop, n_thief = 6, 5    # static for this env; thief uses sub-set
         n_actions = max(n_cop, n_thief)
-        # Per-agent live + target Q-nets
-        self.q_nets = {
-            a: QPerAgent(obs_dim=env.obs_dim, n_actions=n_actions,
-                          hidden_sizes=cfg.hidden_sizes,
-                          gru_hidden_size=cfg.gru_hidden_size).to(self.device)
-            for a in AGENTS
-        }
-        self.target_q_nets = {a: copy.deepcopy(self.q_nets[a]) for a in AGENTS}
-        for a in AGENTS:
-            for p in self.target_q_nets[a].parameters():
-                p.requires_grad = False
-        # Mixer + target (skipped for IQL)
         state_dim = env.global_state().shape[0]
-        self.mixer: QMIXMixer | VDNMixer | None
-        self.target_mixer: QMIXMixer | VDNMixer | None
-        if cfg.algo == "qmix":
-            self.mixer = QMIXMixer(n_agents=2, state_dim=state_dim,
-                                    embed_dim=cfg.embed_dim,
-                                    hyper_hidden=cfg.hyper_hidden).to(self.device)
-            self.target_mixer = copy.deepcopy(self.mixer)
-            for p in self.target_mixer.parameters():
-                p.requires_grad = False
-        elif cfg.algo == "vdn":
-            self.mixer = VDNMixer(n_agents=2).to(self.device)
-            self.target_mixer = copy.deepcopy(self.mixer)
-        elif cfg.algo == "iql":
-            self.mixer = None
-            self.target_mixer = None
-        else:
-            raise ValueError(f"unknown algo: {cfg.algo!r}")
-        # Optimiser(s)
-        self.opts: dict[str, torch.optim.Optimizer] | torch.optim.Optimizer
-        if cfg.algo == "iql":
-            self.opts = {a: torch.optim.Adam(self.q_nets[a].parameters(),
-                                              lr=cfg.lr) for a in AGENTS}
-        else:
-            params: list[torch.nn.Parameter] = []
-            for a in AGENTS:
-                params.extend(self.q_nets[a].parameters())
-            assert self.mixer is not None
-            params.extend(self.mixer.parameters())
-            self.opts = torch.optim.Adam(params, lr=cfg.lr)
+        self.q_nets, self.target_q_nets = build_q_nets(env, cfg, self.device, n_actions)
+        self.mixer, self.target_mixer = build_mixer_pair(cfg, state_dim, self.device)
+        self.opts = build_optimisers(cfg, self.q_nets, self.mixer)
         # Centralised replay buffer
         self.buffer = CentralisedReplayBuffer(
             capacity=cfg.buffer_capacity, max_seq_len=cfg.max_seq_len,
