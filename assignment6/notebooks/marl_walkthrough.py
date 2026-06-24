@@ -17,7 +17,11 @@ from pathlib import Path
 from marl_lab.sdk.marl_sdk import MarlSDK
 from marl_lab.shared.types import StudentEntry
 
-CONFIG = Path("configs/setup.yaml")
+# Resolve config relative to the notebook's location so it executes
+# correctly from either ``notebooks/`` or the project root.
+_HERE = Path.cwd()
+CONFIG = next(p / "configs" / "setup.yaml" for p in (_HERE, *_HERE.parents)
+              if (p / "configs" / "setup.yaml").exists())
 sdk = MarlSDK(cfg_path=CONFIG)
 print(f"algo: {sdk.trainer.cfg.algo}")
 print(f"obs_dim: {sdk.env.obs_dim}")

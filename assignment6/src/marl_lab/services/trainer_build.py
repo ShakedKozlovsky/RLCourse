@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import copy
 
+import numpy as np
 import torch
 
-from marl_lab.environment.dec_pomdp import DecPomdpEnv
+from marl_lab.environment.dec_pomdp import DecPomdpEnv, EnvConfig
+from marl_lab.environment.reward import RewardConfig
+from marl_lab.memory.centralised_buffer import CentralisedReplayBuffer
 from marl_lab.model.qmix_mixer import QMIXMixer
 from marl_lab.model.qplex_mixer import QPLEXMixer
 from marl_lab.model.recurrent_q import QPerAgent
@@ -70,3 +73,32 @@ def build_optimisers(cfg, q_nets: dict, mixer):
         params.extend(q_nets[a].parameters())
     params.extend(mixer.parameters())
     return torch.optim.Adam(params, lr=cfg.lr)
+
+
+def rebuild_env_and_mixer_for_grid(
+    *, old_env: DecPomdpEnv, grid_size: tuple[int, int],
+    cfg, q_nets: dict, device: torch.device, rng: np.random.Generator,
+):
+    """Build (env, mixer, target_mixer, opts, buffer) for a new grid size.
+
+    Curriculum semantics — Q-nets are NOT rebuilt (their obs_dim depends on
+    observation_radius only). Returns the new components as a tuple."""
+    env_cfg = EnvConfig(
+        grid_size=grid_size,
+        max_moves=max(8, grid_size[0] * grid_size[1]),
+        max_barriers=old_env.env_cfg.max_barriers,
+        enable_barriers=old_env.env_cfg.enable_barriers,
+        observation_radius=old_env.env_cfg.observation_radius,
+    )
+    env = DecPomdpEnv(env_cfg=env_cfg, reward_cfg=RewardConfig(), rng=rng)
+    env.reset(seed=int(rng.integers(0, 2**31 - 1)))
+    state_dim = env.global_state().shape[0]
+    mixer, target_mixer = build_mixer_pair(cfg, state_dim, device)
+    opts = build_optimisers(cfg, q_nets, mixer)
+    buffer = CentralisedReplayBuffer(
+        capacity=cfg.buffer_capacity, max_seq_len=env_cfg.max_moves,
+        state_dim=state_dim, obs_dim=env.obs_dim,
+        n_actions_per_agent={"cop": 6, "thief": 5},
+        rng=rng,
+    )
+    return env, mixer, target_mixer, opts, buffer

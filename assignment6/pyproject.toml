@@ -81,3 +81,9 @@ omit = [
 fail_under = 85
 show_missing = true
 skip_covered = false
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.155.7",
+    "jupytext>=1.19.4",
+]

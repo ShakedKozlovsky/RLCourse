@@ -21,6 +21,7 @@ from marl_lab.environment.dec_pomdp import DecPomdpEnv
 from marl_lab.memory.centralised_buffer import CentralisedReplayBuffer
 from marl_lab.noise.epsilon_greedy import select_action
 from marl_lab.noise.schedule import LinearEpsilonSchedule
+from marl_lab.services.curriculum import CurriculumSchedule
 from marl_lab.services.iql_update import apply_iql_update
 from marl_lab.services.qmix_update import apply_qmix_update
 from marl_lab.services.qplex_update import apply_qplex_update
@@ -28,6 +29,7 @@ from marl_lab.services.trainer_build import (
     build_mixer_pair,
     build_optimisers,
     build_q_nets,
+    rebuild_env_and_mixer_for_grid,
 )
 from marl_lab.services.vdn_update import apply_vdn_update
 from marl_lab.shared.types import EpisodeSequence, Transition
@@ -210,9 +212,18 @@ class MarlTrainer:
                 "critic_loss": (d_iql.critic_loss_cop + d_iql.critic_loss_thief) / 2.0,
                 "mean_q_cop": d_iql.mean_q_cop, "mean_q_thief": d_iql.mean_q_thief}
 
-    def train(self, n_episodes: int) -> list[TrainerDiagnostic]:
-        """Train for ``n_episodes`` episodes; return the per-episode diagnostics."""
+    def train(self, n_episodes: int,
+              curriculum: CurriculumSchedule | None = None) -> list[TrainerDiagnostic]:
+        """Train for ``n_episodes`` episodes; return per-episode diagnostics.
+
+        If ``curriculum`` is provided, the trainer starts at the curriculum's
+        current stage's grid size and advances the env when win-rate
+        thresholds are met. Q-net weights are preserved across stages — that's
+        the curriculum transfer signal (Lin 2025)."""
         history: list[TrainerDiagnostic] = []
+        winners: list[str] = []
+        if curriculum is not None:
+            self._rebuild_env_for_grid(curriculum.current_grid_size())
         for _ in range(n_episodes):
             ep, diag = self.collect_episode()
             self.buffer.push(ep)
@@ -222,4 +233,18 @@ class MarlTrainer:
                 diag.mean_q_cop = learn_info["mean_q_cop"]
                 diag.mean_q_thief = learn_info["mean_q_thief"]
             history.append(diag)
+            if diag.winner is not None:
+                winners.append(diag.winner)
+            if curriculum is not None and curriculum.maybe_advance(winners):
+                self._rebuild_env_for_grid(curriculum.current_grid_size())
+                winners = []   # reset window after advancement
         return history
+
+    def _rebuild_env_for_grid(self, grid_size: tuple[int, int]) -> None:
+        """Swap the env to a new grid size (Q-nets preserved; everything else
+        rebuilt). Delegates to ``trainer_build.rebuild_env_and_mixer_for_grid``."""
+        (self.env, self.mixer, self.target_mixer, self.opts,
+         self.buffer) = rebuild_env_and_mixer_for_grid(
+            old_env=self.env, grid_size=grid_size, cfg=self.cfg,
+            q_nets=self.q_nets, device=self.device, rng=self._rng,
+        )
