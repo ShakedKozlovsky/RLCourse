@@ -22,16 +22,14 @@ from marl_lab.memory.centralised_buffer import CentralisedReplayBuffer
 from marl_lab.noise.epsilon_greedy import select_action
 from marl_lab.noise.schedule import LinearEpsilonSchedule
 from marl_lab.services.curriculum import CurriculumSchedule
-from marl_lab.services.iql_update import apply_iql_update
-from marl_lab.services.qmix_update import apply_qmix_update
-from marl_lab.services.qplex_update import apply_qplex_update
+from marl_lab.services.learn_dispatch import dispatch_learn_step
 from marl_lab.services.trainer_build import (
+    build_maddpg_critics,
     build_mixer_pair,
     build_optimisers,
     build_q_nets,
     rebuild_env_and_mixer_for_grid,
 )
-from marl_lab.services.vdn_update import apply_vdn_update
 from marl_lab.shared.types import EpisodeSequence, Transition
 
 AGENTS = ("cop", "thief")
@@ -40,7 +38,7 @@ AGENTS = ("cop", "thief")
 @dataclass
 class TrainerConfig:
     """Hyperparameters for the trainer (mirrors yaml `marl` block)."""
-    algo: str = "qmix"                 # 'qmix' | 'vdn' | 'qplex' | 'iql'
+    algo: str = "qmix"                 # 'qmix' | 'vdn' | 'qplex' | 'iql' | 'maddpg'
     gamma: float = 0.99
     tau: float = 0.005
     lr: float = 1e-3
@@ -89,7 +87,13 @@ class MarlTrainer:
         state_dim = env.global_state().shape[0]
         self.q_nets, self.target_q_nets = build_q_nets(env, cfg, self.device, n_actions)
         self.mixer, self.target_mixer = build_mixer_pair(cfg, state_dim, self.device)
-        self.opts = build_optimisers(cfg, self.q_nets, self.mixer)
+        # MADDPG uses per-agent critics instead of a single mixer
+        if cfg.algo == "maddpg":
+            self.critics, self.target_critics = build_maddpg_critics(cfg, state_dim, self.device)
+        else:
+            self.critics, self.target_critics = {}, {}
+        self.opts = build_optimisers(cfg, self.q_nets, self.mixer,
+                                       critics=self.critics if cfg.algo == "maddpg" else None)
         # Centralised replay buffer
         self.buffer = CentralisedReplayBuffer(
             capacity=cfg.buffer_capacity, max_seq_len=cfg.max_seq_len,
@@ -162,55 +166,15 @@ class MarlTrainer:
         return ep, diag
 
     def learn_step(self) -> dict:
-        """One learning update from the buffer (if warmup is satisfied)."""
+        """One learning update from the buffer (if warmup is satisfied).
+
+        Delegates to ``services.learn_dispatch.dispatch_learn_step`` which
+        encapsulates the per-algo (qmix/vdn/qplex/maddpg/iql) update fn
+        selection + diagnostic normalisation."""
         if len(self.buffer) < self.cfg.warmup_episodes:
             return {"skipped": True, "reason": "warmup"}
         batch = self.buffer.sample(min(self.cfg.batch_size, len(self.buffer)))
-        if self.cfg.algo == "qmix":
-            assert self.mixer is not None and self.target_mixer is not None
-            d = apply_qmix_update(
-                q_nets=self.q_nets, target_q_nets=self.target_q_nets,
-                mixer=self.mixer, target_mixer=self.target_mixer,  # type: ignore[arg-type]
-                batch=batch, gamma=self.cfg.gamma, tau=self.cfg.tau,
-                critic_opt=self.opts,  # type: ignore[arg-type]
-                device=self.device,
-            )
-            return {"skipped": False, "critic_loss": d.critic_loss,
-                    "mean_q_cop": d.mean_q_cop, "mean_q_thief": d.mean_q_thief,
-                    "target_drift": d.target_drift}
-        if self.cfg.algo == "vdn":
-            assert self.mixer is not None and self.target_mixer is not None
-            d = apply_vdn_update(
-                q_nets=self.q_nets, target_q_nets=self.target_q_nets,
-                mixer=self.mixer, target_mixer=self.target_mixer,  # type: ignore[arg-type]
-                batch=batch, gamma=self.cfg.gamma, tau=self.cfg.tau,
-                critic_opt=self.opts,  # type: ignore[arg-type]
-                device=self.device,
-            )
-            return {"skipped": False, "critic_loss": d.critic_loss,
-                    "mean_q_cop": d.mean_q_cop, "mean_q_thief": d.mean_q_thief}
-        if self.cfg.algo == "qplex":
-            assert self.mixer is not None and self.target_mixer is not None
-            d_qpx = apply_qplex_update(
-                q_nets=self.q_nets, target_q_nets=self.target_q_nets,
-                mixer=self.mixer, target_mixer=self.target_mixer,  # type: ignore[arg-type]
-                batch=batch, gamma=self.cfg.gamma, tau=self.cfg.tau,
-                critic_opt=self.opts,  # type: ignore[arg-type]
-                device=self.device,
-            )
-            return {"skipped": False, "critic_loss": d_qpx.critic_loss,
-                    "mean_q_cop": d_qpx.mean_q_cop, "mean_q_thief": d_qpx.mean_q_thief,
-                    "target_drift": d_qpx.target_drift}
-        # iql
-        d_iql = apply_iql_update(
-            q_nets=self.q_nets, target_q_nets=self.target_q_nets,
-            batch=batch, gamma=self.cfg.gamma, tau=self.cfg.tau,
-            critic_opts=self.opts,  # type: ignore[arg-type]
-            device=self.device,
-        )
-        return {"skipped": False,
-                "critic_loss": (d_iql.critic_loss_cop + d_iql.critic_loss_thief) / 2.0,
-                "mean_q_cop": d_iql.mean_q_cop, "mean_q_thief": d_iql.mean_q_thief}
+        return dispatch_learn_step(self, batch)
 
     def train(self, n_episodes: int,
               curriculum: CurriculumSchedule | None = None) -> list[TrainerDiagnostic]:

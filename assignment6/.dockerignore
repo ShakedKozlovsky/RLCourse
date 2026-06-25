@@ -1,0 +1,30 @@
+# Don't ship build / dev / cache artefacts into the image
+.venv/
+__pycache__/
+**/__pycache__/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.hypothesis/
+
+# IDE / OS noise
+.idea/
+.vscode/
+.DS_Store
+
+# Secrets / local-only
+.env
+.env-local
+secrets/
+*.token
+saved_models/
+.prefect/
+
+# Git history (image rebuilds, doesn't need it)
+.git/
+
+# Notebook intermediate output (rendered HTML in docs/wiki ships; raw .ipynb does not)
+notebooks/*_executed.ipynb

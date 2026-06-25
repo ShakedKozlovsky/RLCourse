@@ -10,12 +10,14 @@ import torch
 from marl_lab.environment.dec_pomdp import DecPomdpEnv, EnvConfig
 from marl_lab.environment.reward import RewardConfig
 from marl_lab.memory.centralised_buffer import CentralisedReplayBuffer
+from marl_lab.model.maddpg_critic import MADDPGCritic
 from marl_lab.model.qmix_mixer import QMIXMixer
 from marl_lab.model.qplex_mixer import QPLEXMixer
 from marl_lab.model.recurrent_q import QPerAgent
 from marl_lab.model.vdn_mixer import VDNMixer
 
 AGENTS = ("cop", "thief")
+N_PER_AGENT = {"cop": 6, "thief": 5}
 
 
 def build_q_nets(env: DecPomdpEnv, cfg, device: torch.device,
@@ -55,24 +57,52 @@ def build_mixer_pair(cfg, state_dim: int, device: torch.device):
         for p in target_mixer.parameters():
             p.requires_grad = False
         return mixer, target_mixer
-    if cfg.algo == "iql":
+    if cfg.algo in ("iql", "maddpg"):
+        # MADDPG uses per-agent critics (built separately via build_maddpg_critics)
         return None, None
     raise ValueError(f"unknown algo: {cfg.algo!r}")
 
 
-def build_optimisers(cfg, q_nets: dict, mixer):
+def build_maddpg_critics(cfg, state_dim: int, device: torch.device,
+                          ) -> tuple[dict, dict]:
+    """Build per-agent centralised critics + frozen targets for MADDPG."""
+    critics = {
+        a: MADDPGCritic(
+            state_dim=state_dim,
+            n_actions_per_agent=(N_PER_AGENT["cop"], N_PER_AGENT["thief"]),
+            hidden_sizes=tuple(cfg.hidden_sizes),
+        ).to(device)
+        for a in AGENTS
+    }
+    target_critics = {a: copy.deepcopy(critics[a]) for a in AGENTS}
+    for a in AGENTS:
+        for p in target_critics[a].parameters():
+            p.requires_grad = False
+    return critics, target_critics
+
+
+def build_optimisers(cfg, q_nets: dict, mixer, critics: dict | None = None):
     """Per-algorithm optimiser setup.
 
-    QMIX/VDN: ONE Adam over (all Q-nets ∪ mixer).
-    IQL: TWO Adam (one per agent's Q-net)."""
+    QMIX/VDN/QPLEX: ONE Adam over (all Q-nets ∪ mixer).
+    IQL: TWO Adam (one per agent's Q-net).
+    MADDPG: ONE Adam over (all Q-nets ∪ all critics)."""
     if cfg.algo == "iql":
         return {a: torch.optim.Adam(q_nets[a].parameters(), lr=cfg.lr)
                 for a in AGENTS}
-    params: list[torch.nn.Parameter] = []
+    if cfg.algo == "maddpg":
+        if critics is None:
+            raise ValueError("maddpg algo requires critics= passed in")
+        params: list[torch.nn.Parameter] = []
+        for a in AGENTS:
+            params.extend(q_nets[a].parameters())
+            params.extend(critics[a].parameters())
+        return torch.optim.Adam(params, lr=cfg.lr)
+    params2: list[torch.nn.Parameter] = []
     for a in AGENTS:
-        params.extend(q_nets[a].parameters())
-    params.extend(mixer.parameters())
-    return torch.optim.Adam(params, lr=cfg.lr)
+        params2.extend(q_nets[a].parameters())
+    params2.extend(mixer.parameters())
+    return torch.optim.Adam(params2, lr=cfg.lr)
 
 
 def rebuild_env_and_mixer_for_grid(
