@@ -126,7 +126,8 @@ uv run marl serve-cop --checkpoint saved_models/cop_qmix.pt --port 7301
 
 - [`docs/PRD.md`](docs/PRD.md) — main Product Requirements Document
 - [`docs/PLAN.md`](docs/PLAN.md) — layered architecture + 10 ADRs
-- [`docs/TODO.md`](docs/TODO.md) — 27-layer build plan with DoD per layer
+- [`docs/TODO.md`](docs/TODO.md) — 27-layer build plan with DoD per layer (all ticked; +17 bonus-extension checklist appended)
+- [`docs/CHANGELOG.md`](docs/CHANGELOG.md) — **version-by-version story** from v1.00 → v1.08 with stats + headlines
 - [`docs/PROOFS.md`](docs/PROOFS.md) — **formal IGM derivations** for VDN, QMIX, and QPLEX with refs to the test that verifies each math step
 - [`docs/FAILURE_MODES.md`](docs/FAILURE_MODES.md) — honest limitations + fix-it paths
 - [`docs/wiki/architecture.md`](docs/wiki/architecture.md) — auto-generated module map
