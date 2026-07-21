@@ -81,6 +81,40 @@ class GameReport:
 
 
 @dataclass(frozen=True)
+class BonusSubGameResult:
+    """One sub-game outcome in a spec § 9 inter-group bonus match.
+
+    Differs from SubGameResult by naming the GROUP holding each role
+    (cop_group, thief_group) instead of just tagging the role — the same
+    (cop, thief) roles may swap between the two groups across sub-games."""
+    id: int
+    cop_group: str
+    thief_group: str
+    winner: Winner
+    scores: dict[AgentRole, int]     # {"cop": X, "thief": Y}
+
+
+@dataclass
+class BonusGameReport:
+    """Inter-group bonus match report — matches spec § 9.4 JSON example exactly.
+
+    Two groups play 6 sub-games total with roles alternating (Group 1 = cop
+    for sub-games 1–3, then swap for sub-games 4–6). BOTH groups must send
+    ONE bonus email each; bonus counts only if `mutual_agreement=True` in
+    both reports."""
+    groups: dict[Literal["group_1", "group_2"], str]  # {"group_1": "Team-A", ...}
+    github_repo_group_1: str
+    github_repo_group_2: str
+    timezone: str
+    students_group_1: list[StudentEntry]
+    students_group_2: list[StudentEntry]
+    sub_games: list[BonusSubGameResult] = field(default_factory=list)
+    totals_by_group: dict[str, int] = field(default_factory=dict)   # {group_name: total_score}
+    bonus_claim: dict[str, int] = field(default_factory=dict)       # {group_name: bonus_pts (5/7/10)}
+    mutual_agreement: bool = False
+
+
+@dataclass(frozen=True)
 class StepDiagnostic:
     """Per-update logging tuple (mirrors A4/A5)."""
     step: int

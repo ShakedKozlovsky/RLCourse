@@ -16,7 +16,7 @@ A complete laboratory for **Multi-Agent Reinforcement Learning** on the *Cops-an
 
 ## Beyond the spec (the parts you didn't ask for)
 
-The spec § 7 asks for a Dec-POMDP / VDN / QMIX / IQL implementation with academic analysis. This codebase delivers all of that **plus seventeen extensions** that go past the rubric:
+The spec § 7 asks for a Dec-POMDP / VDN / QMIX / IQL implementation with academic analysis. This codebase delivers all of that **plus eighteen extensions** that go past the rubric:
 
 1. **QPLEX mixer** (`src/marl_lab/model/qplex_mixer.py`) — the duplex dueling decomposition recommended in the §7.2 critical analysis is **actually implemented**, not just cited. 10 dedicated tests verify IGM-by-construction (λ > 0 via autograd, 80 random probes) AND strict expressiveness gain over QMIX (drives Q_tot negative while every Q_i positive — impossible under |W| QMIX). One-line algorithm switch: `algo="qmix" | "vdn" | "qplex" | "iql"`.
 2. **Formal mathematical proofs** ([`docs/PROOFS.md`](docs/PROOFS.md)) — chain-rule derivation of why `|W|` parametrisation guarantees `∂Q_tot/∂Q_i ≥ 0` for QMIX, and why QPLEX's `λ(s) > 0` parametrisation guarantees IGM strictly *by construction* without restricting representational power. Each math step is cross-referenced to the test that verifies it empirically.
@@ -38,7 +38,14 @@ The spec § 7 asks for a Dec-POMDP / VDN / QMIX / IQL implementation with academ
     Status badge at the top of the README links to the live workflow runs; if it's not green, the codebase is not in spec compliance.
 15. **Scale-vs-CTDE-advantage empirical study** ([`assets/figures/ctde_advantage_vs_grid.png`](assets/figures/ctde_advantage_vs_grid.png) + 3-subplot per-grid convergence + raw CSV). Trained QMIX/QPLEX/IQL for 250 episodes each on 5×5 / 6×6 / 7×7 grids (2,250 total training episodes), specifically to **test the Lin 2025 hypothesis** that CTDE advantage grows with grid size. **Hypothesis confirmed.** QPLEX dominates on 6×6 by a +1.01 point margin over IQL; both CTDE methods beat IQL on 7×7. The 4×4 result from v1.05 (IQL competitive) is now properly contextualised as a small-state-space regime — full empirical narrative + per-grid table in [`FAILURE_MODES.md`](docs/FAILURE_MODES.md) § 3. Script: `scripts/scale_convergence_study.py`.
 16. **MADDPG-discrete — 5th algorithm** ([`src/marl_lab/model/maddpg_critic.py`](src/marl_lab/model/maddpg_critic.py) + [`src/marl_lab/services/maddpg_update.py`](src/marl_lab/services/maddpg_update.py)). Implements Lowe et al. (NeurIPS 2017) per-agent centralised critic adapted for discrete actions: each agent has its own `Q_i^C(s, ā)` that takes the joint action (one-hot encoded) and is trained with **that agent's OWN reward**, not the averaged joint reward QMIX/VDN/QPLEX use. This is the canonical POSG-respecting alternative to Dec-POMDP CTDE — directly addresses the "POSG framing" honesty concern from [`FAILURE_MODES.md`](docs/FAILURE_MODES.md) § 1 with code. 13 tests; algo switch is now `algo="qmix" | "vdn" | "qplex" | "maddpg" | "iql"` (5 algorithms total).
-17. **Docker image** ([`assignment6/Dockerfile`](Dockerfile) + `.dockerignore`). Zero-setup playability for the TA:
+17. **Spec § 9 inter-group bonus support (v1.11)** — full implementation of the 10-point bonus even though it requires a partner group:
+    - `services/bonus_game_runner.py` — plays 6 sub-games with role alternation after 3 (spec § 9.1), takes two injectable peer policies (local checkpoint or remote MCP).
+    - `services/bonus_scoring.py` — the spec § 9.2 rule (winner 10 / loser 7 / tie 5).
+    - `shared/types.py::BonusGameReport` — spec § 9.4 JSON shape (`report_type`, `groups`, `students_group_{1,2}`, `totals_by_group`, `bonus_claim`, `mutual_agreement`).
+    - `gmail/bonus_formatter.py` — JSON serialisation + subject `[MARL Bonus Game] Team-A vs Team-B – Final Report` + `verify_peer_agreement(local, peer_json)` for the § 9.3 mutual-agreement gate.
+    - CLI `marl play-bonus --peer-checkpoint <pt> --peer-group-name <name> ...` (peer via MCP is stubbed pending real partner infrastructure).
+    - 20 tests in `tests/unit/test_bonus_game.py` covering scoring rule, runner role-alternation, totals math, JSON shape, subject line, idempotency key, mutual-agreement checker with disagreement detection.
+18. **Docker image** ([`assignment6/Dockerfile`](Dockerfile) + `.dockerignore`). Zero-setup playability for the TA:
     ```
     docker build -t marl-lab .
     docker run --rm marl-lab marl version          # → "marl_lab 1.00"

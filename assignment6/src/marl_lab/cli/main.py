@@ -19,6 +19,7 @@ import argparse
 from marl_lab.cli.commands import (
     cmd_audit,
     cmd_play_and_send,
+    cmd_play_bonus,
     cmd_play_game,
     cmd_send_report,
     cmd_serve_cop,
@@ -76,6 +77,31 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_version = sub.add_parser("version", help="Print marl_lab version")
     p_version.set_defaults(func=cmd_version)
+
+    p_bonus = sub.add_parser("play-bonus",
+                                help="Play a spec § 9 inter-group bonus match (10 pts)")
+    _add_common_args(p_bonus)
+    p_bonus.add_argument("--local-checkpoint",
+                            help="Load local group's trained .pt checkpoint")
+    p_bonus.add_argument("--peer-checkpoint",
+                            help="Peer group's .pt checkpoint (dry-run mode)")
+    p_bonus.add_argument("--peer-mcp-url",
+                            help="Peer's MCP server URL (live-match mode; not yet wired)")
+    p_bonus.add_argument("--peer-mcp-token",
+                            help="Peer's MCP auth token (with --peer-mcp-url)")
+    p_bonus.add_argument("--peer-group-name", required=True,
+                            help="Peer group's display name (e.g. 'Team-Beta')")
+    p_bonus.add_argument("--peer-github-repo", required=True,
+                            help="Peer group's GitHub repo URL")
+    p_bonus.add_argument("--peer-students-names", default="?",
+                            help="Comma-sep list of peer students' names")
+    p_bonus.add_argument("--peer-students-ids", default="?",
+                            help="Comma-sep list of peer students' IDs")
+    p_bonus.add_argument("--peer-report-json",
+                            help="Peer's bonus report JSON file to check mutual agreement")
+    p_bonus.add_argument("--output", help="Write JSON to this path (default stdout)")
+    p_bonus.add_argument("--seed", type=int, default=0)
+    p_bonus.set_defaults(func=cmd_play_bonus)
 
     return parser
 

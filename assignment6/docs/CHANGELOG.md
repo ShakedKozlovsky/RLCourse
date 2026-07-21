@@ -15,6 +15,7 @@ Version-by-version story of the assignment6 codebase. Each tag is a real `git ta
 | [v1.08](#v108--maddpg--docker) | 2026-06-24 | **254** | 95% | 5th algorithm + zero-setup playability |
 | v1.09 | 2026-06-25 | 254 | 95% | docs: tick TODO.md + add CHANGELOG (was over-eager — see v1.10) |
 | **v1.10** | 2026-06-26 | 254 | 95% | **Honest TODO** — audit found 14 plan-vs-reality mismatches; rewrote each layer's checklist; Reflection Q3 honestly marked `[ ]` not done |
+| **v1.11** | 2026-06-28 | **274** | 95% | **Spec § 9 bonus (10 pts) support** — BonusGameRunner + § 9.4 JSON shape + § 9.2 scoring + peer-agreement checker + `marl play-bonus` CLI + 20 tests |
 
 ---
 
@@ -216,6 +217,44 @@ User push-back at v1.09: *"are the ticks in TODO.md actually fit to our real tas
 The rewrite of `docs/TODO.md` strikes through each fiction with an inline note pointing to where the substance actually lives (or admits it doesn't exist). The aspirational version is preserved at git tags `marl-lab-v1.00` through `marl-lab-v1.09`.
 
 **No source changes** — this is a docs honesty pass. 254 tests still green; coverage unchanged.
+
+---
+
+## v1.11 — spec § 9 inter-group bonus support (10 pts)
+
+**`marl-lab-v1.11`**
+
+User is looking for a partner group to actually claim the 10-pt inter-group bonus. This version implements the full support so nothing is bottlenecked on code when a partner appears.
+
+**What shipped:**
+- `shared/types.py::BonusSubGameResult` + `BonusGameReport` — spec § 9.4 JSON shape with `report_type: "bonus_game"`, `groups`, `github_repo_group_{1,2}`, `students_group_{1,2}`, `sub_games` (with `cop_group`/`thief_group`), `totals_by_group`, `bonus_claim`, `mutual_agreement`.
+- `services/bonus_scoring.py::compute_bonus_claim(totals)` — spec § 9.2 rule (winner 10 / loser 7 / tie 5). Rejects wrong group count.
+- `services/bonus_game_runner.py::BonusGameRunner` — plays 6 sub-games; role alternation after 3 (spec § 9.1). **Transport-agnostic**: takes two `PolicyFn` callables so the peer can be a local checkpoint (dry-run) or a real MCP client (live match). `make_local_policy_from_qnet(q_net)` helper wraps a trained Q-net as a greedy `(role, obs) → action` fn.
+- `gmail/bonus_formatter.py` — `bonus_report_to_json(report)` (with optional provenance block); `build_bonus_idempotency_key(report)` (SHA-256 of canonical content, excluding `mutual_agreement` + provenance so the id survives environment differences); `bonus_email_subject(report)` (`[MARL Bonus Game] X vs Y – Final Report`); **`verify_peer_agreement(local_report, peer_json)`** returning `(agreed: bool, reason: str)` for the § 9.3 mutual-agreement gate.
+- `cli/main.py` + `cli/commands.py::cmd_play_bonus` — new subcommand:
+  ```
+  marl play-bonus --peer-group-name Team-Beta \
+                  --peer-github-repo https://github.com/team-beta/marl \
+                  --peer-checkpoint saved_models/team_beta.pt \
+                  --peer-report-json received_from_them.json \
+                  --output our_bonus_report.json
+  ```
+  Peer via MCP URL is stubbed pending real partner infrastructure; peer via local checkpoint works today for smoke / dry-run.
+- CLI count grew 8 → 9; `test_parser_supports_all_9_subcommands` updated.
+- 20 new tests in `tests/unit/test_bonus_game.py`:
+  - Scoring: winner/loser/tie/wrong-group-count (4 tests)
+  - Runner: 6 sub-games, role alternation, totals sum, claim matches scoring, mutual_agreement defaults False (5 tests)
+  - Formatter: JSON has report_type, JSON has all § 9.4 fields, subject line, idempotency deterministic + changes with content + independent of mutual_agreement (6 tests)
+  - Peer agreement: matching reports, disagreement on totals, non-bonus report_type, bad JSON (4 tests)
+  - CLI: play-bonus subcommand registered (1 test)
+
+**Workflow when partner appears:**
+1. Both groups train their agents locally (existing `marl train`).
+2. Set up one MCP server per group (existing `marl serve-cop` / `serve-thief`).
+3. One side runs `marl play-bonus --peer-mcp-url ...` (needs one small HTTP-client PR to wire — currently `SystemExit` with a clear message; can be added in ~10 LOC when a partner materialises).
+4. Both sides send emails via existing `marl send-report` targeting the § 9.4 JSON. The `send_report()` idempotency ledger already works for bonus reports because bonus JSON uses a different `game_id` derived from `build_bonus_idempotency_key`.
+
+Total project tests: 274 (was 254; +20). Ruff clean, LOC clean.
 
 ---
 

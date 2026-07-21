@@ -58,13 +58,15 @@ def test_audit_subcommand_prints_checklist(capsys) -> None:
     assert "MCP" in out
 
 
-def test_parser_supports_all_8_subcommands() -> None:
-    """V3 § 3 requires CLI parity with spec § 5.6."""
+def test_parser_supports_all_9_subcommands() -> None:
+    """V3 § 3 requires CLI parity with spec § 5.6 + § 9 (bonus).
+
+    9 subcommands: 8 core + `play-bonus` for the spec § 9 inter-group match."""
     parser = build_parser()
     sub_action = next(a for a in parser._actions if a.choices)   # noqa: SLF001
     choices = set(sub_action.choices.keys())
     expected = {"train", "play-game", "send-report", "play-and-send",
-                "serve-cop", "serve-thief", "audit", "version"}
+                "serve-cop", "serve-thief", "audit", "version", "play-bonus"}
     assert expected == choices
 
 
