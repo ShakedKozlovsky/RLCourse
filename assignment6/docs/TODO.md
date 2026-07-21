@@ -1,430 +1,304 @@
 # TODO — Layered Implementation Plan (Assignment 6 — MARL)
 
-> **STATUS — v1.08 — 27 LAYERS + 17 BEYOND-SPEC EXTENSIONS — ALL DONE** ✅
+> **HONEST STATUS — v1.10 — implementation diverged from the aspirational plan; this file now reflects what was actually built, not what was promised.**
 >
-> This file is the historical implementation plan that drove the layered build. All `[x]` items are committed up to tag **`marl-lab-v1.08`**. The few `[ ]` remaining are either (a) manual user steps the codebase can't do for you, or (b) plan items that got rolled into a different artifact (called out inline). For the current per-layer status see the table in [`../README.md`](../README.md#status); for the bonus extensions see the "Beyond the spec" section there; for the version-by-version story see [`CHANGELOG.md`](CHANGELOG.md).
-
-> Each layer = one commit. **Definition of Done** is explicit per layer: code + tests + docs updated. Status uses `[ ]` pending, `[~]` in progress, `[x]` done.
+> The original aspirational TODO is preserved in git at tag `marl-lab-v1.00` (or any tag ≤ `v1.09`). The bullets below have been **rewritten to match the real repo state**, with inline notes when the substance was rolled into a different file. Items genuinely not built are marked `[ ]` with a brief reason.
+>
+> For the version-by-version story see [`CHANGELOG.md`](CHANGELOG.md); for bonus extensions see the [README "Beyond the spec"](../README.md#beyond-the-spec-the-parts-you-didnt-ask-for) section; for the audit gate that verifies everything still works, run `uv run python scripts/audit.py`.
 
 Reference: [`PRD.md`](PRD.md), [`PLAN.md`](PLAN.md), [`CHANGELOG.md`](CHANGELOG.md), [`PROOFS.md`](PROOFS.md).
 
 ---
 
-## Layer 0 — Scaffold + planning docs
+## Layer 0 — Scaffold + planning docs ✅
 
 - [x] Directory tree under `assignment6/`
-- [x] `docs/PRD.md` written
-- [x] `docs/PLAN.md` written
-- [x] `docs/TODO.md` (this file)
-- [x] Per-mechanism PRDs: `PRD_dec_pomdp.md`, `PRD_game.md`, `PRD_ctde.md`, `PRD_olora.md`, `PRD_mcp.md`, `PRD_gmail.md`, `PRD_partial_observation.md`, `PRD_iql_baseline.md`
-- [x] `README.md` placeholder
-- [x] `pyproject.toml` (with FastMCP, Prefect, Google APIs, PyYAML deps)
-- [x] `.gitignore` (with secrets carve-out), `.env-example`
-- [x] `configs/setup.yaml`
-- [x] All `__init__.py` files (24 total)
+- [x] `docs/PRD.md`, `docs/PLAN.md`, `docs/TODO.md` (this file), 8 per-mechanism PRDs (`PRD_dec_pomdp`, `PRD_game`, `PRD_ctde`, `PRD_olora`, `PRD_mcp`, `PRD_gmail`, `PRD_partial_observation`, `PRD_iql_baseline`)
+- [x] `README.md` placeholder (now full v1.08 README with badges + "Beyond the spec")
+- [x] `pyproject.toml` (uv + FastMCP + Prefect + Google APIs + PyYAML + matplotlib)
+- [x] `.gitignore`, `.env-example`
+- [x] `configs/setup.yaml` with all spec § 3.6 required keys
 - [x] `shared/version.py` with `__version__ = "1.00"`
 
-**DoD:** repo importable (`uv run python -c "import marl_lab"`), docs explain the full plan, no code beyond shared/version.
-
 ---
 
-## Layer 1 — Shared layer + ConfigManager (YAML)
+## Layer 1 — Shared layer + ConfigManager (YAML) ✅
 
-Commit: `Layer 1: shared/* + YAML config + types`
-
-- [x] `shared/config.py` — YAML loader with `version` check + dotted access (`cfg.get("marl.tau")`)
-- [x] `shared/logger.py` — stdlib factory (no print in library)
+- [x] `shared/config.py` — `ConfigManager(setup_path)` with version check + dotted access (`cfg.get("marl.gamma")`)
+- [x] `shared/logger.py` — stdlib factory (`get_logger`)
 - [x] `shared/seed.py` — `set_global_seed(int)` for Python + NumPy + PyTorch
-- [x] `shared/types.py` — `Obs`, `JointAction`, `Transition`, `EpisodeSequence`, `SubGameResult`, `GameReport`, `StepDiagnostic`, `TrainResult`
-- [x] Tests: YAML loads, version mismatch raises, dotted access works, types frozen
-
-**DoD:** ConfigManager passes 6+ tests; version check identical to A4/A5 pattern.
-
----
-
-## Layer 2 — Game core (board, moves, win adjudication, barriers)
-
-Commit: `Layer 2: game core — board + moves + win adjudication + barriers`
-
-- [x] `game/board.py` — `Board(grid_size, cop_pos, thief_pos, barriers, step)` dataclass
-- [x] `game/actions.py` — `Action` enum (UP, DOWN, LEFT, RIGHT, STAY, PLACE_BARRIER)
-- [x] `game/moves.py` — `MoveDynamics.apply(board, joint_action) → new_board, info`
-- [x] `game/win.py` — `WinAdjudicator.check(board) → "cop"|"thief"|None`
-- [x] `game/barriers.py` — `BarrierPlacement` (validity, max-5 cap)
-- [x] `game/sub_game.py` — `SubGameRunner` (25-move cap)
-- [x] `game/game.py` — `Game` (6 sub-games), accumulates `GameReport`
-- [x] Tests: move validity on 5x5; collisions cap at walls/barriers; barrier placement counter; capture-on-overlap; 6-sub-game accounting
-
-**DoD:** 100 % branch coverage in `game/`; pure functions throughout; 4-test scoring battery.
+- [x] `shared/types.py` — `Obs`, `Transition`, `EpisodeSequence`, `SubGameResult`, `StudentEntry`, `GameReport`, `StepDiagnostic`, `TrainResult`, `AgentRole`/`ActionInt`/`Winner` aliases
+  - *Note: `JointAction` is mentioned in module docstring but not defined as a separate type alias — joint actions are typed inline as `dict[AgentRole, ActionInt]`.*
+- [x] Tests: 12 in `tests/unit/test_shared.py` (YAML loads, version mismatch raises, dotted access, types frozen, Transition with global_state, EpisodeSequence, StepDiagnostic)
 
 ---
 
-## Layer 3 — Partial observation + Dec-POMDP env + reward
+## Layer 2 — Game core (board, moves, win adjudication, barriers) ✅
 
-Commit: `Layer 3: sensor + dec_pomdp env + reward functions`
-
-- [x] `sensor/partial_observation.py` — `observe(global_state, agent_id, radius) → np.ndarray` Manhattan-radius mask
-- [x] `environment/reward.py` — pure `compute_reward(state, action, next_state, cfg) → joint_reward`
-- [x] `environment/dec_pomdp.py` — `DecPomdpEnv` with `reset()`, `step(joint_action)`, `global_state()`, **zero gym imports**
-- [x] Tests: Manhattan mask correctness; reward at capture/timeout; env smoke 50-step random rollout
-
-**DoD:** env is strict spec match (no gym); same-seed → identical first observation; `global_state()` accessible during training only (warned-on-call from execution path).
-
----
-
-## Layer 4 — Per-agent recurrent Q-network + soft Polyak update
-
-Commit: `Layer 4: per-agent recurrent Q-net + soft Polyak update`
-
-- [x] `model/init.py` — orthogonal init helpers (carried-over)
-- [x] `model/recurrent_q.py` — `QPerAgent(obs_dim, action_dim, hidden_sizes, gru_hidden_size)` with GRU
-- [x] `model/soft_update.py` — `polyak_update(target, source, tau)` (carried-over)
-- [x] Tests: forward shape, hidden state propagation, gradient flow, save/load roundtrip; Polyak 4-test math battery
-
-**DoD:** GRU hidden propagates across timesteps; Polyak math battery passes (τ=0 / 1 / 0.5 / convergence).
+- [x] `game/board.py` — `Board` frozen dataclass + `BoardFactory.fresh()`
+- [x] `game/actions.py` — `Action` IntEnum (UP/DOWN/LEFT/RIGHT/STAY/PLACE_BARRIER) + `n_actions(role)` helper
+- [x] `game/moves.py` — `MoveDynamics.apply(board, cop_action, thief_action) → (new_board, MoveInfo)`. **Includes barrier-placement logic** (the planned separate `game/barriers.py` was rolled in here as a private branch).
+- [x] `game/win.py` — `adjudicate(board, max_moves) → "cop"|"thief"|None`
+- [ ] ~~`game/barriers.py`~~ — *rolled into `game/moves.py::MoveDynamics.apply` PLACE_BARRIER branch.*
+- [ ] ~~`game/sub_game.py` / `game/game.py`~~ — *sub-game / game orchestration was deferred to Layer 13 and lives in `services/game_runner.py`.*
+- [x] Tests: 20 in `tests/unit/test_game_core.py` (n_actions × 3, Board × 5, MoveDynamics × 6, barriers × 4, win × 3)
 
 ---
 
-## Layer 5 — VDN mixer (∑ additive identity)
+## Layer 3 — Partial observation + Dec-POMDP env + reward ✅
 
-Commit: `Layer 5: VDN mixer (sum-decomposition)`
-
-- [x] `model/vdn_mixer.py` — `VDNMixer(n_agents)` — `Q_tot = ∑ Qᵢ`
-- [x] Tests:
-  - Sum identity: `mixer([q1, q2]) == q1 + q2`
-  - n-agents generalisation
-  - Gradient flow
-
-**DoD:** VDN is trivially the additive baseline; 100 % coverage.
+- [x] `sensor/partial_observation.py` — `observe(board, role, radius)` returning Manhattan-radius 4-channel mask + 6 status entries; `obs_dim(radius)` helper
+- [x] `environment/reward.py` — `RewardConfig` dataclass + `per_step_reward()` + `sub_game_score()` pure functions
+- [x] `environment/dec_pomdp.py` — `DecPomdpEnv.reset(seed) / step(joint_action) / global_state()`, **zero gym imports** (verified by `test_env_no_gym_imports`)
+- [x] Tests: 23 in `tests/unit/test_sensor_env.py`
 
 ---
 
-## Layer 6 — QMIX mixer (monotonic hypernetwork)
+## Layer 4 — Per-agent recurrent Q-network + soft Polyak update ✅
 
-Commit: `Layer 6: QMIX mixer (monotonic hypernet + abs-weight parametrisation)`
-
-- [x] `model/qmix_mixer.py` — `QMIXMixer(n_agents, state_dim, embed_dim, hidden_dim)`
-- [x] Hypernet: state s → mixer weights (with `|·|` to enforce non-negativity → monotonicity)
-- [x] Tests:
-  - Monotonicity: ∂Q_tot/∂Qᵢ ≥ 0 for all i (verified via random Qᵢ + finite-difference)
-  - State-dependence: same Q inputs, different s → different Q_tot
-  - Reduces to VDN-style when weights are equal
-
-**DoD:** Monotonicity test passes for 100 random inputs; QMIX paper Section 3.2 IGM constraint verified.
+- [x] `model/init.py` — orthogonal init helpers
+- [x] `model/recurrent_q.py` — `QPerAgent` with GRU; forward shape; hidden chaining; init_hidden
+- [x] `model/soft_update.py` — `polyak_update` + `hard_copy`
+- [x] Tests: 11 in `tests/unit/test_q_and_polyak.py` (Polyak 4-test math battery, QPerAgent forward shape, single-step handling, hidden propagation chained==long-sequence, gradient flow, init_hidden shape)
+- [ ] ~~Q-net "save/load roundtrip" test~~ — *the SDK has a save/load checkpoint roundtrip test in `test_sdk.py::test_sdk_save_load_roundtrip` which covers it at the higher level.*
 
 ---
 
-## Layer 7 — OLoRA (Orthonormal Low-Rank Adaptation)
+## Layer 5 — VDN mixer ✅
 
-Commit: `Layer 7: OLoRA — QR-decomposed orthonormal-init PEFT`
-
-- [x] `model/olora.py` — `OLoRAAdapter(base_layer, rank)` wrapping a `nn.Linear`
-- [x] QR decomposition of init weights → orthonormal columns of `A` factor
-- [x] Tests:
-  - `A` matrix has orthonormal columns: `A.T @ A == I_rank`
-  - Reconstruction preserves base layer output at init (zero perturbation)
-  - Gradient flow through `A` + `B` factors
-
-**DoD:** OLoRA paper Eq. (3) initialisation verified; PEFT plugs in via a `wrap_with_olora(model)` helper.
+- [x] `model/vdn_mixer.py` — `VDNMixer(n_agents)`, `Q_tot = Σ Qᵢ`
+- [x] Tests: 6 VDN-specific in `tests/unit/test_mixers.py` (n_agents validation, sum identity 2/n agents, rejects wrong last-dim, ignores global_state, no params)
 
 ---
 
-## Layer 8 — Centralised replay buffer (sequence-aware, masked)
+## Layer 6 — QMIX mixer (monotonic hypernetwork) ✅
 
-Commit: `Layer 8: centralised replay buffer (variable-length sequences + masks)`
-
-- [x] `memory/centralised_buffer.py` — stores `(s_seq, ō_seq, ā_seq, r̄_seq, s'_seq, ō'_seq, done_seq)`
-- [x] Variable sequence length up to `max_seq_len`; pad with mask
-- [x] Tests: push wraps at capacity; sample yields correctly-shaped + masked batch
-
-**DoD:** stores full episodes (not transitions); seq + mask shape contract verified.
+- [x] `model/qmix_mixer.py` — `QMIXMixer(n_agents, state_dim, embed_dim, hyper_hidden)` with `|·|` parametrisation
+- [x] Tests: 7 QMIX-specific in `tests/unit/test_mixers.py` (output shape, rejects wrong n_agents, **monotonicity finite-difference over 100 random (q,s) for n=2 + 50 for n=5**, state-dependence, gradient flow, increasing-q monotonicity probe)
+- [ ] ~~"Reduces to VDN-style when weights are equal" test~~ — *not implemented. The monotonicity test family covers the IGM constraint that motivates this property, and the formal proof is in `docs/PROOFS.md § 2`.*
 
 ---
 
-## Layer 9 — Exploration: ε-greedy + schedule
+## Layer 7 — OLoRA ✅
 
-Commit: `Layer 9: ε-greedy exploration + linear schedule`
-
-- [x] `noise/epsilon_greedy.py` — ε-greedy over discrete action space
-- [x] `noise/schedule.py` — `LinearEpsilonSchedule(initial, final, decay_steps)` (carried-over from A5's σ schedule)
-- [x] Tests: ε=0 → always argmax; ε=1 → uniform random; schedule clamps
-
-**DoD:** discrete-equivalent of A5's noise; same schedule abstraction.
+- [x] `model/olora.py` — `OLoRAAdapter(base_layer, rank, alpha, freeze_a)` + `wrap_with_olora(model, rank)` walker
+- [x] Tests: 10 in `tests/unit/test_olora.py` (rank validation, A orthonormality `A.T @ A == I_rank`, zero-perturbation at init, base layer frozen, A trainable when unfrozen, parameter-count savings, α scaling, walker replaces all linears, walker preserves output)
 
 ---
 
-## Layer 10 — QMIX update step (the headline math)
+## Layer 8 — Centralised replay buffer ✅
 
-Commit: `Layer 10: QMIX update — TD target + per-agent Q + mixer + Polyak`
-
-- [x] `services/qmix_update.py` — `apply_qmix_update(q_nets, mixer, batch, hp) → UpdateDiagnostic`
-- [x] Three-network handling: per-agent Qᵢ + Mixer + targets
-- [x] **TDD pair — write tests first**:
-  - Gradient flows to live Qᵢ + Mixer, NOT to targets
-  - One update changes weights
-  - Target drift > 0 after one step with τ=0.005
-  - Monotonicity preserved post-update
-
-**DoD:** 5-test TDD battery; clean separation of "live" vs "target" networks; matches L10 § 4.2 expressions.
+- [x] `memory/centralised_buffer.py` — `CentralisedReplayBuffer` stores variable-length EPISODES (not transitions) with padding + mask
+- [x] Tests: 9 in `tests/unit/test_buffer_and_noise.py` (capacity/seq-len validation, push wraps at capacity, sample shape contract, padding mask correctness, truncation at max_seq_len, deterministic RNG)
 
 ---
 
-## Layer 11 — VDN update + IQL baseline update
+## Layer 9 — ε-greedy + schedule ✅
 
-Commit: `Layer 11: VDN update + IQL update (baselines)`
-
-- [x] `services/vdn_update.py` — same shape as QMIX but mixer is the sum
-- [x] `services/iql_update.py` — **no mixer**; each Qᵢ trains independently against ITS OWN reward; the centralised buffer is used but mixer is absent
-- [x] Tests: VDN reduces to per-agent + sum; IQL gradients touch ONLY individual Qᵢ params
-
-**DoD:** all three updaters share the `Updater` protocol; swappable via `marl.algorithm` config key.
+- [x] `noise/epsilon_greedy.py` — `select_action(q, ε, rng, action_mask=None)` with optional masking
+- [x] `noise/schedule.py` — `LinearEpsilonSchedule(initial, final, decay_steps).at(step)`
+- [x] Tests: 8 in `tests/unit/test_buffer_and_noise.py` (ε=0 argmax, ε=1 random, mask respected, no-legal raises, schedule initial/final/midpoint/validation)
 
 ---
 
-## Layer 12 — MARL trainer (CTDE end-to-end)
+## Layer 10 — QMIX update step ✅
 
-Commit: `Layer 12: MARL trainer — CTDE end-to-end fit loop`
-
-- [x] `services/marl_trainer.py` — `MarlTrainer(env, q_nets, mixer, buffer, schedule, hp).fit(total_episodes)`
-- [x] Episode loop: reset → unroll up to 25 steps → push trajectory → sample batch → apply updater → log
-- [x] Tests: smoke 200-episode run on 3x3 grid finishes with finite diagnostics
-
-**DoD:** trainer runs end-to-end on a 3x3 grid; pluggable updater (QMIX / VDN / IQL).
+- [x] `services/qmix_update.py` — full TD update step (live + target Q-nets + mixer + targets) with `QmixUpdateDiagnostic`
+- [x] Tests: 6 in `tests/unit/test_qmix_update.py` (diagnostic shape, weights change > 1e-7, no grad on targets, target_drift > 0 at τ=0.005, τ=0 freezes targets, finite loss over 5 consecutive updates)
 
 ---
 
-## Layer 13 — Game runner (6 sub-games per Game)
+## Layer 11 — VDN + IQL updaters ✅
 
-Commit: `Layer 13: game runner — 6 sub-games per game + GameReport`
-
-- [x] `services/game_runner.py` — `GameRunner(agents, game_cfg).play_one_game() → GameReport`
-- [x] Build the JSON per spec § 3.5 (group, students, github_repo, timezone, sub_games[6], totals)
-- [x] Tests: deterministic at seed; produces correctly-shaped JSON
-
-**DoD:** running play_one_game from end-to-end produces a JSON that schema-validates against spec § 3.5 example.
+- [x] `services/vdn_update.py` — thin wrapper around `apply_qmix_update` with `VDNMixer` (the kernel is mixer-agnostic)
+- [x] `services/iql_update.py` — per-agent independent DQN with `IqlUpdateDiagnostic` (per-agent losses, no joint Q_tot)
+- [x] Tests: 5 in `tests/unit/test_vdn_iql_update.py` (VDN finite loss + weight change; IQL finite per-agent losses + independent weight delta + no grad on targets)
 
 ---
 
-## Layer 14 — SDK + experiments
+## Layer 12 — MARL trainer (CTDE end-to-end) ✅
 
-Commit: `Layer 14: sdk facade + env_builder + trainers + experiments`
-
-- [x] `sdk/sdk.py::MarlLab(config_path)` — `make_env`, `train`, `evaluate`, `play_one_game`, `run_sweep`, `graphify`
-- [x] `sdk/env_builder.py::build_env(cfg, grid_size, algorithm)`
-- [x] `sdk/trainers.py::build_trainer(cfg, env)` — picks QMIX / VDN / IQL
-- [x] `sdk/experiments.py::ExperimentService` (multi-seed sweeps; same shape as A5)
-- [x] Tests: SDK make_env returns a DecPomdpEnv; SDK train returns finite TrainResult
-
-**DoD:** SDK works as the single consumer entry-point; experiments handles all 4 sweep kinds.
+- [x] `services/marl_trainer.py` — `MarlTrainer(env, cfg, eps_schedule, rng)` with `collect_episode()` / `learn_step()` / `train(n_episodes)`
+- [x] Algorithm-agnostic via `cfg.algo` switch (qmix/vdn/qplex/maddpg/iql)
+- [x] Tests: 13 in `tests/unit/test_marl_trainer.py` (parametrised over qmix/vdn/iql; collect_episode returns non-empty sequence with winner; train runs end-to-end; invalid algo raises; ε decays; warmup skip; etc.)
 
 ---
 
-## Layer 15 — MCP servers (cop + thief) + auth (localhost phase)
+## Layer 13 — Game runner (6 sub-games) ✅
 
-Commit: `Layer 15: MCP cop + thief servers + token auth (localhost phase 1)`
-
-- [x] `mcp/protocol.py` — pydantic message schemas (MoveRequest, MoveResponse, HealthResponse)
-- [x] `mcp/cop_server.py` — FastMCP server; `@mcp.tool def cop_move(...)`
-- [x] `mcp/thief_server.py` — same shape
-- [x] `auth/token_registry.py` — load tokens from env; `verify(token)`, `revoke(token)`
-- [x] `auth/middleware.py` — `Authorization: Bearer` header check
-- [x] Tests: both servers start on localhost; reject without token (401); accept with valid token; revoked token fails
-
-**DoD:** both servers run on localhost simultaneously (different ports); auth works.
+- [x] `services/game_runner.py` — `GameRunner.play_full_game(...) → GameReport` exactly matching spec § 3.5 JSON shape (group_name, students, github_repo, timezone, sub_games[6], totals)
+- [x] Tests: 7 in `tests/unit/test_game_runner.py` + 5 spec-conformance tests in `tests/integration/test_spec_conformance.py` (sub-game IDs 1..6, Asia/Jerusalem datetimes, yaml scoring wired, totals == sum)
 
 ---
 
-## Layer 16 — MCP client + game adjudicator over MCP
+## Layer 14 — SDK ✅ *(consolidated into one file)*
 
-Commit: `Layer 16: MCP client + game adjudicator drives game via HTTP`
-
-- [x] `mcp/client.py::McpClient(url, token).move(obs, hidden_token) → action`
-- [x] `services/game_runner` gets a new constructor variant that drives the game by POSTing to the two MCP servers
-- [x] Tests: end-to-end localhost game runs through HTTP; logs to `assets/logs/mcp_session.log`
-
-**DoD:** `marl-lab play --mode mcp-localhost` runs a full 6-sub-game game with both servers up.
+- [x] `sdk/marl_sdk.py` — `MarlSDK(cfg_path)` with `train`, `play_game`, `save_checkpoint`, `load_checkpoint`. Single-file facade — the planned 4-way split (`sdk.py` / `env_builder.py` / `trainers.py` / `experiments.py`) was consolidated because the MarlSDK class is small enough.
+- [x] Sweep service lives separately at `services/sweeps.py` (Layer 21 functionality)
+- [x] Tests: 4 in `tests/unit/test_sdk.py` (load_from_yaml, train returns history, play_game returns full report, save/load checkpoint round-trip)
 
 ---
 
-## Layer 17 — Gmail API + JSON formatter + idempotency
+## Layer 15 — MCP servers + auth ✅
 
-Commit: `Layer 17: Gmail API + JSON formatter + idempotency guard`
-
-- [x] `gmail/formatter.py::build_game_email(report: GameReport) → (subject, body_json)`
-- [x] `gmail/sender.py` — common interface; implementations: `AppPasswordSender`, `OAuthSender`, `McpToolSender`
-- [x] ADR-010 idempotency: `results/sent_games.json` ledger; same game_id → no-op + warn
-- [x] Tests: formatter output schema-validates; idempotency: send twice = one actual SMTP call
-
-**DoD:** `marl-lab report --game results/game_001.json` sends one email (or dry-runs and prints the body).
+- [x] `mcp/protocol.py` — `SelectActionRequest` + `SelectActionResponse` dataclasses
+- [x] `mcp/server_base.py` — framework-agnostic `BaseMCPServer` with auth + role checks
+- [x] `mcp/cop_server.py` + `mcp/thief_server.py` — FastMCP CLI wiring (one tool: `select_action`)
+- [x] `auth/token_registry.py` — env-var or programmatic, `hmac.compare_digest` constant-time
+- [ ] ~~`auth/middleware.py`~~ — *not needed; auth is enforced inline in `BaseMCPServer.select_action()` before any logic runs. The token check is one line + a constant-time compare.*
+- [x] Tests: 15 in `tests/unit/test_mcp_server.py` (token registry × 4, protocol round-trip × 3, action-in-legal-range, thief never picks barrier, bad/missing token raises, cross-role request raises, invalid role at construction, reset_hidden clears state)
 
 ---
 
-## Layer 18 — CLI (8 subcommands)
+## Layer 16 — MCP client + adjudicator-over-MCP ✅
 
-Commit: `Layer 18: CLI — train · evaluate · sweep · graphify · gui · serve · play · report`
-
-- [x] `interface/cli/main.py` — Click group
-- [x] `interface/cli/commands.py` — bodies for each subcommand
-- [x] Tests: each subcommand exits 0 on smoke
-
-**DoD:** `marl-lab --help` lists 8+ subcommands; smoke runs ≤ 200 episodes.
+- [x] `mcp/client.py` — `MCPClient(cop_transport, thief_transport, cfg).play_sub_game(...)` with injectable transport callables
+- [x] Tests: 3 in `tests/unit/test_mcp_client.py` (play_sub_game returns SubGameResult; per-role tokens work; server_role mismatch raises)
+  - *Tests use IN-PROCESS transport (lambda wrapping `server.select_action`) rather than real HTTP — this exercises the same code path FastMCP would call. Live HTTP smoke is demonstrated in `assets/logs/mcp_demo.log` instead.*
 
 ---
 
-## Layer 19 — GUI (Tkinter real-time board)
+## Layer 17 — Gmail API + JSON formatter + idempotency ✅
 
-Commit: `Layer 19: Tkinter GUI — real-time board + score table + replay`
-
-- [x] `interface/gui/main_window.py` — Tabbed window
-- [x] `interface/gui/board_tab.py` — live 5x5 board + cop + thief + barriers
-- [x] `interface/gui/score_tab.py` — running score table
-- [x] `interface/gui/replay_tab.py` — load a `assets/logs/*.log` and replay
-- [x] Tests: smoke construction under offscreen Qt-Tk shim (or pytest with `TK_SILENCE_DEPRECATION`)
-
-**DoD:** `marl-lab gui` opens a window; board updates in real time during a game.
+- [x] `gmail/formatter.py` — `report_to_json(report, include_provenance=True)` + `build_idempotency_key(report)` + `email_subject(...)`
+- [x] `gmail/ledger.py` — `IdempotencyLedger` JSON-file-backed `has_been_sent` / `record_sent`
+- [x] `gmail/sender.py` — three strategies: `AppPasswordStrategy` (smtplib), `OAuthStrategy` (Google API client), `MCPToolStrategy` (injectable send_fn) + unified `GameReportSender` facade
+- [x] Tests: 12 in `tests/unit/test_gmail.py` (formatter validity/determinism/subject; ledger empty/record/corrupt-recover; sender first-send/idempotency/different-content/dry-run; app-password env validation)
 
 ---
 
-## Layer 20 — Mini-Graphify port + viz tools
+## Layer 18 — CLI (8 subcommands) ✅
 
-Commit: `Layer 20: Mini-Graphify port + viz tools (plots, GUI capture, log replay)`
-
-- [x] Port `tools/graphify/{walker,emitter,runner}.py` from A5 (rename proximal_lab → marl_lab)
-- [x] `tools/viz/plots.py` — `plot_learning_curve`, `plot_loss_curve`, `plot_trajectory_overlay`, `plot_per_agent_q`
-- [x] Tests: synthetic 3-module fixture; PNG outputs > 1 KB
-
-**DoD:** `marl-lab graphify` builds `docs/wiki/` with the project's module graph; viz scripts emit at least 6 plots.
+- [x] `cli/main.py` — argparse parser + `build_parser()` + `main()`. *(Lives at `cli/`, not `interface/cli/` — the planned `interface/cli/` was a stale layer-0 scaffold removed in v1.02.)*
+- [x] `cli/commands.py` — cmd_train, cmd_play_game, cmd_send_report, cmd_play_and_send, cmd_serve_cop, cmd_serve_thief, cmd_audit, cmd_version
+- [x] Console entry points in `pyproject.toml`: `marl`, `marl-mcp-cop`, `marl-mcp-thief`
+- [x] Tests: 6 in `tests/unit/test_cli.py` (version, audit, exactly-8-subcommands, train runs + writes checkpoint, play-game emits JSON, send-report --dry-run)
 
 ---
 
-## Layer 21 — Empirical sweeps
+## Layer 19 — GUI (headless-testable) ⚠ *Tkinter widget layer NOT built*
 
-Commit: `Layer 21: sweeps — grid_size + algorithm + observation_radius + ablation_seeds`
-
-- [x] `scripts/run_grid_sweep.py` — 2×2, 3×3, 4×4, 5×5
-- [x] `scripts/run_algorithm_sweep.py` — IQL vs VDN vs QMIX
-- [x] `scripts/run_radius_sweep.py` — r ∈ {1, 2, 3}
-- [x] `scripts/plot_sweep.py` — bar charts with t-CIs (from A5)
-- [x] Results → `results/sweeps/*.json`; plots → `assets/plots/*.png`
-- [x] Tests: smoke sweeps with reduced timesteps + 1 seed
-
-**DoD:** 3 sweep JSONs + 3 plots; reflection-Q answers grounded in the JSON values.
+- [x] `interface/board_renderer.py` — pure `render(board) → np.ndarray` + `ascii_dump(board)`
+- [x] `interface/game_gui.py` — `GameGuiCore` (HEADLESS, testable) + `make_random_policy` / `make_stay_policy` helpers
+- [ ] ~~`interface/gui/main_window.py` / `board_tab.py` / `score_tab.py` / `replay_tab.py`~~ — *the Tkinter WIDGET layer was not built (would have required a display server which isn't available in headless CI). The matplotlib-based rendering pipeline in `scripts/generate_artifacts.py` produces the spec § 7.3 visual proofs that the GUI works (PNG renderings at every grid size + animated GIF of a full sub-game). Documented in `docs/FAILURE_MODES.md`.*
+- [x] Tests: 10 in `tests/unit/test_gui.py` (render shape/cells/barriers, ascii_dump, GUI core reset/step/auto_play, random policy legality)
 
 ---
 
-## Layer 22 — Cloud deployment (Prefect/FastMCP) — stub if no creds
+## Layer 20 — Mini-Graphify port + viz ✅
 
-Commit: `Layer 22: cloud deployment via Prefect Cloud — full path or documented stub`
-
-- [x] `cloud/prefect_deploy.py` — uses Prefect API key from env
-- [x] `cloud/local.py` — always-works localhost runner
-- [x] If `PREFECT_API_KEY` missing: print step-by-step guide + skip actual deploy
-- [x] README documents BOTH paths
-- [x] Tests: stub mode doesn't fail; real-deploy is mocked
-
-**DoD:** can demonstrate the cloud step OR convincingly document why it was skipped (with screenshots / curl examples).
+- [x] `graphify/graphify.py` — AST walker + Markdown emitter; `walk_source_tree` + `format_markdown` + `run(src_dir, output_path)`. *(Lives at `graphify/`, not `tools/graphify/` — single-file consolidation.)*
+- [x] Plot generation is done ad-hoc in `scripts/generate_artifacts.py` (learning + loss + GUI renderings + animated GIF + tournament chart), `scripts/long_convergence_study.py`, and `scripts/scale_convergence_study.py`. *(The planned dedicated `tools/viz/plots.py` with named helper functions was not extracted — plotting code lives inline in the scripts because each plot has unique customisation.)*
+- [x] Tests: 6 in `tests/unit/test_graphify.py` (docstring extraction, private filter, syntax-error recovery, walks marl_lab, format groups by pillar, run() writes file)
 
 ---
 
-## Layer 23 — Reproducibility + drift-test (carried from A5)
+## Layer 21 — Empirical sweeps ✅
 
-Commit: `Layer 23: reproducibility tests + meta-consistency drift-test + extension points`
-
-- [x] `tests/integration/test_reproducibility.py` — same-seed identical diagnostics over a 200-step run
-- [ ] `tests/unit/test_doc_drift.py` — *rolled into `tests/integration/test_spec_conformance.py` (5 tests, v1.01) + the CI graphify-drift warning step (v1.06). No standalone file.*
-- [x] PLAN.md § 12 extension points already written (Layer 0)
-- [x] Tests pass
-
-**DoD:** drift test green; reproducibility test confirms bit-for-bit at the same seed on a small grid.
+- [x] `services/sweeps.py` — `SweepCellSpec` + `SweepCellResult` + `run_one_cell(spec)` + `run_sweep(algorithms, grid_sizes, observation_radii, seeds, n_episodes)`. *(One unified programmatic API instead of the planned 3 separate `run_*_sweep.py` scripts.)*
+- [x] Standalone scripts at the sweep-level: `scripts/long_convergence_study.py` (500-eps on 4×4) and `scripts/scale_convergence_study.py` (2,250 eps across 5×5/6×6/7×7).
+- [x] Artifacts: `assets/figures/tournament.png` + `long_convergence.png` + `scale_convergence.png` + `ctde_advantage_vs_grid.png`; CSVs in `assets/logs/`. *(Plots live in `assets/figures/` not `assets/plots/`; data lives in `assets/logs/` not `results/sweeps/`.)*
+- [x] Tests: 5 in `tests/unit/test_sweeps.py` (parametrised over qmix/vdn/iql; cartesian product cardinality; to_table column set)
 
 ---
 
-## Layer 24 — Notebook walkthrough (executed)
+## Layer 22 — Cloud deployment (Prefect/local fallback) ✅
 
-Commit: `Layer 24: notebook walkthrough — 7-cell guided tour, executed end-to-end`
-
-- [x] `notebooks/marl_lab_walkthrough.ipynb` — 7 cells:
-  1. Imports + config
-  2. Build env on 3x3 grid
-  3. Initialise QMIX agents
-  4. Train smoke (200 episodes)
-  5. Play one 6-sub-game game; show GameReport JSON
-  6. Visualise learning curves for cop + thief
-  7. (Optional) plot mixer monotonicity surface
-- [x] Execute via `nbconvert --execute`; commit with embedded outputs
-
-**DoD:** notebook renders; outputs embedded; runtime < 5 min.
+- [x] `cloud/local.py` — `run_local_flow(...)` always-works runner. *(Filename matches plan.)*
+- [x] `cloud/prefect.py` — `run_prefect_flow(...)` falls back to local if `prefect` not installed OR `PREFECT_API_KEY` missing, with a warning. *(Plan called this `prefect_deploy.py`; renamed to `prefect.py` for brevity.)*
+- [x] README documents both paths (Docker / local quickstart)
+- [x] Tests: 2 in `tests/unit/test_cloud.py` (local flow returns valid GameReport; prefect flow falls back to local without API key)
 
 ---
 
-## Layer 25 — Audit + reflection answers + comparison table
+## Layer 23 — Reproducibility + drift-test ✅
 
-Commit: `Layer 25: audit + reflection answers + comparison table + lessons`
-
-- [ ] `docs/AUDIT.md` — *rolled into `CHANGELOG.md` + git tags v1.01/v1.02/v1.05 (TA cycles 1/2/4) + the trail of commits.*
-- [ ] `docs/COMPARISON_TABLE.md` — *rolled into `README.md § 7.2` (critical analysis with QMIX vs VDN vs IQL vs QPLEX vs MADDPG) + `docs/PROOFS.md § 5` (the IGM-family summary table).*
-- [x] `docs/FAILURE_MODES.md` — known issues + honest disclosures
-- [ ] `docs/LESSONS_LEARNED.md` — *rolled into `FAILURE_MODES.md § 3` (the IQL-vs-CTDE empirical finding) + `README.md` "Beyond the spec" rationale.*
-- [x] README cross-references each (where the corresponding artifact exists)
-- [x] All 3 reflection questions answered with empirical evidence + citations
-
-**DoD:** every PRD § 9 reflection question backed by JSON + plot + paragraph.
+- [x] `tests/integration/test_reproducibility.py` — same yaml + same seed → bit-identical Q-net weights; different seeds DIVERGE
+- [ ] ~~`tests/unit/test_doc_drift.py`~~ — *rolled into `tests/integration/test_spec_conformance.py` (5 tests pinning the JSON shape) + the CI graphify-drift detection step in `.github/workflows/assignment6-ci.yml`.*
+- [x] PLAN.md § 12 extension points (already written in Layer 0)
 
 ---
 
-## Layer 26 — Final docs + EXECUTIVE_SUMMARY + Promptbook + COSTS + V3 tag v1.00
+## Layer 24 — Notebook walkthrough (executed) ✅ *(simpler than planned)*
 
-Commit: `Layer 26: final README + EXECUTIVE_SUMMARY + Promptbook + COSTS + sign-off + v1.00 tag`
+- [x] `notebooks/marl_walkthrough.py` — jupytext source (4 cells). *(Filename is `marl_walkthrough.py`, not `marl_lab_walkthrough.ipynb` as in the plan.)*
+- [x] Cells delivered:
+  1. Imports + load config + show env shape
+  2. Train QMIX for 20 episodes (sanity)
+  3. Play 6 sub-games + print JSON totals
+  4. Sweep across (algo, radius)
+- [ ] ~~Cells 6 "Visualise learning curves" + 7 "(Optional) plot mixer monotonicity surface" from the plan~~ — *NOT in the notebook. Learning curves are in the dedicated artifacts (`assets/figures/learning_curves.png`, `long_convergence.png`, `scale_convergence.png`); the monotonicity surface was never plotted but the monotonicity property is verified by 100 random autograd probes in `tests/unit/test_mixers.py::test_qmix_monotonicity_finite_difference`.*
+- [x] `notebooks/marl_walkthrough.ipynb` (jupytext-converted) + `marl_walkthrough_executed.ipynb` (with embedded outputs) + `docs/wiki/marl_walkthrough.html` (rendered)
+- [x] `scripts/rebuild_notebook.py` one-command pipeline
 
-- [x] Rewrite top-level `README.md` (full version — "Beyond the spec" + § 7 academic analysis embedded)
-- [ ] `docs/EXECUTIVE_SUMMARY.md` — *rolled into `README.md` "Beyond the spec" + status badges + the v1.08 tag.*
+---
+
+## Layer 25 — Audit + reflection answers + comparison table ⚠ *(some docs not built; substance rolled in)*
+
+- [ ] ~~`docs/AUDIT.md`~~ — *rolled into `CHANGELOG.md` + git-tag history (v1.01/v1.02/v1.05 are the TA cycles 1/2/4) + the commit-message trail.*
+- [ ] ~~`docs/COMPARISON_TABLE.md`~~ — *rolled into `README.md § 7.2` (critical analysis — VDN/QMIX/QPLEX/MADDPG/IQL compared) + `docs/PROOFS.md § 5` (IGM-family summary table).*
+- [x] `docs/FAILURE_MODES.md` — 8 honest disclosures (POSG framing, GRU session state, CTDE-IQL on small grids, exploration limits, no model-based, soft cloud deploy, Gmail App Password, test coverage gaps)
+- [ ] ~~`docs/LESSONS_LEARNED.md`~~ — *rolled into `FAILURE_MODES.md § 3` (the IQL-on-4×4 finding became the case study) + the README "Beyond the spec" rationale.*
+- [x] README cross-references each artefact that exists
+- [⚠] **Reflection question answers**:
+  - **Q1 (CTDE non-stationarity)**: ✅ answered in `README § 7.2` "Non-stationarity and how CTDE solves it" + `FAILURE_MODES § 3` (with empirical IQL-vs-CTDE data at 4 grid sizes)
+  - **Q2 (IGM limits, QPLEX/Weighted QMIX)**: ✅ answered in `README § 7.2` "IGM limits" + `PROOFS.md § 3` (formal derivation) + `tests/unit/test_qplex.py::test_qplex_more_expressive_than_qmix` (empirical)
+  - **Q3 (swarm vs single-agent pursuit-evasion)**: **[ ] NOT explicitly answered.** The current task is 1 cop + 1 thief; the swarm framing is mentioned only in `PRD.md § 9`. To address Q3 properly would require extending the env to N≥2 cops which is out of v1.10 scope.
+
+---
+
+## Layer 26 — Final docs + tag + CI + submission ✅
+
+- [x] Rewrite top-level `README.md` (full v1.08 with badges + 17-item "Beyond the spec" + § 7.1 + § 7.2 + § 7.3 + bibliography)
+- [ ] ~~`docs/EXECUTIVE_SUMMARY.md`~~ — *rolled into `README.md` "Beyond the spec" section + the version badges at the top.*
 - [x] `docs/wiki/marl_walkthrough.html` — executed-notebook reproduction artefact (covers REPRODUCIBILITY intent)
-- [ ] `docs/PROMPTBOOK.md` — *not produced (methodology trail lives in the git history v1.00 → v1.08 + the 4 TA cycles).*
-- [ ] `docs/COSTS.md` — *not produced.*
-- [ ] `docs/SLIDE_MAP.md` — *file:line citations rolled into `README.md § 7.1` table + `docs/PROOFS.md` cross-refs.*
+- [ ] ~~`docs/PROMPTBOOK.md` / `docs/COSTS.md` / `docs/SLIDE_MAP.md`~~ — *not produced as separate files. Substance: methodology trail in the git history v1.00 → v1.09 + the 4 TA cycles documented in `CHANGELOG.md`; slide:file:line citations in `README § 7.1` table + `PROOFS.md` cross-refs.*
 - [x] `.github/workflows/assignment6-ci.yml` — green badge (v1.06)
-- [ ] **Verify shared with `rmisegal@gmail.com` (MANUAL user step — pending)**
-- [x] Tag `marl-lab-v1.00` + push (and v1.01–v1.08 since)
-
-**DoD:** every V3 § 20.9 final-checklist item satisfied; CI badge green; tag pushed.
+- [x] `docs/CHANGELOG.md` — version-by-version story (v1.09)
+- [x] `docs/PROOFS.md` — formal IGM derivations for VDN/QMIX/QPLEX + Bernstein 2002 complexity appendix
+- [x] Git tags pushed: `marl-lab-v1.00` through `marl-lab-v1.09` (v1.10 with this honest TODO is the latest)
+- [ ] **Verify shared with `rmisegal@gmail.com` (MANUAL user step — still pending)**
+- [ ] **Fill `submission.group_code` in `configs/setup.yaml` (MANUAL user step — still pending)**
 
 ---
 
-## Beyond-spec extensions (v1.03 → v1.08)
+## Beyond-spec extensions (v1.03 → v1.08) ✅
 
-These were not in the original Layer 0 plan above — they came out of the TA-roleplay reviews and post-submission "impress the TA" passes. All 17 are ✅ done; each row links to the tag that introduced it.
+These were NOT in the original Layer 0 plan above — they came out of the TA-roleplay reviews and post-submission "impress the TA" passes. All 17 are ✅ done; each row links to the tag that introduced it. See [`CHANGELOG.md`](CHANGELOG.md) for the per-version story.
 
-### v1.03 — academic depth pass
-- [x] **QPLEX mixer** (5th IGM family) — `src/marl_lab/model/qplex_mixer.py` + `qplex_update.py` + 10 tests
-- [x] **docs/PROOFS.md** — formal chain-rule IGM derivations for VDN/QMIX/QPLEX
+### v1.03 — academic depth
+- [x] **QPLEX mixer** (5th IGM-family) — `src/marl_lab/model/qplex_mixer.py` + `qplex_update.py` + 10 tests
+- [x] **docs/PROOFS.md** — formal chain-rule IGM derivations
 - [x] **Animated sub-game GIF** — `assets/figures/sub_game.gif`
 - [x] **4-algorithm tournament** — `assets/figures/tournament.png` + raw CSV
 - [x] **Provenance in GameReport** — `src/marl_lab/shared/provenance.py` + 5 tests
 
-### v1.04 — engineering excellence pass
+### v1.04 — engineering excellence
 - [x] **Curriculum learning** (Lin 2025) — `services/curriculum.py` + 12 tests with Q-net weight transfer
 - [x] **Property-based fuzz tests** — `tests/property/test_env_invariants.py` (7 invariants × 200+ probes)
-- [x] **95% measured branch coverage** — `pytest --cov` baseline, table embedded in README
-- [x] **Notebook → executed HTML** — `docs/wiki/marl_walkthrough.html` + `scripts/rebuild_notebook.py`
+- [x] **95% measured branch coverage** — `pytest --cov` baseline
+- [x] **Notebook → executed HTML** — `docs/wiki/marl_walkthrough.html`
 
-### v1.05 — visual + empirical pass
+### v1.05 — visual + empirical
 - [x] **Mermaid system diagram** — README data-flow rendered on GitHub
 - [x] **MCP token rotation demo** — 4-stage lifecycle, `assets/logs/token_rotation.log`
 - [x] **Bernstein 2002 complexity appendix** — `docs/PROOFS.md § 4`
 - [x] **500-episode convergence study** — `assets/figures/long_convergence.png` (honest IQL-competitive finding on 4×4)
 
-### v1.06 — CI pass
-- [x] **GitHub Actions** (`.github/workflows/assignment6-ci.yml`) — 2-job pipeline, status badges, HYPOTHESIS_PROFILE=ci
+### v1.06 — CI
+- [x] **GitHub Actions** — 2-job pipeline, status badges, HYPOTHESIS_PROFILE=ci lifting fuzz examples 200→500
 
-### v1.07 — Lin-2025 verification pass
-- [x] **Scale convergence (5×5/6×6/7×7)** — `assets/figures/ctde_advantage_vs_grid.png`; hypothesis confirmed: QPLEX dominates 6×6 by +1.01 over IQL
+### v1.07 — Lin-2025 verification
+- [x] **Scale convergence (5×5/6×6/7×7)** — `assets/figures/ctde_advantage_vs_grid.png`; hypothesis confirmed (QPLEX dominates 6×6 by +1.01 over IQL)
 
-### v1.08 — algorithmic completeness pass
-- [x] **MADDPG-discrete** (true POSG learner; per-agent centralised critic + per-agent reward) — `src/marl_lab/model/maddpg_critic.py` + `services/maddpg_update.py` + 13 tests. 5th algorithm.
-- [x] **Docker** — `Dockerfile` + `.dockerignore`, smoke-tested, zero-setup playability
+### v1.08 — algorithmic completeness
+- [x] **MADDPG-discrete** (POSG learner) — `src/marl_lab/model/maddpg_critic.py` + `services/maddpg_update.py` + 13 tests. 5th algorithm.
+- [x] **Docker** — `Dockerfile` + `.dockerignore`, smoke-tested
 
-### Manual user steps (still pending)
-- [ ] Fill `submission.group_code` in `configs/setup.yaml` with the real 8-char code
-- [ ] Fill `submission.students[0].id` with the real student ID
-- [ ] Share GitHub repo with `rmisegal@gmail.com` (read access)
-- [ ] (Optional) Find a partner for the spec § 9 inter-group bonus (10 pts)
+### v1.09 — docs honesty
+- [x] **`docs/TODO.md` ticked + un-ticked honestly** (this commit's predecessor was overly optimistic; v1.10 fixes the lies)
+- [x] **`docs/CHANGELOG.md`** — version-by-version story
+
+### v1.10 — honest plan-vs-reality reconciliation (this commit)
+- [x] **Audit of TODO.md** — found 14 mismatches between aspirational plan and reality; rewrote each layer's checklist to reflect what was ACTUALLY shipped, with inline `~~strikethrough~~` notes where substance was rolled into a different artefact
+- [x] **Reflection Q3 honestly marked unanswered** (swarm-vs-single-agent — would require multi-cop env, out of scope)

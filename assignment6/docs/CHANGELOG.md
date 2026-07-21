@@ -13,6 +13,8 @@ Version-by-version story of the assignment6 codebase. Each tag is a real `git ta
 | [v1.06](#v106--ci) | 2026-06-24 | 241 | 95% | GitHub Actions CI green |
 | [v1.07](#v107--scale-study) | 2026-06-24 | 241 | 95% | Lin 2025 hypothesis empirically verified |
 | [v1.08](#v108--maddpg--docker) | 2026-06-24 | **254** | 95% | 5th algorithm + zero-setup playability |
+| v1.09 | 2026-06-25 | 254 | 95% | docs: tick TODO.md + add CHANGELOG (was over-eager — see v1.10) |
+| **v1.10** | 2026-06-26 | 254 | 95% | **Honest TODO** — audit found 14 plan-vs-reality mismatches; rewrote each layer's checklist; Reflection Q3 honestly marked `[ ]` not done |
 
 ---
 
@@ -183,6 +185,37 @@ Beyond-spec extensions #16–17.
 **Bonus refactor**: `services/learn_dispatch.py` extracts per-algo update dispatch from `MarlTrainer.learn_step` (now 214 LOC, was 271). Adding a 6th algorithm is now a single new branch in one file.
 
 **Stats:** 254 tests (was 241; +13 MADDPG). 5 algorithms.
+
+---
+
+## v1.10 — honest TODO
+
+**`marl-lab-v1.10`**
+
+User push-back at v1.09: *"are the ticks in TODO.md actually fit to our real tasks?"* — answer: many weren't. The v1.09 bulk sed-replace was over-optimistic. This version is the honest reckoning.
+
+**Audit found 14 mismatches** between the aspirational TODO.md plan and what was actually built:
+
+| # | Layer | Plan said | Reality |
+|---|---|---|---|
+| 1 | 1 | `JointAction` type alias defined | only in docstring; inline `dict[AgentRole, ActionInt]` |
+| 2 | 2 | `game/barriers.py`, `sub_game.py`, `game.py` | rolled into `game/moves.py` + `services/game_runner.py` |
+| 3 | 4 | Q-net "save/load roundtrip" test | not built (SDK-level save/load test covers it) |
+| 4 | 6 | "Reduces to VDN-style" QMIX test | not built; monotonicity tests cover the IGM constraint |
+| 5 | 14 | 4 SDK files (`sdk.py`, `env_builder.py`, `trainers.py`, `experiments.py`) | consolidated to one `sdk/marl_sdk.py` |
+| 6 | 15 | `auth/middleware.py` | not needed — auth inline in `BaseMCPServer.select_action` |
+| 7 | 16 | Real HTTP localhost game test + `mcp_session.log` | in-process transport tested; log is `mcp_demo.log` |
+| 8 | 18 | CLI at `interface/cli/` | actually at `cli/` (top-level) |
+| 9 | 19 | Tkinter widget layer (`main_window`/`board_tab`/`score_tab`/`replay_tab`) | **not built** — only headless `GameGuiCore` + matplotlib renderer (FAILURE_MODES § 8) |
+| 10 | 20 | `tools/graphify/*` + `tools/viz/plots.py` | actually `graphify/graphify.py`; plotting inline in `scripts/` |
+| 11 | 21 | 4 sweep scripts + `results/sweeps/` + `assets/plots/` | unified `services/sweeps.py`; outputs at `assets/figures/` + `assets/logs/` |
+| 12 | 22 | `cloud/prefect_deploy.py` | renamed `cloud/prefect.py` |
+| 13 | 24 | 7-cell `marl_lab_walkthrough.ipynb` | 4-cell `marl_walkthrough.py` (no monotonicity-surface cell, no learning-curve cell) |
+| 14 | 25 | "All 3 reflection questions answered" | **Q3 (swarm vs single-agent) NOT answered** — out of scope for 1v1 task |
+
+The rewrite of `docs/TODO.md` strikes through each fiction with an inline note pointing to where the substance actually lives (or admits it doesn't exist). The aspirational version is preserved at git tags `marl-lab-v1.00` through `marl-lab-v1.09`.
+
+**No source changes** — this is a docs honesty pass. 254 tests still green; coverage unchanged.
 
 ---
 
