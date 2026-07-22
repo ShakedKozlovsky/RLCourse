@@ -1,0 +1,15 @@
+{
+  "checkpoint": "saved_models/qmix_curriculum.pt",
+  "n_games": 100,
+  "grid_size": [
+    5,
+    5
+  ],
+  "max_moves": 25,
+  "cop_wins": 0,
+  "thief_wins": 100,
+  "cop_win_rate": 0.0,
+  "thief_win_rate": 1.0,
+  "mean_moves_per_sub_game": 25.0,
+  "median_moves_per_sub_game": 25.0
+}

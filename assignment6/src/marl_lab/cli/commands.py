@@ -26,8 +26,29 @@ def _students_from_config(sdk: MarlSDK) -> list[StudentEntry]:
 
 
 def cmd_train(args: argparse.Namespace) -> int:
+    """Train MARL agents.
+
+    Optional --seed overrides the yaml seed for this run (useful for
+    reproducing / A-B testing / multi-seed sweeps). Optional --curriculum
+    ramps grid size 2×2 → 3×3 → 4×4 → 5×5 as cop win-rate crosses each
+    stage's threshold (Lin 2025, `services/curriculum.py`)."""
     sdk = MarlSDK(cfg_path=args.config)
-    history = sdk.train(n_episodes=args.episodes)
+    if args.seed is not None:
+        # Re-seed the underlying trainer + torch/numpy/python for this run
+        import numpy as np
+
+        from marl_lab.shared.seed import set_global_seed
+        set_global_seed(args.seed)
+        sdk._rng = np.random.default_rng(args.seed)  # noqa: SLF001
+        sdk.trainer._rng = np.random.default_rng(args.seed)  # noqa: SLF001
+        LOG.info("train seed override: %d", args.seed)
+    if args.curriculum:
+        from marl_lab.services.curriculum import CurriculumSchedule
+        curriculum = CurriculumSchedule()  # default: 2×2 → 3×3 → 4×4 → 5×5
+        LOG.info("curriculum enabled: %s", [s.grid_size for s in curriculum.stages])
+        history = sdk.trainer.train(n_episodes=args.episodes, curriculum=curriculum)
+    else:
+        history = sdk.train(n_episodes=args.episodes)
     wins = sum(1 for h in history if h.winner == "cop")
     LOG.info("train done: %d episodes, cop wins: %d (%.1f%%)",
               len(history), wins, 100.0 * wins / max(1, len(history)))
@@ -147,103 +168,25 @@ def cmd_version(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_play_bonus(args: argparse.Namespace) -> int:
-    """Play a spec § 9 inter-group bonus match.
+def cmd_gui(args: argparse.Namespace) -> int:
+    """Open the live Tkinter window playing a real sub-game (spec § 5.4).
 
-    Requires a partner group whose peer policy is available either as (a) a
-    local .pt checkpoint (--peer-checkpoint, for dry-run / self-play smoke)
-    or (b) a live MCP server (--peer-mcp-url, --peer-mcp-token).
-
-    On completion, writes the § 9.4 JSON to --output (or stdout). If
-    --peer-report-json is provided, verifies mutual agreement first and
-    sets `mutual_agreement=true` before writing."""
-    import numpy as np
-
-    from marl_lab.environment.reward import RewardConfig
-    from marl_lab.gmail.bonus_formatter import (
-        bonus_report_to_json,
-        verify_peer_agreement,
-    )
-    from marl_lab.model.recurrent_q import QPerAgent
-    from marl_lab.sensor.partial_observation import obs_dim
-    from marl_lab.services.bonus_game_runner import (
-        BonusGameRunner,
-        BonusRunnerConfig,
-        make_local_policy_from_qnet,
-    )
-
+    On headless environments (no DISPLAY) this exits with a helpful message
+    pointing at the pre-rendered ``assets/figures/sub_game.gif`` alternative."""
+    from marl_lab.interface.tk_gui import launch_live_gui
     sdk = MarlSDK(cfg_path=args.config)
-    # Local policy
-    if args.local_checkpoint:
-        sdk.load_checkpoint(args.local_checkpoint)
-    local_policy = make_local_policy_from_qnet(sdk.trainer.q_nets["cop"])
-    # Peer policy — one of: local checkpoint (dry-run) or MCP URL (live)
-    if args.peer_checkpoint:
-        o = obs_dim(int(sdk.config.get("game.observation_radius", 2)))
-        peer_qnet = QPerAgent(obs_dim=o, n_actions=6,
-                                hidden_sizes=(128, 128),
-                                gru_hidden_size=64)
-        import torch as _torch
-        ckpt = _torch.load(args.peer_checkpoint, map_location="cpu", weights_only=True)
-        peer_qnet.load_state_dict(ckpt["q_nets"]["cop"])
-        peer_qnet.eval()
-        peer_policy = make_local_policy_from_qnet(peer_qnet)
-    elif args.peer_mcp_url:
-        from marl_lab.mcp.client import MCPClient, MCPClientConfig
-        # Placeholder transport: caller wires this to a real HTTP client
-        raise SystemExit(
-            "--peer-mcp-url is not yet wired in the CLI. Use --peer-checkpoint "
-            "for dry-runs; wire MCPClient with an HTTP transport in your "
-            "own harness for live matches (see docs/PRD_mcp.md)."
-        )
-        # (kept import lines above so the intent is visible in `git blame`)
-        _ = MCPClient
-        _ = MCPClientConfig
-    else:
-        raise SystemExit(
-            "must supply either --peer-checkpoint (dry-run) or "
-            "--peer-mcp-url + --peer-mcp-token (live)"
-        )
-
-    runner = BonusGameRunner(
-        cfg=BonusRunnerConfig(
-            grid_size=tuple(sdk.config.get("game.grid_size", (5, 5))),
-            max_moves=int(sdk.config.get("game.max_moves", 25)),
-            max_barriers=int(sdk.config.get("game.max_barriers", 5)),
-            enable_barriers=bool(sdk.config.get("game.enable_barriers", True)),
-            observation_radius=int(sdk.config.get("game.observation_radius", 2)),
-            timezone_name=sdk.config.get("submission.timezone", "Asia/Jerusalem"),
-        ),
-        reward_cfg=RewardConfig(),
-        rng=np.random.default_rng(args.seed),
+    grid = tuple(sdk.config.get("game.grid_size", (5, 5)))
+    launch_live_gui(
+        checkpoint_path=args.checkpoint,
+        grid_size=grid,
+        max_moves=int(sdk.config.get("game.max_moves", 25)),
+        observation_radius=int(sdk.config.get("game.observation_radius", 2)),
+        delay_ms=args.delay_ms,
     )
-    local_students = _students_from_config(sdk)
-    peer_students = [StudentEntry(role="A", full_name=n, id=i)
-                       for n, i in zip(
-                           (args.peer_students_names or "?").split(","),
-                           (args.peer_students_ids or "?").split(","),
-                           strict=False,
-                       )]
-    report = runner.play_bonus_match(
-        local_group_name=sdk.config.get("submission.group_name", "TBD"),
-        peer_group_name=args.peer_group_name,
-        local_students=local_students,
-        peer_students=peer_students,
-        local_github_repo=sdk.config.get("submission.github_repo", "?"),
-        peer_github_repo=args.peer_github_repo,
-        local_policy=local_policy, peer_policy=peer_policy,
-        seed=args.seed,
-    )
-    # Peer agreement check (only if a peer report was supplied)
-    if args.peer_report_json:
-        peer_txt = Path(args.peer_report_json).read_text()
-        agreed, reason = verify_peer_agreement(report, peer_txt)
-        report.mutual_agreement = agreed
-        LOG.info("mutual_agreement=%s (%s)", agreed, reason)
-    js = bonus_report_to_json(report)
-    if args.output:
-        Path(args.output).write_text(js)
-        LOG.info("bonus report written to %s", args.output)
-    else:
-        sys.stdout.write(js + "\n")
     return 0
+
+
+# cmd_play_bonus lives in cli/bonus_command.py to keep this file ≤ 250 LOC
+from marl_lab.cli.bonus_command import cmd_play_bonus  # noqa: E402, F401
+
+# cmd_play_bonus lives in cli/bonus_command.py to keep this file lean

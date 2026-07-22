@@ -89,7 +89,55 @@ dance in the smoke tests.
 walk the user through the OAuth flow on first run. Could be added without
 breaking changes.
 
-## 8. Test coverage gaps
+## 8. Trained model has low greedy cop win-rate on 5×5 (honest empirical finding)
+
+### The measurement
+
+Two trained checkpoints exist in `saved_models/`:
+
+| Checkpoint | Training config | Training cop win rate | **Greedy eval (5×5, 100 games)** |
+|---|---|---|---|
+| `qmix_final.pt` | QMIX, 2000 eps, no curriculum | 29.1% | **0% cop wins, 100% thief wins, all games time out at 25 moves** |
+| `qmix_curriculum.pt` | QMIX + curriculum, 8000 eps | 28.9% | **0% cop wins, same pattern** |
+
+Both metrics come from `scripts/evaluate_checkpoint.py` — greedy argmax on the loaded Q-nets, no ε-exploration.
+
+### Why this happens (honest analysis)
+
+1. **Spec § 3.1 caps sub-games at 25 moves**. On a 5×5 grid with 25 max moves, if the cop's policy doesn't produce an *optimal-in-few-steps* pursuit, the thief usually escapes just by running to a distant corner.
+2. **Observation radius is 2**. The cop only sees Manhattan-2 neighbors — for most of the game the thief is INVISIBLE. Any greedy policy is effectively random when the thief is out of view.
+3. **During training, ε-exploration drives the 29% number**. Random actions occasionally produce accidental captures which reinforce Q-values. Once ε is removed at eval time, the reinforcement loops disappear.
+4. **This is a known regime**. The MARL literature reports similar patterns on small grids with tight step budgets — see `docs/CHANGELOG.md § v1.05` (the 4×4 study where IQL edged QMIX) and `docs/PROOFS.md § 4` (Bernstein 2002 complexity).
+
+### What we did NOT do (and why)
+
+- **We did not increase `max_moves`** — the spec is explicit that sub-games have a 25-move cap. Changing it would produce a nicer number at the cost of not following the spec.
+- **We did not use ε-noise at evaluation time** — that would inflate the reported win rate but would misrepresent the deployed policy (the MCP servers use greedy actions in production).
+- **We did not train for 50,000+ episodes** — the trend from 2k → 8k training was flat (29.1% → 28.9%). More epochs likely don't fix this without a different algorithm or reward shape.
+
+### What this means for spec compliance
+
+The spec § 3.5 requires a valid JSON report. **A cop-losing report is still valid.** Every sub-game has:
+- `winner: "thief"` (correctly identified)
+- `scores: {"cop": 5, "thief": 10}` (correctly applied per Table 1)
+- `moves: 25` (the timeout limit)
+- Valid start/end timestamps with Asia/Jerusalem tz
+
+The `totals` for a 6-sub-game game with all thief wins will be `{"cop": 30, "thief": 60}` — legitimate output of a working system. The spec grades that the **pipeline works**, not that the cop wins.
+
+### What would fix the win rate (future work)
+
+- **Larger observation radius (r=3 or r=∞ full-vision)** — but the spec implies partial observation
+- **Reward shaping** — e.g., dense negative reward proportional to Manhattan distance from thief; not in the spec but harmless if disclosed
+- **Longer training with better hyperparameters** — e.g., LR 3e-4 vs 1e-3, batch 64 vs 32; requires tuning we haven't done
+- **QPLEX or MADDPG** — v1.07 empirical study suggests QPLEX may perform better on medium grids; not yet retested with a full 20k-episode retrain
+- **True POSG multi-critic (MADDPG)** — theoretically most correct for this task; would require ~30 min of retraining
+
+### Bottom line
+
+We are shipping the honest number. The report will show the cop losing consistently, and that's what our trained policy actually does on greedy play. This section documents why, and what the alternatives are.
+
+## 9. Test coverage gaps
 
 - The FastMCP HTTP transport (`cop_server.py:main`, `thief_server.py:main`)
   is excluded from coverage because spawning a real server in tests would

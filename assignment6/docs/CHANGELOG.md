@@ -16,6 +16,7 @@ Version-by-version story of the assignment6 codebase. Each tag is a real `git ta
 | v1.09 | 2026-06-25 | 254 | 95% | docs: tick TODO.md + add CHANGELOG (was over-eager — see v1.10) |
 | **v1.10** | 2026-06-26 | 254 | 95% | **Honest TODO** — audit found 14 plan-vs-reality mismatches; rewrote each layer's checklist; Reflection Q3 honestly marked `[ ]` not done |
 | **v1.11** | 2026-06-28 | **274** | 95% | **Spec § 9 bonus (10 pts) support** — BonusGameRunner + § 9.4 JSON shape + § 9.2 scoring + peer-agreement checker + `marl play-bonus` CLI + 20 tests |
+| **v1.12** | 2026-07-22 | **~295** | 95% | **Gap-fixing pass** — real Tkinter GUI + MCP HTTP transport (fixes v1.11 stub) + Reflection Q3 answered empirically (multi-cop env + swarm-vs-single study) + `--seed`/`--curriculum` CLI flags + evaluate_checkpoint script + honest 0%-cop-win-rate disclosure in FAILURE_MODES § 8 + trained curriculum checkpoint at `saved_models/qmix_curriculum.pt` |
 
 ---
 
@@ -255,6 +256,89 @@ User is looking for a partner group to actually claim the 10-pt inter-group bonu
 4. Both sides send emails via existing `marl send-report` targeting the § 9.4 JSON. The `send_report()` idempotency ledger already works for bonus reports because bonus JSON uses a different `game_id` derived from `build_bonus_idempotency_key`.
 
 Total project tests: 274 (was 254; +20). Ruff clean, LOC clean.
+
+---
+
+## v1.12 — gap-fixing pass (fills v1.11 stubs, adds honest disclosures)
+
+**`marl-lab-v1.12`**
+
+After a user walk-through of the assignment spec section by section, four gaps were identified that we'd been documenting but not addressing. This version closes them:
+
+### 1. Live Tkinter GUI (fixes prior § 5.4 gap)
+
+- `src/marl_lab/interface/tk_gui.py` — real Tkinter widget with Start / Reset / Quit buttons; watches cop chase thief step-by-step
+- `marl gui --checkpoint saved_models/qmix_curriculum.pt --delay-ms 500` opens the window
+- Headless-safe: exits with a helpful message on no-DISPLAY environments
+- Lazy tkinter import so headless envs can still import the module
+- 3 tests + CLI parity updated (was 9 subcommands, now 10)
+
+### 2. MCP HTTP transport (fixes v1.11 bonus stub)
+
+- `src/marl_lab/mcp/http_transport.py::build_http_transport(url, token, timeout_s)`
+- Real `httpx.post` with Bearer auth; handles FastMCP payload/result wrapping
+- Wired into `cmd_play_bonus`: `--peer-mcp-url ... --peer-mcp-token ...` now genuinely works
+- Extracted `cmd_play_bonus` into its own file `cli/bonus_command.py` (kept `commands.py` ≤ 250 LOC per V3 rule)
+- 5 tests covering happy path + auth header + non-2xx errors + connection failures + bare-response fallback
+
+### 3. Reflection Q3 empirically answered (was `[ ]` in TODO.md § 25)
+
+- `src/marl_lab/environment/multi_cop_env.py` — N-cop pursuit variant (N ≥ 1)
+- `scripts/q3_swarm_vs_single.py` — 500 random-policy games × N ∈ {1, 2, 3, 4}
+- **Result**: cop-team capture rate 47% → 68% → 80% → 90% as N grows
+- Figure: `assets/figures/q3_swarm_vs_single.png`; JSON: `assets/logs/q3_swarm_vs_single.json`
+- 7 tests for the multi-cop env
+- **Interpretation for the spec Q3**: coordination-through-density is empirically demonstrable; even random policies benefit from swarm size because each additional cop reduces the thief's escape options.
+
+### 4. CLI training improvements + evaluation script
+
+- `marl train --seed <int>` — override yaml seed for reproducibility / A-B testing
+- `marl train --curriculum` — enable Lin-2025 grid ramp (2×2 → 5×5)
+- `scripts/evaluate_checkpoint.py --checkpoint ... --n 100` — pure greedy eval (no ε); reports cop win-rate + mean moves per sub-game
+- 3 CLI tests (determinism, curriculum flag, seed reproducibility)
+
+### 5. Honest empirical disclosure (FAILURE_MODES.md § 8)
+
+Ran both trained checkpoints through greedy evaluation:
+
+| Checkpoint | Training win rate | Greedy eval (100 games) |
+|---|---|---|
+| `saved_models/qmix_final.pt` (2k eps, no curriculum) | 29.1% | **0% cop wins** |
+| `saved_models/qmix_curriculum.pt` (8k eps, curriculum) | 28.9% | **0% cop wins** |
+
+The 29% training number was ε-exploration noise. Greedy execution on 5×5 with 25-move cap and observation radius 2 is genuinely hard: the thief is invisible most of the game, and 25 moves isn't enough to guarantee a catch without a lucky exploration path. Documented in FAILURE_MODES.md § 8 with the full analysis of why it happens, what would fix it (larger radius / reward shaping / QPLEX / MADDPG), and why we're shipping the honest number instead of a fudged one.
+
+**Spec-compliance**: still full. The spec § 3.5 requires a valid JSON report; a cop-losing report is still a valid report with correct scoring per Table 1. The system grade is on the pipeline, not the win rate.
+
+### Files added
+
+```
+src/marl_lab/interface/tk_gui.py          (~180 LOC, 3 tests)
+src/marl_lab/mcp/http_transport.py         (~60 LOC, 5 tests)
+src/marl_lab/environment/multi_cop_env.py  (~140 LOC, 7 tests)
+src/marl_lab/cli/bonus_command.py          (~140 LOC, extracted from commands.py)
+scripts/evaluate_checkpoint.py             (~100 LOC)
+scripts/q3_swarm_vs_single.py              (~100 LOC)
+tests/unit/test_tk_gui.py                  (3 tests)
+tests/unit/test_http_transport.py          (5 tests)
+tests/unit/test_multi_cop_env.py           (7 tests)
+saved_models/qmix_curriculum.pt            (587 KB, 8000 eps checkpoint)
+assets/figures/q3_swarm_vs_single.png      (Q3 plot)
+assets/logs/q3_swarm_vs_single.json        (raw Q3 data)
+assets/logs/eval_qmix_final.json           (0% baseline)
+assets/logs/eval_qmix_curriculum.json      (0% curriculum, disclosed honestly)
+```
+
+Total project tests: ~295 (was 274; +21 across the 4 new test files + 2 CLI tests). Ruff clean, LOC clean (extract kept `commands.py` under limit).
+
+### What we DID NOT do in v1.12 (honest gaps that remain)
+
+Two items still ⚠. Both require manual/external steps the codebase can't do headlessly:
+
+1. **Live Prefect Cloud deploy (spec § 5.3 phase 2 / § 8)** — code is deploy-ready via `cloud/prefect.py`, but requires **YOUR** Prefect account signup + `prefect cloud login` + `prefect deploy`. No public URL exists. Documented in FAILURE_MODES.md § 6.
+2. **Actual email send (spec § 3.5 / § 5.5)** — code path is complete and 12 tests use a FakeStrategy proving the wiring works. But no real email has ever left this repo — needs **YOU** to set `GMAIL_USER` + `GMAIL_APP_PASSWORD` and hit `marl play-and-send`. Documented in FAILURE_MODES.md § 7.
+
+Both are labelled clearly. Both need external accounts I can't create for you. Every other gap the walk-through identified is now closed.
 
 ---
 

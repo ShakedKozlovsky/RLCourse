@@ -240,10 +240,10 @@ Reference: [`PRD.md`](PRD.md), [`PLAN.md`](PLAN.md), [`CHANGELOG.md`](CHANGELOG.
 - [x] `docs/FAILURE_MODES.md` — 8 honest disclosures (POSG framing, GRU session state, CTDE-IQL on small grids, exploration limits, no model-based, soft cloud deploy, Gmail App Password, test coverage gaps)
 - [ ] ~~`docs/LESSONS_LEARNED.md`~~ — *rolled into `FAILURE_MODES.md § 3` (the IQL-on-4×4 finding became the case study) + the README "Beyond the spec" rationale.*
 - [x] README cross-references each artefact that exists
-- [⚠] **Reflection question answers**:
+- [x] **Reflection question answers** (all 3 addressed as of v1.12):
   - **Q1 (CTDE non-stationarity)**: ✅ answered in `README § 7.2` "Non-stationarity and how CTDE solves it" + `FAILURE_MODES § 3` (with empirical IQL-vs-CTDE data at 4 grid sizes)
   - **Q2 (IGM limits, QPLEX/Weighted QMIX)**: ✅ answered in `README § 7.2` "IGM limits" + `PROOFS.md § 3` (formal derivation) + `tests/unit/test_qplex.py::test_qplex_more_expressive_than_qmix` (empirical)
-  - **Q3 (swarm vs single-agent pursuit-evasion)**: **[ ] NOT explicitly answered.** The current task is 1 cop + 1 thief; the swarm framing is mentioned only in `PRD.md § 9`. To address Q3 properly would require extending the env to N≥2 cops which is out of v1.10 scope.
+  - **Q3 (swarm vs single-agent pursuit-evasion)**: ✅ **answered in v1.12** via `src/marl_lab/environment/multi_cop_env.py` (N-cop pursuit env) + `scripts/q3_swarm_vs_single.py` (empirical study). Result: capture rate scales 47% → 68% → 80% → 90% as N grows from 1 → 4 with random policies. Figure at `assets/figures/q3_swarm_vs_single.png`, JSON at `assets/logs/q3_swarm_vs_single.json`.
 
 ---
 

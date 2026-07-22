@@ -18,6 +18,7 @@ import argparse
 
 from marl_lab.cli.commands import (
     cmd_audit,
+    cmd_gui,
     cmd_play_and_send,
     cmd_play_bonus,
     cmd_play_game,
@@ -44,6 +45,10 @@ def build_parser() -> argparse.ArgumentParser:
     _add_common_args(p_train)
     p_train.add_argument("--episodes", type=int, default=None)
     p_train.add_argument("--checkpoint", help="Where to save the .pt checkpoint")
+    p_train.add_argument("--seed", type=int, default=None,
+                            help="Override yaml seed for this run (reproducibility / A-B)")
+    p_train.add_argument("--curriculum", action="store_true",
+                            help="Enable Lin-2025 grid-ramp curriculum (2×2 → 5×5)")
     p_train.set_defaults(func=cmd_train)
 
     p_play = sub.add_parser("play-game", help="Play 6 sub-games and emit JSON report")
@@ -77,6 +82,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_version = sub.add_parser("version", help="Print marl_lab version")
     p_version.set_defaults(func=cmd_version)
+
+    p_gui = sub.add_parser("gui",
+                             help="Open the live Tkinter window (spec § 5.4)")
+    _add_common_args(p_gui)
+    p_gui.add_argument("--checkpoint", required=True,
+                          help="Trained .pt to load for both agents")
+    p_gui.add_argument("--delay-ms", type=int, default=500,
+                          help="Milliseconds between frames (default: 500)")
+    p_gui.set_defaults(func=cmd_gui)
 
     p_bonus = sub.add_parser("play-bonus",
                                 help="Play a spec § 9 inter-group bonus match (10 pts)")

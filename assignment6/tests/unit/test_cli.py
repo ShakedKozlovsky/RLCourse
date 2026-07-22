@@ -58,15 +58,16 @@ def test_audit_subcommand_prints_checklist(capsys) -> None:
     assert "MCP" in out
 
 
-def test_parser_supports_all_9_subcommands() -> None:
-    """V3 § 3 requires CLI parity with spec § 5.6 + § 9 (bonus).
+def test_parser_supports_all_10_subcommands() -> None:
+    """V3 § 3 requires CLI parity with spec § 5.4 (GUI) + § 5.6 + § 9 (bonus).
 
-    9 subcommands: 8 core + `play-bonus` for the spec § 9 inter-group match."""
+    10 subcommands: 8 core + `play-bonus` (§ 9) + `gui` (live § 5.4 widget)."""
     parser = build_parser()
     sub_action = next(a for a in parser._actions if a.choices)   # noqa: SLF001
     choices = set(sub_action.choices.keys())
     expected = {"train", "play-game", "send-report", "play-and-send",
-                "serve-cop", "serve-thief", "audit", "version", "play-bonus"}
+                "serve-cop", "serve-thief", "audit", "version",
+                "play-bonus", "gui"}
     assert expected == choices
 
 
@@ -74,6 +75,31 @@ def test_train_subcommand_runs(tiny_cfg: Path, tmp_path: Path) -> None:
     ckpt = tmp_path / "ckpt.pt"
     rc = main(["train", "--config", str(tiny_cfg), "--episodes", "3",
                 "--checkpoint", str(ckpt)])
+    assert rc == 0
+    assert ckpt.exists()
+
+
+def test_train_with_seed_flag_reproduces(tiny_cfg: Path, tmp_path: Path) -> None:
+    """--seed override must produce identical Q-net weights on two runs."""
+    import torch
+    ckpt_a = tmp_path / "a.pt"
+    ckpt_b = tmp_path / "b.pt"
+    main(["train", "--config", str(tiny_cfg), "--episodes", "3",
+           "--seed", "12345", "--checkpoint", str(ckpt_a)])
+    main(["train", "--config", str(tiny_cfg), "--episodes", "3",
+           "--seed", "12345", "--checkpoint", str(ckpt_b)])
+    a = torch.load(str(ckpt_a), map_location="cpu", weights_only=True)
+    b = torch.load(str(ckpt_b), map_location="cpu", weights_only=True)
+    for agent in ("cop", "thief"):
+        for k in a["q_nets"][agent]:
+            torch.testing.assert_close(a["q_nets"][agent][k], b["q_nets"][agent][k])
+
+
+def test_train_with_curriculum_flag_runs(tiny_cfg: Path, tmp_path: Path) -> None:
+    """--curriculum flag routes to curriculum-aware train path."""
+    ckpt = tmp_path / "c.pt"
+    rc = main(["train", "--config", str(tiny_cfg), "--episodes", "3",
+                "--curriculum", "--checkpoint", str(ckpt)])
     assert rc == 0
     assert ckpt.exists()
 
