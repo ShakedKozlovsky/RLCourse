@@ -20,6 +20,11 @@ class RewardConfig:
     capture_penalty_thief: float = -1.0  # large negative on capture (thief)
     collision_penalty: float = -0.02     # both get a small penalty on collision
     barrier_placed_penalty_cop: float = -0.05  # opportunity cost of placing a barrier
+    # Distance shaping (v1.13 — dense learning signal for partial-obs env).
+    # Legitimate CTDE technique: uses global-state distance during TRAINING
+    # only; the reported per-sub-game score (Table 1) is unchanged. See
+    # docs/FAILURE_MODES § 8 for the empirical justification.
+    distance_shaping_weight: float = 0.0  # 0 = no shaping (spec-only); 0.02 = mild pull
     # Per-sub-game scoring (used for the Gmail JSON via game_runner)
     score_cop_win: int = 20
     score_thief_win: int = 10
@@ -33,8 +38,16 @@ def per_step_reward(
     collision: bool,
     barrier_placed_by_cop: bool,
     cfg: RewardConfig,
+    manhattan_distance: int | None = None,
 ) -> dict[str, float]:
-    """Per-tick reward emitted to both agents. Pure function — no env mutation."""
+    """Per-tick reward emitted to both agents. Pure function — no env mutation.
+
+    If ``manhattan_distance`` is provided AND cfg.distance_shaping_weight > 0,
+    the cop gets an additional negative reward proportional to the distance
+    to the thief (encouraging pursuit even when the thief is out of visual
+    range). The thief gets the symmetric positive reward (encouraging
+    escape). This is a CTDE training-time signal — the reported score
+    (Table 1) is unaffected."""
     r_cop = cfg.step_penalty_cop
     r_thief = cfg.step_penalty_thief
     if capture:
@@ -48,6 +61,11 @@ def per_step_reward(
         r_thief += cfg.collision_penalty
     if barrier_placed_by_cop:
         r_cop += cfg.barrier_placed_penalty_cop
+    if manhattan_distance is not None and cfg.distance_shaping_weight > 0:
+        # Cop penalised for being far away, thief rewarded for being far away
+        shaping = cfg.distance_shaping_weight * float(manhattan_distance)
+        r_cop -= shaping
+        r_thief += shaping
     return {"cop": float(r_cop), "thief": float(r_thief)}
 
 

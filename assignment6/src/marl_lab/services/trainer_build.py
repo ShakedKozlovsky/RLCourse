@@ -108,11 +108,16 @@ def build_optimisers(cfg, q_nets: dict, mixer, critics: dict | None = None):
 def rebuild_env_and_mixer_for_grid(
     *, old_env: DecPomdpEnv, grid_size: tuple[int, int],
     cfg, q_nets: dict, device: torch.device, rng: np.random.Generator,
+    reward_cfg: RewardConfig | None = None,
 ):
-    """Build (env, mixer, target_mixer, opts, buffer) for a new grid size.
+    """Build (env, mixer, target_mixer, opts, buffer, critics, target_critics)
+    for a new grid size.
 
     Curriculum semantics — Q-nets are NOT rebuilt (their obs_dim depends on
-    observation_radius only). Returns the new components as a tuple."""
+    observation_radius only). For MADDPG, per-agent centralised critics ARE
+    rebuilt (their state_dim changes with the grid). Returns:
+        (env, mixer, target_mixer, opts, buffer, critics, target_critics)
+    where critics + target_critics are {} for non-MADDPG algorithms."""
     env_cfg = EnvConfig(
         grid_size=grid_size,
         max_moves=max(8, grid_size[0] * grid_size[1]),
@@ -120,15 +125,25 @@ def rebuild_env_and_mixer_for_grid(
         enable_barriers=old_env.env_cfg.enable_barriers,
         observation_radius=old_env.env_cfg.observation_radius,
     )
-    env = DecPomdpEnv(env_cfg=env_cfg, reward_cfg=RewardConfig(), rng=rng)
+    # Preserve the trainer's reward_cfg (incl. distance_shaping_weight) across
+    # curriculum stage rebuilds; fall back to default if caller didn't pass one.
+    if reward_cfg is None:
+        reward_cfg = RewardConfig()
+    env = DecPomdpEnv(env_cfg=env_cfg, reward_cfg=reward_cfg, rng=rng)
     env.reset(seed=int(rng.integers(0, 2**31 - 1)))
     state_dim = env.global_state().shape[0]
     mixer, target_mixer = build_mixer_pair(cfg, state_dim, device)
-    opts = build_optimisers(cfg, q_nets, mixer)
+    critics: dict = {}
+    target_critics: dict = {}
+    if cfg.algo == "maddpg":
+        critics, target_critics = build_maddpg_critics(cfg, state_dim, device)
+        opts = build_optimisers(cfg, q_nets, mixer, critics=critics)
+    else:
+        opts = build_optimisers(cfg, q_nets, mixer)
     buffer = CentralisedReplayBuffer(
         capacity=cfg.buffer_capacity, max_seq_len=env_cfg.max_moves,
         state_dim=state_dim, obs_dim=env.obs_dim,
         n_actions_per_agent={"cop": 6, "thief": 5},
         rng=rng,
     )
-    return env, mixer, target_mixer, opts, buffer
+    return env, mixer, target_mixer, opts, buffer, critics, target_critics

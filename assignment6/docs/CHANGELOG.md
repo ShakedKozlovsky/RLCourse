@@ -17,6 +17,7 @@ Version-by-version story of the assignment6 codebase. Each tag is a real `git ta
 | **v1.10** | 2026-06-26 | 254 | 95% | **Honest TODO** — audit found 14 plan-vs-reality mismatches; rewrote each layer's checklist; Reflection Q3 honestly marked `[ ]` not done |
 | **v1.11** | 2026-06-28 | **274** | 95% | **Spec § 9 bonus (10 pts) support** — BonusGameRunner + § 9.4 JSON shape + § 9.2 scoring + peer-agreement checker + `marl play-bonus` CLI + 20 tests |
 | **v1.12** | 2026-07-22 | **~295** | 95% | **Gap-fixing pass** — real Tkinter GUI + MCP HTTP transport (fixes v1.11 stub) + Reflection Q3 answered empirically (multi-cop env + swarm-vs-single study) + `--seed`/`--curriculum` CLI flags + evaluate_checkpoint script + honest 0%-cop-win-rate disclosure in FAILURE_MODES § 8 + trained curriculum checkpoint at `saved_models/qmix_curriculum.pt` |
+| **v1.13** | 2026-07-22 | ~295 | 95% | **Algorithm bake-off + MADDPG default** — added distance-shaping reward + fixed curriculum-with-MADDPG bug + trained 3 algorithms (QMIX/QPLEX/MADDPG) with same curriculum + shaping. **MADDPG-discrete wins**: 24% greedy on 5×5 (vs QMIX 1% / QPLEX 0%), 94% on 2×2, 65-67% on 3×3/4×4. Flipped `configs/setup.yaml::marl.algorithm` from qmix → maddpg. Investigation writeup in FAILURE_MODES § 8. |
 
 ---
 

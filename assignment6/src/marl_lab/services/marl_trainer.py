@@ -205,10 +205,13 @@ class MarlTrainer:
         return history
 
     def _rebuild_env_for_grid(self, grid_size: tuple[int, int]) -> None:
-        """Swap the env to a new grid size (Q-nets preserved; everything else
-        rebuilt). Delegates to ``trainer_build.rebuild_env_and_mixer_for_grid``."""
+        """Swap the env to a new grid size (Q-nets preserved; mixer + critics
+        rebuilt because state_dim changes). Preserves the trainer's reward_cfg
+        so distance-shaping survives curriculum stage transitions."""
         (self.env, self.mixer, self.target_mixer, self.opts,
-         self.buffer) = rebuild_env_and_mixer_for_grid(
+         self.buffer, self.critics,
+         self.target_critics) = rebuild_env_and_mixer_for_grid(
             old_env=self.env, grid_size=grid_size, cfg=self.cfg,
             q_nets=self.q_nets, device=self.device, rng=self._rng,
+            reward_cfg=self.env.reward_cfg,
         )

@@ -30,7 +30,7 @@ def test_version_pinned() -> None:
 def test_config_loads_default() -> None:
     cfg = ConfigManager()
     assert cfg.get("marl.gamma") == pytest.approx(0.99)
-    assert cfg.get("marl.algorithm") == "qmix"
+    assert cfg.get("marl.algorithm") == "maddpg"   # v1.13 default (was "qmix"; see FAILURE_MODES § 8)
     assert cfg.get("game.grid_size") == [5, 5]
     assert cfg.get("game.num_games") == 6
     assert cfg.get("missing.key", default="dflt") == "dflt"

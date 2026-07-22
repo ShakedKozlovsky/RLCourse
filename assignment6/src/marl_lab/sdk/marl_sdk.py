@@ -54,12 +54,15 @@ class MarlSDK:
             enable_barriers=bool(self.config.get("game.enable_barriers", True)),
             observation_radius=int(self.config.get("game.observation_radius", 2)),
         )
-        # Spec § 3.6 — yaml `scoring.*` keys must drive runtime scoring
+        # Spec § 3.6 — yaml `scoring.*` keys must drive runtime scoring.
+        # v1.13 — also plumb the distance_shaping_weight training aid.
         reward_cfg = RewardConfig(
             score_cop_win=int(self.config.get("scoring.cop_win", 20)),
             score_thief_win=int(self.config.get("scoring.thief_win", 10)),
             score_cop_loss=int(self.config.get("scoring.cop_loss", 5)),
             score_thief_loss=int(self.config.get("scoring.thief_loss", 5)),
+            distance_shaping_weight=float(
+                self.config.get("scoring.distance_shaping_weight", 0.0)),
         )
         self._rng = np.random.default_rng(seed)
         self.env = DecPomdpEnv(env_cfg=env_cfg, reward_cfg=reward_cfg, rng=self._rng)

@@ -80,10 +80,16 @@ class DecPomdpEnv:
         capture = winner == "cop"
         timeout = winner == "thief"
         done = winner is not None
+        # Manhattan distance from the NEW board — used for distance shaping
+        # if reward_cfg.distance_shaping_weight > 0 (v1.13 CTDE training aid)
+        cr, cc = new_board.cop_pos
+        tr, tc = new_board.thief_pos
+        manhattan = abs(cr - tr) + abs(cc - tc)
         reward = per_step_reward(
             capture=capture, timeout=timeout, collision=move_info.collision,
             barrier_placed_by_cop=move_info.barrier_placed,
             cfg=self.reward_cfg,
+            manhattan_distance=manhattan,
         )
         info = {
             "winner": winner,

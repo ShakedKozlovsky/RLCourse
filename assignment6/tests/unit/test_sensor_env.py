@@ -84,6 +84,31 @@ def test_observe_dim_matches_obs_dim() -> None:
 
 # ----- Reward function -----
 
+def test_per_step_reward_distance_shaping_off_by_default() -> None:
+    """distance_shaping_weight=0 (default) → identical to pre-v1.13 behaviour."""
+    cfg = RewardConfig()  # default weight = 0
+    r_no_shape = per_step_reward(capture=False, timeout=False, collision=False,
+                                    barrier_placed_by_cop=False, cfg=cfg,
+                                    manhattan_distance=8)
+    r_ref = per_step_reward(capture=False, timeout=False, collision=False,
+                             barrier_placed_by_cop=False, cfg=cfg,
+                             manhattan_distance=None)
+    assert r_no_shape == r_ref  # No shaping → no distance effect
+
+
+def test_per_step_reward_distance_shaping_penalises_far_cop() -> None:
+    """With weight > 0, farther cop → more negative cop reward."""
+    cfg = RewardConfig(distance_shaping_weight=0.05)
+    r_close = per_step_reward(capture=False, timeout=False, collision=False,
+                                barrier_placed_by_cop=False, cfg=cfg,
+                                manhattan_distance=1)
+    r_far = per_step_reward(capture=False, timeout=False, collision=False,
+                              barrier_placed_by_cop=False, cfg=cfg,
+                              manhattan_distance=8)
+    assert r_far["cop"] < r_close["cop"]     # farther → more negative
+    assert r_far["thief"] > r_close["thief"] # thief benefits from distance
+
+
 def test_per_step_reward_no_terminal() -> None:
     cfg = RewardConfig()
     r = per_step_reward(capture=False, timeout=False, collision=False,
