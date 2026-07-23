@@ -37,3 +37,8 @@ token.json
 # but assets/logs/ is a SPEC § 7.3 evidence directory and ships in the repo.
 *.log
 !assets/logs/*.log
+
+# v1.14: personal-data files (preview.json contains student ID via env-var override)
+preview.json
+final_report.json
+assets/logs/sent_games.json
