@@ -61,7 +61,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_send = sub.add_parser("send-report", help="Send a report JSON via Gmail")
     _add_common_args(p_send)
     p_send.add_argument("--report-json", required=True)
-    p_send.add_argument("--dry-run", action="store_true")
+    p_send.add_argument("--dry-run", action="store_true",
+                          help="Build + log the send but don't hit SMTP")
+    p_send.add_argument("--to", default=None,
+                          help="Override gmail.report_to (test-send to your own address first)")
+    p_send.add_argument("--from", dest="from_addr", default=None,
+                          help="Override From: address (default: $GMAIL_USER env)")
+    p_send.add_argument("--force", action="store_true",
+                          help="Bypass idempotency ledger (allows re-send of same JSON)")
     p_send.set_defaults(func=cmd_send_report)
 
     p_ps = sub.add_parser("play-and-send", help="Play 6 sub-games then send report")
@@ -69,6 +76,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_ps.add_argument("--checkpoint")
     p_ps.add_argument("--seed", type=int, default=0)
     p_ps.add_argument("--dry-run", action="store_true")
+    p_ps.add_argument("--to", default=None,
+                         help="Override gmail.report_to (test-send first)")
+    p_ps.add_argument("--from", dest="from_addr", default=None,
+                         help="Override From: address")
+    p_ps.add_argument("--force", action="store_true",
+                         help="Bypass ledger idempotency")
     p_ps.set_defaults(func=cmd_play_and_send)
 
     p_cop = sub.add_parser("serve-cop", help="Start the cop MCP server")

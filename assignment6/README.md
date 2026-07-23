@@ -375,6 +375,26 @@ Trained QMIX/QPLEX/IQL for 250 episodes each on **5×5, 6×6, and 7×7** grids (
 
 **Conclusion.** The Lin 2025 hypothesis is borne out on this codebase: as grid size grows from 4×4 → 7×7, the IQL non-stationarity gap widens. **QPLEX dominates on 6×6** — the dueling decomposition's strict expressiveness gain over QMIX cashes out on medium grids. Both CTDE methods beat IQL on 7×7. The 4×4 anti-hallucination finding from v1.05 is now properly contextualised in [`docs/FAILURE_MODES.md`](docs/FAILURE_MODES.md) § 3 — it was a **small-state-space artefact**, not a critique of CTDE. This is exactly the kind of empirical grounding spec § 7.2 asks for.
 
+### 7.3 (extra) 5-algorithm ELO tournament (v1.14)
+
+![ELO leaderboard](assets/figures/elo_leaderboard.png)
+![Pairwise win-rate heatmap](assets/figures/elo_win_matrix.png)
+
+600 games round-robin between our 5 trained algorithms + a uniform-random baseline. Standard chess ELO (K=32, initial 1500). Each pair plays 20 games with role alternation.
+
+**Result** (raw CSV at [`assets/logs/elo_tournament.csv`](assets/logs/elo_tournament.csv)):
+
+| Rank | Model | ELO | Wins/200 |
+|---|---|---|---|
+| 🥇 | MADDPG | **1825** | 85 |
+| 🥈 | IQL | **1799** | 75 |
+| 🥉 | Random baseline | 1422 | 32 |
+| 4 | VDN | 1370 | 34 |
+| 5 | QPLEX | 1309 | 38 (**0 as cop**) |
+| 6 | QMIX | 1275 | 37 |
+
+**The finding**: both POSG-respecting algorithms (MADDPG per-agent critic, IQL per-agent Q-net) crush the field. All three cooperative-Dec-POMDP algorithms with the averaged-reward hack rank *below* random. QPLEX's cop policy has literally zero wins in 100 cop-side games. Full analysis in `docs/FAILURE_MODES.md § 8`.
+
 ### 7.3 (d) MCP communication proof (CLI-style log)
 
 ```

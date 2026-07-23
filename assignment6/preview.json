@@ -1,0 +1,95 @@
+{
+  "github_repo": "https://github.com/ShakedKozlovsky/RLCourse",
+  "group_code": "biu-rl12",
+  "group_name": "biu-rl12",
+  "provenance": {
+    "git_dirty": true,
+    "git_sha": "eefddb3",
+    "marl_lab_version": "1.00",
+    "matplotlib_version": "3.11.0",
+    "numpy_version": "2.5.0",
+    "platform": "Linux-6.8.0-110-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "torch_version": "2.12.1+cu130"
+  },
+  "students": [
+    {
+      "full_name": "Shaked Kozlovsky",
+      "id": "208904839",
+      "role": "A"
+    }
+  ],
+  "sub_games": [
+    {
+      "end": "2026-07-22T21:41:22.463327+03:00",
+      "id": 1,
+      "moves": 2,
+      "scores": {
+        "cop": 20,
+        "thief": 5
+      },
+      "start": "2026-07-22T21:41:22.461513+03:00",
+      "winner": "cop"
+    },
+    {
+      "end": "2026-07-22T21:41:22.464422+03:00",
+      "id": 2,
+      "moves": 2,
+      "scores": {
+        "cop": 20,
+        "thief": 5
+      },
+      "start": "2026-07-22T21:41:22.463342+03:00",
+      "winner": "cop"
+    },
+    {
+      "end": "2026-07-22T21:41:22.476205+03:00",
+      "id": 3,
+      "moves": 25,
+      "scores": {
+        "cop": 5,
+        "thief": 10
+      },
+      "start": "2026-07-22T21:41:22.464431+03:00",
+      "winner": "thief"
+    },
+    {
+      "end": "2026-07-22T21:41:22.487944+03:00",
+      "id": 4,
+      "moves": 25,
+      "scores": {
+        "cop": 5,
+        "thief": 10
+      },
+      "start": "2026-07-22T21:41:22.476220+03:00",
+      "winner": "thief"
+    },
+    {
+      "end": "2026-07-22T21:41:22.489055+03:00",
+      "id": 5,
+      "moves": 2,
+      "scores": {
+        "cop": 20,
+        "thief": 5
+      },
+      "start": "2026-07-22T21:41:22.487958+03:00",
+      "winner": "cop"
+    },
+    {
+      "end": "2026-07-22T21:41:22.496157+03:00",
+      "id": 6,
+      "moves": 15,
+      "scores": {
+        "cop": 20,
+        "thief": 5
+      },
+      "start": "2026-07-22T21:41:22.489066+03:00",
+      "winner": "cop"
+    }
+  ],
+  "timezone": "Asia/Jerusalem",
+  "totals": {
+    "cop": 90,
+    "thief": 40
+  }
+}

@@ -104,6 +104,34 @@ def test_train_with_curriculum_flag_runs(tiny_cfg: Path, tmp_path: Path) -> None
     assert ckpt.exists()
 
 
+def test_env_var_overrides_student_id(tiny_cfg: Path, tmp_path: Path,
+                                          monkeypatch) -> None:
+    """MARL_STUDENT_A_ID env var must override yaml (keeps ID out of committed yaml)."""
+    monkeypatch.setenv("MARL_STUDENT_A_ID", "999999999")
+    out = tmp_path / "report.json"
+    rc = main(["play-game", "--config", str(tiny_cfg), "--output", str(out),
+                "--seed", "0"])
+    assert rc == 0
+    import json
+    data = json.loads(out.read_text())
+    assert data["students"][0]["id"] == "999999999"
+
+
+def test_env_var_overrides_group_code_and_name(tiny_cfg: Path, tmp_path: Path,
+                                                    monkeypatch) -> None:
+    """MARL_GROUP_CODE / MARL_GROUP_NAME env vars must override yaml."""
+    monkeypatch.setenv("MARL_GROUP_CODE", "abc12345")
+    monkeypatch.setenv("MARL_GROUP_NAME", "test-team")
+    out = tmp_path / "report.json"
+    rc = main(["play-game", "--config", str(tiny_cfg), "--output", str(out),
+                "--seed", "0"])
+    assert rc == 0
+    import json
+    data = json.loads(out.read_text())
+    assert data["group_code"] == "abc12345"
+    assert data["group_name"] == "test-team"
+
+
 def test_play_game_subcommand_emits_json(tiny_cfg: Path, tmp_path: Path) -> None:
     out = tmp_path / "report.json"
     rc = main(["play-game", "--config", str(tiny_cfg), "--output", str(out),

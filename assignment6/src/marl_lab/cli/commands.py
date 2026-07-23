@@ -16,13 +16,35 @@ LOG = get_logger("cli")
 
 
 def _students_from_config(sdk: MarlSDK) -> list[StudentEntry]:
+    """Load students from yaml, then apply env-var overrides for role A.
+
+    Env-var overrides let you keep personal data out of the committed yaml:
+      - MARL_STUDENT_A_ID       — 9-digit teudat zehut (overrides yaml)
+      - MARL_STUDENT_A_NAME     — full name (overrides yaml)
+      - MARL_GROUP_CODE         — 8-char group code (overrides yaml)
+      - MARL_GROUP_NAME         — team display name (overrides yaml)
+
+    Env vars win over yaml when set. Leave them unset to use yaml defaults."""
+    import os
     raw = sdk.config.get("submission.students", []) or []
     out: list[StudentEntry] = []
     for s in raw:
-        out.append(StudentEntry(role=s.get("role", "A"),
-                                  full_name=s.get("full_name", "?"),
-                                  id=str(s.get("id", "?"))))
-    return out or [StudentEntry(role="A", full_name="?", id="?")]
+        role = s.get("role", "A")
+        full_name = s.get("full_name", "?")
+        student_id = str(s.get("id", "?"))
+        # Override role-A student's ID + name from env if provided (keeps
+        # personal data out of the committed yaml)
+        if role == "A":
+            student_id = os.environ.get("MARL_STUDENT_A_ID", student_id)
+            full_name = os.environ.get("MARL_STUDENT_A_NAME", full_name)
+        out.append(StudentEntry(role=role, full_name=full_name, id=student_id))
+    if not out:
+        out = [StudentEntry(
+            role="A",
+            full_name=os.environ.get("MARL_STUDENT_A_NAME", "?"),
+            id=os.environ.get("MARL_STUDENT_A_ID", "?"),
+        )]
+    return out
 
 
 def cmd_train(args: argparse.Namespace) -> int:
@@ -58,13 +80,20 @@ def cmd_train(args: argparse.Namespace) -> int:
 
 
 def cmd_play_game(args: argparse.Namespace) -> int:
+    import os
     sdk = MarlSDK(cfg_path=args.config)
     if args.checkpoint:
         sdk.load_checkpoint(args.checkpoint)
     students = _students_from_config(sdk)
+    # Env overrides (keep personal / assignment-specific data out of yaml):
+    #   MARL_GROUP_CODE / MARL_GROUP_NAME — override submission.{group_code,group_name}
+    group_name = os.environ.get("MARL_GROUP_NAME",
+                                  sdk.config.get("submission.group_name", "TBD"))
+    group_code = os.environ.get("MARL_GROUP_CODE",
+                                  sdk.config.get("submission.group_code", "TBD"))
     report = sdk.play_game(
-        group_name=sdk.config.get("submission.group_name", "TBD"),
-        group_code=sdk.config.get("submission.group_code", "TBD"),
+        group_name=group_name,
+        group_code=group_code,
         github_repo=sdk.config.get("submission.github_repo", "?"),
         students=students,
         timezone_name=sdk.config.get("submission.timezone", "UTC"),
@@ -93,14 +122,18 @@ def cmd_send_report(args: argparse.Namespace) -> int:
     from marl_lab.shared.types import GameReport, SubGameResult
 
     sdk = MarlSDK(cfg_path=args.config)
+    # --to override lets you test-send to your own address first before the
+    # real submission. --from overrides GMAIL_USER for the "From:" header.
+    report_to = args.to or sdk.config.get("gmail.report_to", "rmisegal+marl@gmail.com")
+    from_address = args.from_addr or sdk.config.get("gmail.from_address", "")
     cfg = SenderConfig(
-        report_to=sdk.config.get("gmail.report_to", "rmisegal+marl@gmail.com"),
-        from_address=sdk.config.get("gmail.from_address", ""),
+        report_to=report_to,
+        from_address=from_address,
         subject_prefix=sdk.config.get("gmail.subject_prefix", "[MARL Game]"),
         send_mode=sdk.config.get("gmail.send_mode", "app_password"),
     )
     if cfg.send_mode == "app_password":
-        strategy = AppPasswordStrategy()
+        strategy = AppPasswordStrategy(sender_email=from_address or None)
     elif cfg.send_mode == "oauth":
         strategy = OAuthStrategy()
     elif cfg.send_mode == "mcp_tool":
@@ -108,6 +141,15 @@ def cmd_send_report(args: argparse.Namespace) -> int:
     else:
         raise SystemExit(f"unknown send_mode={cfg.send_mode!r}")
     sender = GameReportSender(cfg, strategy)
+    # --force bypasses the ledger idempotency check (useful for test-sends
+    # to your own address before the real submission). The ledger still
+    # records successful sends, so you get one accidental-re-send safety net
+    # per (game_id, recipient) after the flag is off.
+    if args.force:
+        sender.ledger._entries.clear()   # noqa: SLF001 (deliberate test-flow reset)
+        LOG.info("send-report: --force clears ledger before this send")
+    LOG.info("send-report: to=%s from=%s mode=%s", cfg.report_to,
+              cfg.from_address or "(GMAIL_USER)", cfg.send_mode)
     data = json.loads(Path(args.report_json).read_text())
     sub_games = [SubGameResult(
         id=sg["id"], start=datetime.fromisoformat(sg["start"]),
