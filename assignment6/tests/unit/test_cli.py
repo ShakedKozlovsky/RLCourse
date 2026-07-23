@@ -14,7 +14,7 @@ from marl_lab.cli.main import build_parser, main
 @pytest.fixture
 def tiny_cfg(tmp_path: Path) -> Path:
     cfg = {
-        "version": "1.17", "seed": 0, "device": "cpu",
+        "version": "1.18", "seed": 0, "device": "cpu",
         "game": {"grid_size": [4, 4], "max_moves": 8, "num_games": 2,
                   "max_barriers": 2, "enable_barriers": False, "observation_radius": 1},
         "scoring": {"cop_win": 20, "thief_win": 10, "cop_loss": 5, "thief_loss": 5},
@@ -149,6 +149,86 @@ def test_send_report_with_dry_run(tiny_cfg: Path, tmp_path: Path) -> None:
     # First play-game to get a real report
     out = tmp_path / "report.json"
     main(["play-game", "--config", str(tiny_cfg), "--output", str(out), "--seed", "0"])
+    rc = main(["send-report", "--config", str(tiny_cfg),
+                "--report-json", str(out), "--dry-run"])
+    assert rc == 0
+
+
+# ---- v1.18 submission guardrails ----
+
+def test_play_and_send_refuses_random_play_without_checkpoint(
+    tiny_cfg: Path, tmp_path: Path, monkeypatch
+) -> None:
+    """v1.18: `play-and-send` with no --checkpoint AND no yaml default
+    must refuse — silent random-play would be a devastating submission
+    accident. --dry-run bypasses so CI tests still work."""
+    # tiny_cfg has no submission.default_checkpoint set
+    with pytest.raises(SystemExit, match="random-play"):
+        main(["play-and-send", "--config", str(tiny_cfg), "--seed", "0"])
+
+
+def test_play_and_send_uses_yaml_default_checkpoint(
+    tiny_cfg: Path, tmp_path: Path
+) -> None:
+    """v1.18: when --checkpoint is omitted, submission.default_checkpoint
+    from yaml is used automatically. Prevents the "forgot --checkpoint"
+    footgun."""
+    # First train a checkpoint the play-and-send run can pick up
+    ckpt = tmp_path / "trained.pt"
+    main(["train", "--config", str(tiny_cfg), "--episodes", "3",
+           "--checkpoint", str(ckpt)])
+    # Rewrite the tiny cfg to point default_checkpoint at it
+    txt = tiny_cfg.read_text()
+    cfg_dict = yaml.safe_load(txt)
+    cfg_dict["submission"]["default_checkpoint"] = str(ckpt)
+    tiny_cfg.write_text(yaml.safe_dump(cfg_dict))
+    # play-and-send with --dry-run so no real SMTP hit
+    rc = main(["play-and-send", "--config", str(tiny_cfg),
+                "--seed", "0", "--dry-run"])
+    assert rc == 0
+
+
+def test_send_report_refuses_placeholder_group_code(
+    tiny_cfg: Path, tmp_path: Path
+) -> None:
+    """v1.18: cmd_send_report must refuse to send when group/student
+    metadata still contains TBD/TODO/? placeholders."""
+    out = tmp_path / "report.json"
+    main(["play-game", "--config", str(tiny_cfg), "--output", str(out), "--seed", "0"])
+    # Poison the report on disk (simulates the "forgot to set env vars" case)
+    data = json.loads(out.read_text())
+    data["group_code"] = "TBD-8CHR"
+    out.write_text(json.dumps(data))
+    with pytest.raises(SystemExit, match="placeholders"):
+        main(["send-report", "--config", str(tiny_cfg),
+               "--report-json", str(out)])
+
+
+def test_send_report_refuses_placeholder_student_id(
+    tiny_cfg: Path, tmp_path: Path
+) -> None:
+    """v1.18: TODO in a student.id must block the send too."""
+    out = tmp_path / "report.json"
+    main(["play-game", "--config", str(tiny_cfg), "--output", str(out), "--seed", "0"])
+    data = json.loads(out.read_text())
+    data["students"][0]["id"] = "TODO"
+    out.write_text(json.dumps(data))
+    with pytest.raises(SystemExit, match="placeholders"):
+        main(["send-report", "--config", str(tiny_cfg),
+               "--report-json", str(out)])
+
+
+def test_send_report_dry_run_bypasses_placeholder_check(
+    tiny_cfg: Path, tmp_path: Path
+) -> None:
+    """--dry-run must still work even with placeholder metadata (nothing
+    leaves the machine, so metadata validity is moot)."""
+    out = tmp_path / "report.json"
+    main(["play-game", "--config", str(tiny_cfg), "--output", str(out), "--seed", "0"])
+    data = json.loads(out.read_text())
+    data["group_code"] = "TBD-8CHR"
+    data["students"][0]["id"] = "TODO"
+    out.write_text(json.dumps(data))
     rc = main(["send-report", "--config", str(tiny_cfg),
                 "--report-json", str(out), "--dry-run"])
     assert rc == 0

@@ -2,7 +2,7 @@
 # Spec § 3.6 demands a YAML/JSON config; this is the YAML option.
 # Every numeric parameter the game / agent / training uses MUST appear here.
 
-version: "1.17"
+version: "1.18"
 seed: 208904839
 device: cpu
 
@@ -83,14 +83,18 @@ gmail:
 
 # === Submission metadata (filled in before submission) ===
 submission:
-  group_code: "TBD-8CHR"          # 8-char unique group code; replace before submitting
-  group_name: "TBD"
+  group_code: "TBD-8CHR"          # 8-char unique group code; override via MARL_GROUP_CODE env var (kept out of yaml so it doesn't sit in git)
+  group_name: "TBD"               # override via MARL_GROUP_NAME env var
   students:
     - role: "A"
       full_name: "Shaked Kozlovsky"
-      id: "TODO"
+      id: "TODO"                  # override via MARL_STUDENT_A_ID env var
   github_repo: "https://github.com/ShakedKozlovsky/RLCourse"
   timezone: "Asia/Jerusalem"
+  # v1.18: `play-and-send` auto-loads this checkpoint when --checkpoint is
+  # omitted. Prevents accidental random-play submissions. Set to null to
+  # force explicit --checkpoint each time.
+  default_checkpoint: "saved_models/maddpg_shaped.pt"
 
 # === Paths ===
 paths:

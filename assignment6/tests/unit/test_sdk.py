@@ -16,7 +16,7 @@ from marl_lab.shared.types import StudentEntry
 def tiny_cfg(tmp_path: Path) -> Path:
     """Write a tiny yaml so train() finishes quickly."""
     cfg = {
-        "version": "1.17",
+        "version": "1.18",
         "seed": 0,
         "device": "cpu",
         "game": {"grid_size": [4, 4], "max_moves": 8, "num_games": 2,

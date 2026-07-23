@@ -14,6 +14,9 @@ from marl_lab.shared.version import __version__
 
 LOG = get_logger("cli")
 
+# v1.18 guardrail helper (see cli/submission_guards.py for the check itself)
+from marl_lab.cli.submission_guards import refuse_placeholder_metadata  # noqa: E402
+
 
 def _students_from_config(sdk: MarlSDK) -> list[StudentEntry]:
     """Load students from yaml, then apply env-var overrides for role A.
@@ -163,12 +166,15 @@ def cmd_send_report(args: argparse.Namespace) -> int:
         students=students, github_repo=data["github_repo"],
         timezone=data["timezone"], sub_games=sub_games, totals=data["totals"],
     )
+    refuse_placeholder_metadata(report, dry_run=args.dry_run)
     result = sender.send_report(report, dry_run=args.dry_run)
     LOG.info("send result: %s", result)
     return 0 if (result["sent"] or result["skipped"]) else 1
 
 
 def cmd_play_and_send(args: argparse.Namespace) -> int:
+    from marl_lab.cli.submission_guards import resolve_or_refuse_checkpoint
+    resolve_or_refuse_checkpoint(args, lambda: MarlSDK(cfg_path=args.config))
     import tempfile
     with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
         out_path = f.name

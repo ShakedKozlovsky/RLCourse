@@ -18,7 +18,7 @@ from marl_lab.sdk.marl_sdk import MarlSDK
 @pytest.fixture
 def repro_cfg(tmp_path: Path) -> Path:
     cfg = {
-        "version": "1.17", "seed": 12345, "device": "cpu",
+        "version": "1.18", "seed": 12345, "device": "cpu",
         "game": {"grid_size": [4, 4], "max_moves": 6, "num_games": 2,
                   "max_barriers": 2, "enable_barriers": False, "observation_radius": 1},
         "scoring": {"cop_win": 20, "thief_win": 10, "cop_loss": 5, "thief_loss": 5},
