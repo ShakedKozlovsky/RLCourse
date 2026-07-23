@@ -25,13 +25,21 @@ def _git_sha(cwd: str | None = None) -> str:
 
 
 def _git_dirty(cwd: str | None = None) -> bool:
-    """True if the working tree has uncommitted changes."""
+    """True if the working tree has uncommitted changes to TRACKED files.
+
+    v1.19: was ``git status --porcelain`` (counted untracked files too),
+    which reported ``git_dirty: true`` in a clean submission just because
+    an unrelated scratch dir or a ``.DS_Store`` existed elsewhere in the
+    repo. For reproducibility semantics we only care about modifications
+    to files git knows about — a fresh ``git checkout <sha>`` restores
+    those exactly; it can't restore files git never tracked."""
     try:
-        out = subprocess.run(
-            ["git", "status", "--porcelain"],
-            capture_output=True, text=True, cwd=cwd, timeout=2, check=True,
-        )
-        return bool(out.stdout.strip())
+        # Exit 0 = no diff to tracked files; exit 1 = there are diffs
+        rc = subprocess.run(
+            ["git", "diff", "--quiet", "HEAD"],
+            capture_output=True, cwd=cwd, timeout=2,
+        ).returncode
+        return rc != 0
     except (subprocess.SubprocessError, FileNotFoundError):
         return True
 

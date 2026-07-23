@@ -3,4 +3,4 @@ enforce that any `configs/*.yaml` whose `version` field disagrees raises early."
 
 from __future__ import annotations
 
-__version__ = "1.18"
+__version__ = "1.19"

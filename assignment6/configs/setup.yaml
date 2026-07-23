@@ -2,7 +2,7 @@
 # Spec § 3.6 demands a YAML/JSON config; this is the YAML option.
 # Every numeric parameter the game / agent / training uses MUST appear here.
 
-version: "1.18"
+version: "1.19"
 seed: 208904839
 device: cpu
 

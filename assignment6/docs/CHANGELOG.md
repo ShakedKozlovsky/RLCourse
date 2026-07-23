@@ -23,6 +23,7 @@ Version-by-version story of the assignment6 codebase. Each tag is a real `git ta
 | **v1.16** | 2026-07-23 | 295 | 90% | **Professor-lens audit sweep (13 fixes)** — corrected ELO wins-tracking bug (added `else` branch to credit B when A loses; new totals: MADDPG 172/200, IQL 147, Random 64, VDN 66, QPLEX 75, QMIX 76). Doc hygiene: PROOFS/FAILURE_MODES line-cite fix (`qmix_update.py:96` → `:94`), PROOFS §1 disclosed that VDN also averages rewards via the shared `apply_qmix_update` path, PRD KPI table rewritten (removed unsupported "≤150 LOC hard rule" claim; actual gate is ≤250). Code hygiene: removed dead yaml keys (`actor_lr`, `mixer_lr`, `use_rnn`, `use_olora`, `olora_rank`), removed dead `BoardFactory.enable_barriers` field, hoisted `Board` import out of `multi_cop_env::_joint_obs` hot path, hardened ELO `_play_one` (raises on invalid winner instead of silently defaulting to "thief"), fixed `moves.py` module + method docstring self-contradiction. Test hygiene: rewrote `test_play_full_game_alternates_roles` to actually verify role alternation (was asserting only sub-game IDs), rewrote `test_capture_implies_positions_equal` to force a deterministic capture (was silently passing when all 50 fuzz rollouts happened to end by timeout). Reorganised `cmd_audit` into `cli/audit_data.py` to stay ≤250 LOC. |
 | **v1.17** | 2026-07-23 | **297** | 90% | **Bonus flow polish (§ 9)** — added `scripts/bonus_demo.py` (self-contained MADDPG-vs-IQL bonus match with peer-agreement handshake — no partner group required to demo the full flow) + `marl play-bonus-and-send` CLI subcommand (run bonus + email § 9.4 report in one shot). Fixed two real bugs surfaced during the demo: (a) `bonus_game_runner._play_one` had the same silent-fail `info["winner"] or "thief"` pattern that v1.16 fixed in ELO — now raises on invalid winner + explicit while/else timeout branch; (b) `_canonical_match_content` compared `groups` as a raw `{group_1, group_2}` dict, but those positional labels are per-team-arbitrary — would spuriously fail every real cross-team agreement check. Now normalises to a sorted list of team names. Added 2 regression tests (label-flip + invalid-winner) + BONUS.md end-to-end doc. `GameReportSender.send_bonus_report` reuses the idempotency ledger with a bonus-specific subject prefix. |
 | **v1.18** | 2026-07-23 | **302** | 90% | **Submission guardrails** — caught by an actual bad test-send: `play-and-send` without `--checkpoint` had been silently using freshly-initialised random Q-nets (cop 0-6 loss, 30–60 totals) and `cmd_send_report` happily emailed placeholder `group_code=TBD-8CHR` / `student.id=TODO`. Two guardrails added: (1) `play-and-send` refuses to run when neither `--checkpoint` nor `submission.default_checkpoint` yaml key is set (bypass with `--dry-run` for CI); (2) `send-report` refuses to send when metadata contains TBD/TODO/? (bypass with `--dry-run`). Also added `submission.default_checkpoint: saved_models/maddpg_shaped.pt` to yaml so the default is the correct trained model. +5 regression tests. |
+| **v1.19** | 2026-07-23 | 302 | 90% | **Provenance semantic fix** — `provenance.git_dirty` was `git status --porcelain`, which flagged any untracked file anywhere in the repo (macOS `.DS_Store`, unrelated scratch dirs) as "dirty" even when the actual submitted code was byte-identical to HEAD. Real symptom: successful v1.18 submission-quality test-send showed `git_dirty: true` misleadingly. Fix: `_git_dirty` now uses `git diff --quiet HEAD` — reports true only when TRACKED files have modifications, which is the semantically correct definition for "can the grader reproduce from `git checkout <sha>`". Also added a root `.gitignore` covering macOS junk (`.DS_Store`, `._*`). |
 
 ---
 
@@ -369,6 +370,31 @@ docker run --rm marl-lab uv run pytest -q
 ```
 
 Or just look at the green badge at the top of [`../README.md`](../README.md) — every push since v1.06 has been verified by GitHub Actions.
+
+---
+
+## v1.19 — provenance semantic fix
+
+**`marl-lab-v1.19` · 2026-07-23**
+
+Cosmetic-looking but load-bearing: v1.18 shipped and produced a real
+submission-quality test-send with the correct trained model, correct
+metadata, cop winning 5 of 6 sub-games, totals 105–35 — but the
+`provenance.git_dirty` flag came back `true`. Investigation: the flag
+was `git status --porcelain`, which counts UNTRACKED files (macOS
+`.DS_Store`, an unrelated `src/roomba_lab` scratch dir, an unrelated
+`assignment1/assignment2/` folder) as "dirty" even when none of them
+affect the submission code.
+
+For provenance semantics, "dirty" should mean: *the code that generated
+this report differs from what a grader would get with `git checkout
+<sha>`*. Untracked-elsewhere files don't affect that. Modifications to
+TRACKED files do. Fix: `_git_dirty` now uses `git diff --quiet HEAD`
+which returns exit 0 iff no tracked files have modifications.
+
+Also added a `.gitignore` at the repo root for macOS filesystem junk
+(`.DS_Store`, `._*`) — these are created by Finder / SMB filesystem
+sharing and never belong in git.
 
 ---
 

@@ -15,7 +15,7 @@ from marl_lab.shared.types import StudentEntry
 @pytest.fixture
 def tiny_cfg(tmp_path: Path) -> Path:
     cfg = {
-        "version": "1.18", "seed": 0, "device": "cpu",
+        "version": "1.19", "seed": 0, "device": "cpu",
         "game": {"grid_size": [4, 4], "max_moves": 8, "num_games": 2,
                   "max_barriers": 2, "enable_barriers": False, "observation_radius": 1},
         "scoring": {"cop_win": 20, "thief_win": 10, "cop_loss": 5, "thief_loss": 5},
