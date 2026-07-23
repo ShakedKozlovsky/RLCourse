@@ -222,7 +222,7 @@ def cmd_gui(args: argparse.Namespace) -> int:
     return 0
 
 
-# cmd_play_bonus lives in cli/bonus_command.py to keep this file ≤ 250 LOC
-from marl_lab.cli.bonus_command import cmd_play_bonus  # noqa: E402, F401
+# cmd_play_bonus + cmd_play_bonus_and_send live in cli/bonus_command.py
+from marl_lab.cli.bonus_command import cmd_play_bonus, cmd_play_bonus_and_send  # noqa: E402, F401
 
 # cmd_play_bonus lives in cli/bonus_command.py to keep this file lean

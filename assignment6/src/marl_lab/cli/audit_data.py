@@ -27,7 +27,7 @@ AUDIT_LINES: list[str] = [
     "[ok] § 7.1 Formal defs — Dec-POMDP tuple → code map in README + PROOFS.md",
     "[ok] § 7.2 Critical analysis — non-stationarity + IQL + IGM + QPLEX + Q3",
     "[ok] § 7.3 Visualisations — learning curves + loss + GUI + MCP log + ELO",
-    "[ok] § 9 Bonus (10 pts) — infrastructure ready (needs partner group)",
+    "[ok] § 9 Bonus (10 pts) — full flow demoable via scripts/bonus_demo.py; play-bonus-and-send CLI wired",
     "",
     "=== BEYOND SPEC ===",
     "[ok] Chess-style ELO tournament (v1.14) — MADDPG champion at 1825 ELO",
@@ -41,5 +41,5 @@ AUDIT_LINES: list[str] = [
     "",
     "=== KNOWN GAPS (documented in FAILURE_MODES.md) ===",
     "[--] § 5.3 phase 2 — Live Prefect Cloud URL (needs YOUR account)",
-    "[--] Spec § 9 bonus — Requires partner group (out of solo control)",
+    "[--] Spec § 9 bonus (LIVE match) — Requires partner group's live MCP URL (solo demo via scripts/bonus_demo.py works today)",
 ]

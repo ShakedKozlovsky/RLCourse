@@ -52,9 +52,15 @@ def _canonical_match_content(report: BonusGameReport) -> dict:
 
     Excludes: provenance (environment-dependent), mutual_agreement
     (coordination output), students (each group only knows their own IDs;
-    the OTHER group's list might not have been shared before match time)."""
+    the OTHER group's list might not have been shared before match time).
+
+    v1.17: ``groups`` is normalised to a *sorted-by-value list of team
+    names*, not a ``{group_1: X, group_2: Y}`` dict. The group_1/group_2
+    positional labels are per-team-arbitrary — each team is free to call
+    themselves group_1 — so comparing the raw dict would spuriously fail
+    mutual agreement even when the actual match content is identical."""
     return {
-        "groups": dict(sorted(report.groups.items())),
+        "groups": sorted(report.groups.values()),
         "sub_games": [
             {"id": sg.id, "cop_group": sg.cop_group,
              "thief_group": sg.thief_group, "winner": sg.winner,
@@ -81,9 +87,11 @@ def verify_peer_agreement(local_report: BonusGameReport,
         return (False, f"peer JSON parse error: {e}")
     if peer_payload.get("report_type") != "bonus_game":
         return (False, "peer report_type != 'bonus_game'")
-    # Build the peer's canonical view from their payload (same schema)
+    # Build the peer's canonical view from their payload (same schema).
+    # v1.17: normalise "groups" to a sorted list-of-values (see
+    # _canonical_match_content for the "arbitrary positional label" fix).
     peer_canon = {
-        "groups": dict(sorted(peer_payload.get("groups", {}).items())),
+        "groups": sorted(peer_payload.get("groups", {}).values()),
         "sub_games": [
             {"id": sg["id"], "cop_group": sg["cop_group"],
              "thief_group": sg["thief_group"], "winner": sg["winner"],

@@ -14,7 +14,7 @@ from marl_lab.cli.main import build_parser, main
 @pytest.fixture
 def tiny_cfg(tmp_path: Path) -> Path:
     cfg = {
-        "version": "1.16", "seed": 0, "device": "cpu",
+        "version": "1.17", "seed": 0, "device": "cpu",
         "game": {"grid_size": [4, 4], "max_moves": 8, "num_games": 2,
                   "max_barriers": 2, "enable_barriers": False, "observation_radius": 1},
         "scoring": {"cop_win": 20, "thief_win": 10, "cop_loss": 5, "thief_loss": 5},
@@ -58,16 +58,17 @@ def test_audit_subcommand_prints_checklist(capsys) -> None:
     assert "MCP" in out
 
 
-def test_parser_supports_all_10_subcommands() -> None:
+def test_parser_supports_all_11_subcommands() -> None:
     """V3 § 3 requires CLI parity with spec § 5.4 (GUI) + § 5.6 + § 9 (bonus).
 
-    10 subcommands: 8 core + `play-bonus` (§ 9) + `gui` (live § 5.4 widget)."""
+    v1.17: 11 subcommands — 8 core + `play-bonus` + `play-bonus-and-send`
+    (both § 9) + `gui` (live § 5.4 widget)."""
     parser = build_parser()
     sub_action = next(a for a in parser._actions if a.choices)   # noqa: SLF001
     choices = set(sub_action.choices.keys())
     expected = {"train", "play-game", "send-report", "play-and-send",
                 "serve-cop", "serve-thief", "audit", "version",
-                "play-bonus", "gui"}
+                "play-bonus", "play-bonus-and-send", "gui"}
     assert expected == choices
 
 

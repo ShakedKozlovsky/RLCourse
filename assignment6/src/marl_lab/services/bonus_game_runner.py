@@ -86,10 +86,9 @@ class BonusGameRunner:
                     sub_game_id: int, cop_group: str, thief_group: str,
                     seed: int) -> BonusSubGameResult:
         """Play a single sub-game with the two supplied policies."""
-        self.env.reset(seed=seed)
         joint_obs = self.env.reset(seed=seed)
         moves = 0
-        while True:
+        while moves < self.cfg.max_moves:
             cop_a = cop_policy("cop", joint_obs["cop"])
             thief_a = thief_policy("thief", joint_obs["thief"])
             joint_obs, _, done, info = self.env.step(
@@ -97,7 +96,15 @@ class BonusGameRunner:
             moves += 1
             if done:
                 break
-        winner = info["winner"] or "thief"
+        else:
+            # while-loop exhausted without done → spec § 3.4 timeout ⇒ thief wins
+            info = {"winner": "thief"}
+        winner = info["winner"]
+        if winner not in ("cop", "thief"):
+            raise RuntimeError(
+                f"env reported done=True with invalid winner={winner!r}; "
+                "adjudicator contract violated (silently defaulting to "
+                "'thief' here would corrupt bonus scoring)")
         scores = sub_game_score(winner, self.reward_cfg)
         return BonusSubGameResult(
             id=sub_game_id, cop_group=cop_group, thief_group=thief_group,

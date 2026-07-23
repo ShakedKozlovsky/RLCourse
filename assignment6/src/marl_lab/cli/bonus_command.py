@@ -87,8 +87,11 @@ def _students_from_config(sdk: MarlSDK) -> list[StudentEntry]:
     return out or [StudentEntry(role="A", full_name="?", id="?")]
 
 
-def cmd_play_bonus(args: argparse.Namespace) -> int:
-    """Play a spec § 9 inter-group bonus match. See module docstring."""
+def _run_bonus_match(args: argparse.Namespace):
+    """Shared body of ``cmd_play_bonus`` and ``cmd_play_bonus_and_send``.
+
+    Returns the ``BonusGameReport`` (with ``mutual_agreement`` already set
+    if ``--peer-report-json`` was supplied)."""
     sdk = MarlSDK(cfg_path=args.config)
     if args.local_checkpoint:
         sdk.load_checkpoint(args.local_checkpoint)
@@ -138,6 +141,12 @@ def cmd_play_bonus(args: argparse.Namespace) -> int:
         agreed, reason = verify_peer_agreement(report, peer_txt)
         report.mutual_agreement = agreed
         LOG.info("mutual_agreement=%s (%s)", agreed, reason)
+    return report, sdk
+
+
+def cmd_play_bonus(args: argparse.Namespace) -> int:
+    """Play a spec § 9 inter-group bonus match. See module docstring."""
+    report, _sdk = _run_bonus_match(args)
     js = bonus_report_to_json(report)
     if args.output:
         Path(args.output).write_text(js)
@@ -145,3 +154,48 @@ def cmd_play_bonus(args: argparse.Namespace) -> int:
     else:
         sys.stdout.write(js + "\n")
     return 0
+
+
+def cmd_play_bonus_and_send(args: argparse.Namespace) -> int:
+    """Play a spec § 9 bonus match and email the § 9.4 report in one shot.
+
+    Mirrors ``cmd_play_and_send`` but for the bonus flow: uses
+    ``GameReportSender.send_bonus_report`` (bonus subject + JSON shape +
+    idempotency key). Honours ``--to`` / ``--from`` / ``--force`` /
+    ``--dry-run`` exactly like ``cmd_send_report``."""
+    from marl_lab.gmail.sender import (
+        AppPasswordStrategy,
+        GameReportSender,
+        OAuthStrategy,
+        SenderConfig,
+    )
+
+    report, sdk = _run_bonus_match(args)
+    if args.output:
+        Path(args.output).write_text(bonus_report_to_json(report))
+        LOG.info("bonus report written to %s", args.output)
+
+    report_to = args.to or sdk.config.get(
+        "gmail.report_to", "rmisegal+marl@gmail.com")
+    from_address = args.from_addr or sdk.config.get("gmail.from_address", "")
+    cfg = SenderConfig(
+        report_to=report_to, from_address=from_address,
+        subject_prefix=sdk.config.get("gmail.subject_prefix", "[MARL Game]"),
+        send_mode=sdk.config.get("gmail.send_mode", "app_password"),
+    )
+    if cfg.send_mode == "app_password":
+        strategy = AppPasswordStrategy(sender_email=from_address or None)
+    elif cfg.send_mode == "oauth":
+        strategy = OAuthStrategy()
+    else:
+        raise SystemExit(f"unknown / unsupported send_mode={cfg.send_mode!r}")
+    sender = GameReportSender(cfg, strategy)
+    if args.force:
+        sender.ledger._entries.clear()   # noqa: SLF001 (deliberate reset)
+        LOG.info("play-bonus-and-send: --force clears ledger before this send")
+    LOG.info("play-bonus-and-send: to=%s from=%s mode=%s dry_run=%s",
+              cfg.report_to, cfg.from_address or "(GMAIL_USER)",
+              cfg.send_mode, args.dry_run)
+    result = sender.send_bonus_report(report, dry_run=args.dry_run)
+    LOG.info("bonus send result: %s", result)
+    return 0 if (result["sent"] or result["skipped"]) else 1

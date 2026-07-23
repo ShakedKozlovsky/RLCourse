@@ -265,3 +265,48 @@ def test_cli_play_bonus_subcommand_registered() -> None:
     parser = build_parser()
     sub_action = next(a for a in parser._actions if a.choices)   # noqa: SLF001
     assert "play-bonus" in sub_action.choices
+
+
+# ----- v1.17 regressions -----
+
+def test_verify_peer_agreement_ignores_group_1_group_2_label_flip() -> None:
+    """The group_1 / group_2 dict keys are per-team-arbitrary positional
+    labels — each team is free to call themselves group_1. Mutual
+    agreement must depend on the SET of teams, not the labelling.
+
+    Before v1.17 the canonicaliser sorted by dict key, so two identical
+    matches labelled from opposite perspectives would spuriously fail
+    to agree — breaking every real cross-team bonus submission.
+    """
+    r = _dummy_report()
+    peer_json = bonus_report_to_json(r, include_provenance=False)
+    peer_payload = json.loads(peer_json)
+    # Simulate the peer's naturally-flipped label assignment:
+    g1, g2 = peer_payload["groups"]["group_1"], peer_payload["groups"]["group_2"]
+    peer_payload["groups"] = {"group_1": g2, "group_2": g1}
+    agreed, reason = verify_peer_agreement(r, json.dumps(peer_payload))
+    assert agreed is True, f"label-flip broke agreement: {reason}"
+
+
+def test_bonus_runner_raises_on_invalid_winner(monkeypatch) -> None:
+    """v1.17: bonus runner used to `info["winner"] or "thief"` — silently
+    defaulted an invalid winner to a thief-win, corrupting bonus scoring.
+    Now must raise."""
+    runner = BonusGameRunner(cfg=BonusRunnerConfig(observation_radius=1),
+                              reward_cfg=RewardConfig(),
+                              rng=np.random.default_rng(0))
+    # Monkeypatch env.step to always return done=True with a garbage winner
+    def bad_step(_actions):
+        return ({"cop": np.zeros(runner.env.obs_dim, dtype=np.float32),
+                 "thief": np.zeros(runner.env.obs_dim, dtype=np.float32)},
+                {"cop": 0.0, "thief": 0.0},
+                True,
+                {"winner": "banana"})
+    monkeypatch.setattr(runner.env, "step", bad_step)
+
+    def zero_policy(_role, _obs):
+        return 0
+    with pytest.raises(RuntimeError, match="invalid winner"):
+        runner._play_one(cop_policy=zero_policy, thief_policy=zero_policy,
+                          sub_game_id=1, cop_group="A", thief_group="B",
+                          seed=0)

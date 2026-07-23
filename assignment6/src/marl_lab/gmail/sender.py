@@ -130,3 +130,29 @@ class GameReportSender:
                            from_address=self.cfg.from_address)
         self.ledger.record_sent(game_id, subject)
         return {"sent": True, "game_id": game_id, "subject": subject, "skipped": False}
+
+    def send_bonus_report(self, report, *, dry_run: bool = False) -> dict:
+        """Spec § 9 bonus-report sender. Same idempotency ledger, different
+        subject-line format + JSON shape (uses ``gmail.bonus_formatter``)."""
+        from marl_lab.gmail.bonus_formatter import (
+            bonus_email_subject,
+            bonus_report_to_json,
+            build_bonus_idempotency_key,
+        )
+        game_id = build_bonus_idempotency_key(report)
+        subject = bonus_email_subject(report,
+                                        prefix=self.cfg.subject_prefix.replace(
+                                            "[MARL Game]", "[MARL Bonus Game]"))
+        body = bonus_report_to_json(report)
+        if self.ledger.has_been_sent(game_id):
+            LOG.info("idempotency: bonus_id=%s already sent — skipping", game_id)
+            return {"sent": False, "game_id": game_id, "subject": subject,
+                    "skipped": True, "reason": "already_sent"}
+        if dry_run:
+            return {"sent": False, "game_id": game_id, "subject": subject,
+                    "skipped": True, "reason": "dry_run"}
+        self.strategy.send(subject=subject, body=body,
+                            to_address=self.cfg.report_to,
+                            from_address=self.cfg.from_address)
+        self.ledger.record_sent(game_id, subject)
+        return {"sent": True, "game_id": game_id, "subject": subject, "skipped": False}

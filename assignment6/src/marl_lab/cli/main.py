@@ -21,6 +21,7 @@ from marl_lab.cli.commands import (
     cmd_gui,
     cmd_play_and_send,
     cmd_play_bonus,
+    cmd_play_bonus_and_send,
     cmd_play_game,
     cmd_send_report,
     cmd_serve_cop,
@@ -129,6 +130,32 @@ def build_parser() -> argparse.ArgumentParser:
     p_bonus.add_argument("--output", help="Write JSON to this path (default stdout)")
     p_bonus.add_argument("--seed", type=int, default=0)
     p_bonus.set_defaults(func=cmd_play_bonus)
+
+    p_bs = sub.add_parser("play-bonus-and-send",
+                             help="Play a spec § 9 bonus match then email the § 9.4 report")
+    _add_common_args(p_bs)
+    p_bs.add_argument("--local-checkpoint")
+    p_bs.add_argument("--peer-checkpoint")
+    p_bs.add_argument("--peer-mcp-url")
+    p_bs.add_argument("--peer-mcp-token")
+    p_bs.add_argument("--peer-group-name", required=True)
+    p_bs.add_argument("--peer-github-repo", required=True)
+    p_bs.add_argument("--peer-students-names", default="?")
+    p_bs.add_argument("--peer-students-ids", default="?")
+    p_bs.add_argument("--peer-report-json",
+                          help="Peer's bonus report JSON — sets mutual_agreement")
+    p_bs.add_argument("--output",
+                          help="Also write the § 9.4 JSON to this path")
+    p_bs.add_argument("--seed", type=int, default=0)
+    p_bs.add_argument("--dry-run", action="store_true",
+                          help="Build + log the send but don't hit SMTP")
+    p_bs.add_argument("--to", default=None,
+                          help="Override gmail.report_to (test-send first)")
+    p_bs.add_argument("--from", dest="from_addr", default=None,
+                          help="Override From: address (default: $GMAIL_USER)")
+    p_bs.add_argument("--force", action="store_true",
+                          help="Bypass ledger idempotency")
+    p_bs.set_defaults(func=cmd_play_bonus_and_send)
 
     return parser
 

@@ -24,7 +24,7 @@ from marl_lab.shared.version import __version__
 
 
 def test_version_pinned() -> None:
-    assert __version__ == "1.16"
+    assert __version__ == "1.17"
 
 
 def test_config_loads_default() -> None:

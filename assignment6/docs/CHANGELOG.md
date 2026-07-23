@@ -21,6 +21,7 @@ Version-by-version story of the assignment6 codebase. Each tag is a real `git ta
 | **v1.14** | 2026-07-22 | ~295 | 95% | **ELO tournament** — 600-game round-robin between all 5 trained algos + random baseline. Chess ELO scoring (K=32). Winner: **MADDPG 1825**, IQL 1799, Random 1422, VDN 1370, QPLEX 1309 (**0 cop wins**), QMIX 1275. Both POSG-respecting algos crush the field; all three averaged-reward algos rank below random. Empirical demonstration of the FAILURE_MODES § 1 concern. Test-first Gmail flow: `--to`/`--from`/`--force` CLI flags. |
 | **v1.15** | 2026-07-22 | ~295 | 90% | **Grader-friendly README + env-var identity overrides** — added "For the grader — 60-second reproduction" section; introduced `MARL_STUDENT_A_ID` / `MARL_STUDENT_A_NAME` / `MARL_GROUP_CODE` / `MARL_GROUP_NAME` env-var overrides so future runs never commit personal data; gitignored `preview.json`. |
 | **v1.16** | 2026-07-23 | 295 | 90% | **Professor-lens audit sweep (13 fixes)** — corrected ELO wins-tracking bug (added `else` branch to credit B when A loses; new totals: MADDPG 172/200, IQL 147, Random 64, VDN 66, QPLEX 75, QMIX 76). Doc hygiene: PROOFS/FAILURE_MODES line-cite fix (`qmix_update.py:96` → `:94`), PROOFS §1 disclosed that VDN also averages rewards via the shared `apply_qmix_update` path, PRD KPI table rewritten (removed unsupported "≤150 LOC hard rule" claim; actual gate is ≤250). Code hygiene: removed dead yaml keys (`actor_lr`, `mixer_lr`, `use_rnn`, `use_olora`, `olora_rank`), removed dead `BoardFactory.enable_barriers` field, hoisted `Board` import out of `multi_cop_env::_joint_obs` hot path, hardened ELO `_play_one` (raises on invalid winner instead of silently defaulting to "thief"), fixed `moves.py` module + method docstring self-contradiction. Test hygiene: rewrote `test_play_full_game_alternates_roles` to actually verify role alternation (was asserting only sub-game IDs), rewrote `test_capture_implies_positions_equal` to force a deterministic capture (was silently passing when all 50 fuzz rollouts happened to end by timeout). Reorganised `cmd_audit` into `cli/audit_data.py` to stay ≤250 LOC. |
+| **v1.17** | 2026-07-23 | **297** | 90% | **Bonus flow polish (§ 9)** — added `scripts/bonus_demo.py` (self-contained MADDPG-vs-IQL bonus match with peer-agreement handshake — no partner group required to demo the full flow) + `marl play-bonus-and-send` CLI subcommand (run bonus + email § 9.4 report in one shot). Fixed two real bugs surfaced during the demo: (a) `bonus_game_runner._play_one` had the same silent-fail `info["winner"] or "thief"` pattern that v1.16 fixed in ELO — now raises on invalid winner + explicit while/else timeout branch; (b) `_canonical_match_content` compared `groups` as a raw `{group_1, group_2}` dict, but those positional labels are per-team-arbitrary — would spuriously fail every real cross-team agreement check. Now normalises to a sorted list of team names. Added 2 regression tests (label-flip + invalid-winner) + BONUS.md end-to-end doc. `GameReportSender.send_bonus_report` reuses the idempotency ledger with a bonus-specific subject prefix. |
 
 ---
 
@@ -367,6 +368,32 @@ docker run --rm marl-lab uv run pytest -q
 ```
 
 Or just look at the green badge at the top of [`../README.md`](../README.md) — every push since v1.06 has been verified by GitHub Actions.
+
+---
+
+## v1.17 — bonus flow polish (§ 9)
+
+**`marl-lab-v1.17` · 2026-07-23**
+
+Focus: make the spec § 9 bonus (10 pts) demoable end-to-end without a
+partner group, and fix two real bugs the demo surfaced.
+
+**New:**
+- **`scripts/bonus_demo.py`** — self-contained MADDPG-vs-IQL bonus match using shipped checkpoints. Runs the match once (single-machine simulation of the live-MCP flow), simulates the peer's report by flipping only the group_1/group_2 positional labels (faithful to what a peer would produce observing the same rollout), verifies mutual agreement, emits the § 9.4 JSON. Deterministic given `--seed`. Example output for `--seed 0`: MADDPG 85–IQL 45 → bonus_claim {MADDPG: 10, IQL: 7}, `mutual_agreement: True (match)`.
+- **`marl play-bonus-and-send`** CLI subcommand — mirrors `play-and-send` but for the bonus flow: runs the match, verifies peer agreement (optional `--peer-report-json`), and emails the § 9.4 report through the same idempotent sender. Honours `--to` / `--from` / `--force` / `--dry-run`.
+- **`GameReportSender.send_bonus_report`** — sibling of `send_report`; different subject line + JSON shape + idempotency key (from `gmail.bonus_formatter`), same ledger.
+- **`docs/BONUS.md`** — end-to-end bonus doc: files map, three reproduction paths (solo demo / dry-run vs peer checkpoint / live MCP match), scoring rule, mutual-agreement mechanics, § 9.4 JSON schema, test coverage.
+
+**Fixed:**
+- **`bonus_game_runner._play_one` silent-fail winner** — same `info["winner"] or "thief"` pattern v1.16 fixed in ELO. Now raises `RuntimeError` on invalid winner; timeout branch uses explicit `while / else` and explicitly sets winner to `"thief"` per spec § 3.4. Also removed a duplicate `env.reset(seed=seed)` call (the first return was thrown away).
+- **`_canonical_match_content` group-labelling bug** — the canonicaliser compared `report.groups` as `{group_1: X, group_2: Y}` sorted by key, but the group_1/group_2 assignment is per-team-arbitrary (each team calls themselves group_1 from their own perspective). Meant every real cross-team agreement check would spuriously fail on the `groups` field even when the actual match content agreed byte-for-byte. Now normalises to a sorted list of team names.
+
+**Tests:**
+- +2 regression tests in `test_bonus_game.py`: label-flip agreement and invalid-winner raise.
+- CLI subcommand count assertion bumped 10 → 11 (added `play-bonus-and-send`).
+- Bonus suite: 22 tests. Full suite: **297 tests · 90% coverage**.
+
+**Audit output:** the § 9 line in `cli/audit_data.py` now reads `full flow demoable via scripts/bonus_demo.py; play-bonus-and-send CLI wired` rather than the previous `infrastructure ready (needs partner group)` — the "known gap" now scopes strictly to the LIVE cross-machine match, not the flow as a whole.
 
 ---
 
