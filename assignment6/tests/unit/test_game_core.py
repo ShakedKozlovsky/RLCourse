@@ -62,7 +62,7 @@ def test_board_state_vector_encoding() -> None:
 
 
 def test_board_factory_distinct_positions() -> None:
-    bf = BoardFactory(grid_size=(5, 5), enable_barriers=True, rng=np.random.default_rng(0))
+    bf = BoardFactory(grid_size=(5, 5), rng=np.random.default_rng(0))
     for _ in range(20):
         b = bf.fresh()
         assert b.cop_pos != b.thief_pos

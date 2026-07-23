@@ -426,16 +426,16 @@ Trained QMIX/QPLEX/IQL for 250 episodes each on **5×5, 6×6, and 7×7** grids (
 
 **Result** (raw CSV at [`assets/logs/elo_tournament.csv`](assets/logs/elo_tournament.csv)):
 
-| Rank | Model | ELO | Wins/200 |
-|---|---|---|---|
-| 🥇 | MADDPG | **1825** | 85 |
-| 🥈 | IQL | **1799** | 75 |
-| 🥉 | Random baseline | 1422 | 32 |
-| 4 | VDN | 1370 | 34 |
-| 5 | QPLEX | 1309 | 38 (**0 as cop**) |
-| 6 | QMIX | 1275 | 37 |
+| Rank | Model | ELO | Wins / Games | Cop-role win rate |
+|---|---|---|---|---|
+| 🥇 | MADDPG | **1825** | 172 / 200 | 77% |
+| 🥈 | IQL | **1799** | 147 / 200 | 66% |
+| 🥉 | Random | 1422 | 64 / 200 | 11% |
+| 4 | VDN | 1370 | 66 / 200 | 11% |
+| 5 | QPLEX | 1309 | 75 / 200 | **0%** ⚠ |
+| 6 | QMIX | 1275 | 76 / 200 | 4% |
 
-**The finding**: both POSG-respecting algorithms (MADDPG per-agent critic, IQL per-agent Q-net) crush the field. All three cooperative-Dec-POMDP algorithms with the averaged-reward hack rank *below* random. QPLEX's cop policy has literally zero wins in 100 cop-side games. Full analysis in `docs/FAILURE_MODES.md § 8`.
+**The finding**: both POSG-respecting algorithms (MADDPG per-agent critic, IQL per-agent Q-net) crush the field with 74-86% overall win rates. All three cooperative-Dec-POMDP algorithms with the averaged-reward hack post cop-role win rates *below* the 11% random baseline (QMIX 4%, VDN 11%, QPLEX literally 0). Full analysis in `docs/FAILURE_MODES.md § 8`.
 
 ### 7.3 (d) MCP communication proof (CLI-style log)
 

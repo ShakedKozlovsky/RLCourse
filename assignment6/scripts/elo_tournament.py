@@ -127,8 +127,14 @@ def _play_one(cop_policy, thief_policy, seed: int) -> str:
         a_thief = thief_policy.act(obs["thief"])
         obs, _, done, info = env.step({"cop": a_cop, "thief": a_thief})
         if done:
-            return info["winner"] or "thief"
-    return "thief"    # timeout
+            winner = info["winner"]
+            if winner not in ("cop", "thief"):
+                raise RuntimeError(
+                    f"env reported done=True with invalid winner={winner!r}; "
+                    "adjudicator contract violated (silently defaulting to "
+                    "'thief' here would corrupt ELO)")
+            return winner
+    return "thief"    # timeout — spec § 3.4: max_moves reached → thief wins
 
 
 def _elo_update(rating_a: float, rating_b: float, score_a: float,
@@ -171,12 +177,20 @@ def run_tournament(competitors: list[Competitor], games_per_pair: int,
                 winner = _play_one(cop_policy, thief_policy, seed)
                 seed += 1
                 a_won = (winner == a_role)
+                b_role = "thief" if a_role == "cop" else "cop"
                 if a_won:
                     wins[i, j] += 1
                     if a_role == "cop":
                         a.wins_as_cop += 1
                     else:
                         a.wins_as_thief += 1
+                else:
+                    # B won — count it symmetrically so the leaderboard
+                    # "wins" column reflects true totals (bug caught v1.16)
+                    if b_role == "cop":
+                        b.wins_as_cop += 1
+                    else:
+                        b.wins_as_thief += 1
                 plays[i, j] += 1
                 a.games_played += 1
                 b.games_played += 1

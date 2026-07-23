@@ -19,6 +19,8 @@ Version-by-version story of the assignment6 codebase. Each tag is a real `git ta
 | **v1.12** | 2026-07-22 | **~295** | 95% | **Gap-fixing pass** — real Tkinter GUI + MCP HTTP transport (fixes v1.11 stub) + Reflection Q3 answered empirically (multi-cop env + swarm-vs-single study) + `--seed`/`--curriculum` CLI flags + evaluate_checkpoint script + honest 0%-cop-win-rate disclosure in FAILURE_MODES § 8 + trained curriculum checkpoint at `saved_models/qmix_curriculum.pt` |
 | **v1.13** | 2026-07-22 | ~295 | 95% | **Algorithm bake-off + MADDPG default** — added distance-shaping reward + fixed curriculum-with-MADDPG bug + trained 3 algorithms (QMIX/QPLEX/MADDPG) with same curriculum + shaping. **MADDPG-discrete wins**: 24% greedy on 5×5 (vs QMIX 1% / QPLEX 0%), 94% on 2×2, 65-67% on 3×3/4×4. Flipped `configs/setup.yaml::marl.algorithm` from qmix → maddpg. Investigation writeup in FAILURE_MODES § 8. |
 | **v1.14** | 2026-07-22 | ~295 | 95% | **ELO tournament** — 600-game round-robin between all 5 trained algos + random baseline. Chess ELO scoring (K=32). Winner: **MADDPG 1825**, IQL 1799, Random 1422, VDN 1370, QPLEX 1309 (**0 cop wins**), QMIX 1275. Both POSG-respecting algos crush the field; all three averaged-reward algos rank below random. Empirical demonstration of the FAILURE_MODES § 1 concern. Test-first Gmail flow: `--to`/`--from`/`--force` CLI flags. |
+| **v1.15** | 2026-07-22 | ~295 | 90% | **Grader-friendly README + env-var identity overrides** — added "For the grader — 60-second reproduction" section; introduced `MARL_STUDENT_A_ID` / `MARL_STUDENT_A_NAME` / `MARL_GROUP_CODE` / `MARL_GROUP_NAME` env-var overrides so future runs never commit personal data; gitignored `preview.json`. |
+| **v1.16** | 2026-07-23 | 295 | 90% | **Professor-lens audit sweep (13 fixes)** — corrected ELO wins-tracking bug (added `else` branch to credit B when A loses; new totals: MADDPG 172/200, IQL 147, Random 64, VDN 66, QPLEX 75, QMIX 76). Doc hygiene: PROOFS/FAILURE_MODES line-cite fix (`qmix_update.py:96` → `:94`), PROOFS §1 disclosed that VDN also averages rewards via the shared `apply_qmix_update` path, PRD KPI table rewritten (removed unsupported "≤150 LOC hard rule" claim; actual gate is ≤250). Code hygiene: removed dead yaml keys (`actor_lr`, `mixer_lr`, `use_rnn`, `use_olora`, `olora_rank`), removed dead `BoardFactory.enable_barriers` field, hoisted `Board` import out of `multi_cop_env::_joint_obs` hot path, hardened ELO `_play_one` (raises on invalid winner instead of silently defaulting to "thief"), fixed `moves.py` module + method docstring self-contradiction. Test hygiene: rewrote `test_play_full_game_alternates_roles` to actually verify role alternation (was asserting only sub-game IDs), rewrote `test_capture_implies_positions_equal` to force a deterministic capture (was silently passing when all 50 fuzz rollouts happened to end by timeout). Reorganised `cmd_audit` into `cli/audit_data.py` to stay ≤250 LOC. |
 
 ---
 
@@ -365,3 +367,48 @@ docker run --rm marl-lab uv run pytest -q
 ```
 
 Or just look at the green badge at the top of [`../README.md`](../README.md) — every push since v1.06 has been verified by GitHub Actions.
+
+---
+
+## v1.15 — grader-friendly submission + PII scrub
+
+**`marl-lab-v1.15` · 2026-07-22**
+
+- **README §  "For the grader — 60-second reproduction"** — one copy-paste block that clones, builds, and reproduces the ELO leaderboard headline claim without reading any other doc. Assumes only `git` + `uv` (or `docker`).
+- **Env-var identity overrides** — `src/marl_lab/reporting/*` and `src/marl_lab/cli/commands.py::cmd_send_report` now honour `MARL_STUDENT_A_ID`, `MARL_STUDENT_A_NAME`, `MARL_GROUP_CODE`, `MARL_GROUP_NAME`. Purpose: keep real student ID / name / group code out of git and out of `preview.json`. Falls back to yaml if env-vars are unset.
+- **PII scrub** — `preview.json` (contains student ID) was accidentally committed at `55b045b`. Removed from HEAD (`git rm --cached`) and added to `.gitignore`. History was **not** rewritten (single-user public repo, cheaper to revoke than to force-push and break others' clones).
+- **CLI `--to` / `--from` / `--force`** — `marl send-report` now takes these flags so the same trained checkpoint can be sent to a test inbox first, then to the real grader address, without redoing training.
+
+---
+
+## v1.16 — professor-lens audit sweep
+
+**`marl-lab-v1.16` · 2026-07-23**
+
+Hostile "read the whole repo as a grader" audit surfaced 13 real issues, ranked SEV 1 → 4. Every one fixed in this tag. Categories:
+
+**Numbers hygiene (SEV 1):**
+- `shared/version.py`, `configs/setup.yaml`, and 6 test-fixture yamls all bumped from `1.14` to `1.16`. `tests/unit/test_shared.py::test_version_pinned` assertion updated.
+- Removed dead yaml keys (`marl.actor_lr`, `marl.mixer_lr`, `marl.use_rnn`, `marl.use_olora`, `marl.olora_rank`) from `configs/setup.yaml`. Added `NOTE` comment explaining the removal.
+- `docs/PRD.md` KPI table rewritten (lines 133–146): dropped the unsupported "≤150 LOC hard rule" claim (8 files violated it); replaced with the actual audit gate (≤250 LOC, enforced by `scripts/audit.py`). Updated test count (295) and coverage (90%) to match reality.
+
+**Correctness (SEV 2):**
+- **ELO wins tracking**: `scripts/elo_tournament.py::run_tournament` was crediting a win to A when A won (`a_won = True`), but had no `else:` branch to credit B when A lost. Meant per-competitor `wins_as_cop` / `wins_as_thief` were half-empty. Fix: added symmetric else-branch. Rerun produced corrected totals: **MADDPG 172/200 (86%)**, IQL 147/200 (74%), Random 64/200 (32%), VDN 66/200 (33%), QPLEX 75/200 (0% as cop!), QMIX 76/200 (4% as cop).
+- **PROOFS `qmix_update.py:96` → `:94`** cite fix; same in `docs/FAILURE_MODES.md`. Also changed "lines 78–96" to point at the actual `torch.abs()` calls at lines 86 and 90.
+- **PROOFS §1 VDN disclosure** — VDN is affected by the POSG reward-averaging hack too, even though its mixer is a pure sum, because its update path calls `apply_qmix_update` (`services/vdn_update.py:32`) which averages the joint reward. Previously implied only QMIX was affected.
+
+**Test correctness (SEV 3):**
+- `test_play_full_game_alternates_roles` — docstring promised role-alternation verification; body only checked sub-game IDs. Fixed by intercepting `runner.play_sub_game` with a spy that records the `(sub_game_id, a_role)` sequence and asserting `[(1, "cop"), (2, "thief"), (3, "cop"), (4, "thief")]`.
+- `test_capture_implies_positions_equal` — a Hypothesis property test that ran 50 random rollouts and only asserted the invariant if a capture happened by chance. Silently passed when 0 captures happened. Fixed by forcing cop next to thief via `env._board.with_(cop_pos=(2,3), thief_pos=(2,4))` and stepping RIGHT — deterministic capture; assertion always fires.
+
+**Code hygiene (SEV 4):**
+- `game/moves.py` module docstring self-contradiction: said both "cop's CURRENT cell (spec § 3.3)" and "the cell ADJACENT in cop's last intended direction". Same contradiction in `MoveDynamics.apply`'s docstring. The code puts the barrier on the cop's CURRENT cell (`cop_target = board.cop_pos`); the "adjacent" language was a leftover from an earlier design. Removed.
+- `scripts/elo_tournament.py::_play_one` — `return info["winner"] or "thief"` silently swallowed any invalid winner value (`None`, empty string, typo). ELO would still compute; results would just be wrong. Fixed to raise `RuntimeError` on invalid winner. Timeout branch still explicitly returns `"thief"` (spec § 3.4).
+- `BoardFactory.enable_barriers` field was set at every construction site but never read. Barrier gating actually lives in `actions.n_actions(role, enable_barriers)`. Field removed; 4 call-sites cleaned up (`environment/dec_pomdp.py`, `scripts/generate_artifacts.py` × 2, `tests/unit/test_game_core.py`).
+- `environment/multi_cop_env.py::_joint_obs` — `from marl_lab.game.board import Board` was inside the per-cop `for` loop AND inside the thief block, so it re-ran on every observation call in a hot path (hundreds of times per episode). Hoisted to module top-of-file.
+
+**Reorganisation:**
+- `cli/commands.py::cmd_audit` body extracted to `cli/audit_data.py::AUDIT_LINES` (organised by spec section: § 3.1 / § 3.2 / … / § 9 / Beyond Spec / Known Gaps) so `commands.py` stays under the ≤250-LOC audit gate.
+
+**Stats:** 295 tests · 90% coverage · every fix verified via `uv run pytest` before commit.
+

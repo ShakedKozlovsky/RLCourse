@@ -95,16 +95,16 @@ breaking changes.
 
 Ran a 600-game round-robin tournament (6 competitors × 5 opponents × 20 games per ordered pair × 2 role-swaps) with standard chess ELO scoring (K=32, initial 1500). Every trained model + a random policy baseline.
 
-**Final leaderboard** (higher = stronger; ELO gap of 200 ≈ 75% head-to-head win rate):
+**Final leaderboard** (higher = stronger; ELO gap of 200 ≈ 75% head-to-head win rate). 200 games per competitor (100 as cop, 100 as thief across the 5 opponents):
 
 | Rank | Model | Final ELO | Wins/200 | Cop wins | Thief wins |
 |---|---|---|---|---|---|
-| 🥇 1 | **MADDPG** | **1825** | 85 | 37 | 48 |
-| 🥈 2 | **IQL** | **1799** | 75 | 35 | 40 |
-| 🥉 3 | Random baseline | 1422 | 32 | 5 | 27 |
-| 4 | VDN | 1370 | 34 | 6 | 28 |
-| 5 | QPLEX | 1309 | 38 | **0** ⚠ | 38 |
-| 6 | QMIX | 1275 | 37 | 2 | 35 |
+| 🥇 1 | **MADDPG** | **1825** | 172 (86%) | 77 (77%) | 95 (95%) |
+| 🥈 2 | **IQL** | **1799** | 147 (74%) | 66 (66%) | 81 (81%) |
+| 🥉 3 | Random baseline | 1422 | 64 (32%) | 11 (11%) | 53 (53%) |
+| 4 | VDN | 1370 | 66 (33%) | 11 (11%) | 55 (55%) |
+| 5 | QPLEX | 1309 | 75 (38%) | **0** ⚠ | 75 (75%) |
+| 6 | QMIX | 1275 | 76 (38%) | 4 (4%) | 72 (72%) |
 
 **The finding that jumped off the page:**
 
@@ -136,7 +136,7 @@ The tournament data (`assets/logs/elo_tournament.csv`) contains every game with 
 
 ### The mechanism — why MADDPG works when QMIX doesn't
 
-The task is a **POSG** (cop and thief have opposite rewards), not a Dec-POMDP (shared team reward). QMIX/VDN/QPLEX are designed for cooperative Dec-POMDP; we bridge the gap by averaging the two per-agent rewards into a single scalar (`services/qmix_update.py` line 96):
+The task is a **POSG** (cop and thief have opposite rewards), not a Dec-POMDP (shared team reward). QMIX/VDN/QPLEX are designed for cooperative Dec-POMDP; we bridge the gap by averaging the two per-agent rewards into a single scalar (`services/qmix_update.py` line 94, also invoked by VDN via `vdn_update.py` line 32):
 
 ```python
 joint_reward = (b["reward"]["cop"] + b["reward"]["thief"]) * 0.5

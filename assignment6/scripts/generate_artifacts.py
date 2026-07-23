@@ -102,7 +102,7 @@ def figure_loss_curves(n_episodes: int = 60) -> Path:
 def figure_gui_at_grid(size: int) -> Path:
     """Matplotlib snapshot of one board at the given grid size — § 7.3 bullet 3."""
     FIGS.mkdir(parents=True, exist_ok=True)
-    bf = BoardFactory(grid_size=(size, size), enable_barriers=True,
+    bf = BoardFactory(grid_size=(size, size),
                        rng=np.random.default_rng(size))
     board = bf.fresh()
     grid = render(board)
@@ -178,7 +178,7 @@ def file_gui_ascii_demo() -> Path:
     out = LOGS / "gui_ascii_demo.txt"
     sections: list[str] = []
     for size in (3, 4, 5):
-        bf = BoardFactory(grid_size=(size, size), enable_barriers=True,
+        bf = BoardFactory(grid_size=(size, size),
                            rng=np.random.default_rng(size))
         board = bf.fresh()
         sections.append(f"=== board {size}x{size} (C=cop, T=thief, #=barrier) ===")

@@ -144,21 +144,23 @@ def test_opponent_hidden_outside_radius(board: Board, radius: int,
 def test_capture_implies_positions_equal(seed: int) -> None:
     """INV 5: when env.step() reports winner='cop', positions must coincide.
 
-    We force-run random rollouts and check the capture invariant whenever
-    it fires."""
+    v1.16: FORCED capture (deterministic) instead of hoping a random
+    rollout produces one. Previous version could pass with 0 captures
+    across all 50 fuzz draws, making the assertion vacuous."""
+    from marl_lab.game.actions import Action
     env = DecPomdpEnv(
-        env_cfg=EnvConfig(grid_size=(4, 4), max_moves=15, max_barriers=2,
+        env_cfg=EnvConfig(grid_size=(5, 5), max_moves=25, max_barriers=2,
                           enable_barriers=False, observation_radius=2),
         reward_cfg=RewardConfig(),
         rng=np.random.default_rng(seed),
     )
     env.reset(seed=seed)
-    rng = np.random.default_rng(seed + 1)
-    for _ in range(15):
-        a = {"cop": int(rng.integers(0, 6)), "thief": int(rng.integers(0, 5))}
-        _, _, done, info = env.step(a)
-        if done and info["winner"] == "cop":
-            board = env.board()
-            assert board.cop_pos == board.thief_pos
-        if done:
-            break
+    # Force cop next to thief, then have cop move RIGHT onto thief
+    env._board = env._board.with_(cop_pos=(2, 3), thief_pos=(2, 4))  # noqa: SLF001
+    _, _, done, info = env.step({"cop": Action.RIGHT, "thief": Action.STAY})
+    assert done, "must terminate on capture"
+    assert info["winner"] == "cop", f"expected cop win, got {info['winner']}"
+    board = env.board()
+    assert board.cop_pos == board.thief_pos, (
+        f"capture invariant violated: cop={board.cop_pos} thief={board.thief_pos}"
+    )

@@ -39,7 +39,7 @@ So the partial derivative is the constant $1$, which is strictly positive. ∎
 
 ## 2. QMIX — monotonic-mixer IGM via $|\,\cdot\,|$ parametrisation
 
-**Mixer** (`src/marl_lab/model/qmix_mixer.py`, lines 78–96):
+**Mixer** (`src/marl_lab/model/qmix_mixer.py::QMIXMixer.forward` — the `torch.abs()` calls at lines 86 and 90 enforce the non-negativity that carries the whole proof):
 
 The QMIX mixer is a two-layer feedforward network whose **weights** $W_1, W_2$ are produced by a hypernet conditioned on the global state $s$:
 
@@ -125,7 +125,7 @@ The factorisation methods above (VDN, QMIX, QPLEX) are not just *convenient* —
 
 The VDN / QMIX / QPLEX trio buys polynomial-time decentralised execution at the price of **representational restrictions** on $Q_{\text{tot}}$. We characterise those restrictions explicitly in § 1-3 above and verify them empirically.
 
-**Where the spec's POSG framing changes the picture.** Bernstein's NEXP-completeness is for cooperative Dec-POMDPs with a *shared* reward. The cops-and-robbers task is technically a POSG — the cop and thief have opposite reward signals. The complexity for general POSG solving is **NEXP**$^{\text{NP}}$ (Hansen, Bernstein, Zilberstein 2004) — strictly harder. Our averaged-reward CTDE compromise (`(r_cop + r_thief) / 2` in `services/qmix_update.py` line 96) is a pragmatic choice that recovers the Dec-POMDP machinery; the trade-off is documented in [`FAILURE_MODES.md`](FAILURE_MODES.md) § 1.
+**Where the spec's POSG framing changes the picture.** Bernstein's NEXP-completeness is for cooperative Dec-POMDPs with a *shared* reward. The cops-and-robbers task is technically a POSG — the cop and thief have opposite reward signals. The complexity for general POSG solving is **NEXP**$^{\text{NP}}$ (Hansen, Bernstein, Zilberstein 2004) — strictly harder. Our averaged-reward CTDE compromise (`(r_cop + r_thief) / 2` in `services/qmix_update.py` line 94) is a pragmatic choice that recovers the Dec-POMDP machinery; the trade-off is documented in [`FAILURE_MODES.md`](FAILURE_MODES.md) § 1 and empirically confirmed as harmful on this task by the v1.14 ELO tournament (FAILURE_MODES § 8): all three algorithms that go through this averaging (QMIX / VDN / QPLEX) rank BELOW uniform-random. **VDN is affected too even though its mixer is a pure sum** — its update path calls `apply_qmix_update` (`services/vdn_update.py` line 32) which averages the rewards before backprop.
 
 **Why the bibliography ranks Bernstein 2002 first.** The cited paper (spec § 10 ref [1]) is the *reason* the field developed CTDE in the first place. Implementing CTDE without engaging with this complexity result would be implementing a remedy without understanding the disease. The reduction from TILING (a classic NEXP-complete problem) to Dec-POMDP planning establishes that no asymptotic improvement is possible by clever algorithm design alone — the only paths forward are (a) restrict the representable family (VDN / QMIX / QPLEX), (b) sample-based planning (Monte Carlo Tree Search), or (c) accept approximate solutions. We pursue path (a).
 

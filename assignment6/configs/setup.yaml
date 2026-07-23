@@ -2,7 +2,7 @@
 # Spec § 3.6 demands a YAML/JSON config; this is the YAML option.
 # Every numeric parameter the game / agent / training uses MUST appear here.
 
-version: "1.14"
+version: "1.16"
 seed: 208904839
 device: cpu
 
@@ -31,18 +31,17 @@ marl:
                                   # Options: qmix | vdn | qplex | maddpg | iql
   gamma: 0.99
   tau: 0.005                     # Polyak soft-target update rate
-  actor_lr: 0.0001
-  critic_lr: 0.001
-  mixer_lr: 0.001                # QMIX/VDN mixer LR
+  critic_lr: 0.001               # used as the single LR (SDK reads this key)
   batch_size: 64
   replay_capacity: 100000
-  warmup_steps: 500
+  warmup_steps: 500              # ~divided by 25 → warmup_episodes at SDK build
   max_grad_norm: 1.0
   hidden_sizes: [128, 128]
-  use_rnn: true                  # GRU on per-agent obs history (slide 5 — recurrent for partial-obs)
-  rnn_hidden_size: 64
-  use_olora: false               # toggle OLoRA fine-tuning of a pre-trained network
-  olora_rank: 8                  # if use_olora=true
+  rnn_hidden_size: 64            # GRU on per-agent obs history (L10 § 5 — recurrent for partial-obs)
+  # NOTE: actor_lr / mixer_lr / use_rnn / use_olora / olora_rank were
+  # removed in v1.16 — they were declared but never read (dead yaml keys
+  # caught by professor-lens audit). OLoRA is toggled programmatically via
+  # `wrap_with_olora(q_net, rank)` (see model/olora.py + test_olora.py).
 
 # === Exploration ===
 exploration:

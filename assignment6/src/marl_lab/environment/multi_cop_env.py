@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from marl_lab.game.actions import Action
+from marl_lab.game.board import Board
 from marl_lab.sensor.partial_observation import obs_dim, observe
 
 
@@ -160,7 +161,6 @@ class MultiCopEnv:
         # with the thief as OPPONENT. Other cops are ignored in the obs
         # (they'd take another channel; we simplify).
         for i, cp in enumerate(self._board.cop_positions):
-            from marl_lab.game.board import Board
             fake_board = Board(grid_size=(h, w), cop_pos=cp,
                                  thief_pos=self._board.thief_pos)
             obs_dict[f"cop_{i}"] = observe(fake_board, "cop",
@@ -169,7 +169,6 @@ class MultiCopEnv:
         nearest_cop = min(self._board.cop_positions,
                             key=lambda cp: abs(cp[0] - self._board.thief_pos[0])
                                             + abs(cp[1] - self._board.thief_pos[1]))
-        from marl_lab.game.board import Board
         fake_board = Board(grid_size=(h, w), cop_pos=nearest_cop,
                              thief_pos=self._board.thief_pos)
         obs_dict["thief"] = observe(fake_board, "thief",

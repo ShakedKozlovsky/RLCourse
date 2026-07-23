@@ -81,19 +81,28 @@ def test_play_full_game_totals_match_per_subgame_sum(runner, q_pair) -> None:
 
 
 def test_play_full_game_alternates_roles(runner, q_pair) -> None:
-    """Sub-games 0, 2 are policy_a=cop; sub-games 1, 3 are policy_a=thief.
-
-    We verify by running with two MARKEDLY different policies (one always
-    returns Q in favour of action 0 = UP, the other always action 4 = STAY),
-    and confirming that the env actually receives both kinds of patterns."""
-    # Easier proxy: just check sub_game IDs are 0..N-1 in order
+    """Actually verify the sub-game role alternation by intercepting
+    the runner's per-sub-game calls (not just the sub-game IDs)."""
     q_a, q_b = q_pair
     students = [StudentEntry(role="A", full_name="A", id="1"),
                 StudentEntry(role="B", full_name="B", id="2")]
+
+    # Intercept play_sub_game: record every (sub_game_id, a_role) pair
+    recorded: list[tuple[int, str]] = []
+    original = runner.play_sub_game
+    def spy(q_a_arg, q_b_arg, a_role, sub_game_id, seed):
+        recorded.append((sub_game_id, a_role))
+        return original(q_a_arg, q_b_arg, a_role, sub_game_id, seed)
+    runner.play_sub_game = spy
+
     report = runner.play_full_game(q_a, q_b, students=students,
                                      group_name="g", group_code="c",
                                      github_repo="r", timezone_name="UTC")
-    assert [s.id for s in report.sub_games] == [1, 2, 3, 4]   # spec § 3.5 uses 1-based IDs
+
+    # IDs 1..N in order
+    assert [s.id for s in report.sub_games] == [1, 2, 3, 4]
+    # AND: policy_a alternates cop/thief starting with cop
+    assert recorded == [(1, "cop"), (2, "thief"), (3, "cop"), (4, "thief")]
 
 
 def test_play_full_game_carries_metadata(runner, q_pair) -> None:

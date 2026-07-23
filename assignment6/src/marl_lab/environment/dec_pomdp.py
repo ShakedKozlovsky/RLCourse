@@ -44,7 +44,6 @@ class DecPomdpEnv:
         self._rng = rng or np.random.default_rng(0)
         self._board_factory = BoardFactory(
             grid_size=env_cfg.grid_size,
-            enable_barriers=env_cfg.enable_barriers,
             rng=self._rng,
         )
         self._dynamics = MoveDynamics(max_barriers=env_cfg.max_barriers)

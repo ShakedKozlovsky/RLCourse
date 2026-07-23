@@ -74,9 +74,13 @@ class Board:
 
 @dataclass
 class BoardFactory:
-    """Construct fresh Boards with random valid agent positions."""
+    """Construct fresh Boards with random valid agent positions.
+
+    Note: barrier gating lives in ``actions.n_actions(role, enable_barriers)``;
+    the factory itself has no barrier-related state (fresh boards always start
+    with zero barriers). The ``enable_barriers`` yaml key is threaded through
+    ``EnvConfig``, not through this class."""
     grid_size: tuple[int, int]
-    enable_barriers: bool
     rng: np.random.Generator = field(default_factory=lambda: np.random.default_rng(0))
 
     def fresh(self) -> Board:

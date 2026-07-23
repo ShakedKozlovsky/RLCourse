@@ -1,11 +1,9 @@
 """Move dynamics T(s' | s, ā) — pure function on Boards.
 
 Simultaneous resolution: cop and thief move in the same tick. Walls + barriers
-block movement. PLACE_BARRIER (action 5, cop-only) drops a barrier on the
-cop's CURRENT cell (spec § 3.3) and the cop stays put that turn.
-block; collisions resolve as the **moving agent stays put**. Cop's
-PLACE_BARRIER (action 5) drops a barrier on the cell ADJACENT in cop's last
-intended direction — see § 1 below."""
+block movement; collisions resolve as the **moving agent stays put**.
+PLACE_BARRIER (action 5, cop-only) drops a barrier on the cop's CURRENT
+cell (spec § 3.3) and the cop stays put that turn."""
 
 from __future__ import annotations
 
@@ -50,15 +48,12 @@ class MoveDynamics:
              If both target the SAME empty cell → both stay put (collision tie).
           2. If cop targets the thief's CURRENT cell and thief doesn't move →
              cop captures (lands on thief). step counter still advances.
-          3. PLACE_BARRIER (cop only): cop does NOT move. Barrier is placed on
-             the cell one step in cop's last-direction-of-intent (UP-direction
-             default). Cannot place on:
-                 - cop's own cell
-                 - thief's cell
-                 - existing barrier
-                 - off-grid
-             Cap: ``max_barriers`` per game. Beyond cap → barrier action is
-             silently a STAY.
+          3. PLACE_BARRIER (cop only): cop does NOT move. Barrier is placed
+             on the cop's CURRENT cell (spec § 3.3); cop remains on that cell
+             this turn and moves off it next turn. Cannot place if:
+                 - the cell is already a barrier
+                 - the cap ``max_barriers`` per game is reached
+             In either case the action is silently a STAY.
           4. The step counter increments by 1 every tick."""
         # Resolve thief
         thief_target = _try_move(board.thief_pos, thief_action, board)
